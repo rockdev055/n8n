@@ -105,17 +105,3 @@ To start n8n execute:
 ```
 npm run start
 ```
-
-
-## Development Cycle
-
-While iterating on n8n modules' code, you can run `npm run watch` to automatically build your changes. This will alert you as soon as something gets broken.
-
-1. `npm run watch`
-1. hack, hack, hack
-1. `npm run start`
-1. test
-
-### Test suite
-
-TODO: how to run jest or other automated test tools
