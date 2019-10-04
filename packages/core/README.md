@@ -11,5 +11,3 @@ npm install n8n-core
 ## License
 
 [Apache 2.0 with Commons Clause](LICENSE.md)
-
-Additional information about license can be found in the [FAQ](https://docs.n8n.io/#/faq?id=license)
