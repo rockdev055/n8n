@@ -28,12 +28,6 @@
   - [Development](development.md)
 
 
-- Other
-
-  - [FAQ](faq.md)
-  - [License](license.md)
-
-
 - Links
 
   - [![Website](https://n8n.io/favicon.ico ':size=16')n8n.io](https://n8n.io)
