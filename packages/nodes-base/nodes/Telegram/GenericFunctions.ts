@@ -153,7 +153,7 @@ export async function apiRequest(this: IHookFunctions | IExecuteFunctions | ILoa
 	};
 
 	try {
-		return await this.helpers.request!(options);
+		return this.helpers.request!(options);
 	} catch (error) {
 		if (error.statusCode === 401) {
 			// Return a clear error
@@ -162,8 +162,8 @@ export async function apiRequest(this: IHookFunctions | IExecuteFunctions | ILoa
 
 		if (error.response && error.response.body && error.response.body.error_code) {
 			// Try to return the error prettier
-			const errorBody = error.response.body;
-			throw new Error(`Telegram error response [${errorBody.error_code}]: ${errorBody.description}`);
+			const airtableError = error.response.body;
+			throw new Error(`Telegram error response [${airtableError.error_code}]: ${airtableError.description}`);
 		}
 
 		// Expected error data did not get returned so throw the actual error
