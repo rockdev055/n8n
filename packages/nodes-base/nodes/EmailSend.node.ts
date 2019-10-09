@@ -52,15 +52,6 @@ export class EmailSend implements INodeType {
 				description: 'Email address of the recipient.',
 			},
 			{
-				displayName: 'CC Email',
-				name: 'ccEmail',
-				type: 'string',
-				default: '',
-				required: false,
-				placeholder: 'cc@example.com',
-				description: 'Email address of CC recipient.',
-			},
-			{
 				displayName: 'Subject',
 				name: 'subject',
 				type: 'string',
@@ -105,7 +96,6 @@ export class EmailSend implements INodeType {
 
 		const fromEmail = this.getNodeParameter('fromEmail') as string;
 		const toEmail = this.getNodeParameter('toEmail') as string;
-		const ccEmail = this.getNodeParameter('ccEmail') as string;
 		const subject = this.getNodeParameter('subject') as string;
 		const text = this.getNodeParameter('text') as string;
 		const html = this.getNodeParameter('html') as string;
@@ -132,7 +122,6 @@ export class EmailSend implements INodeType {
 		const mailOptions = {
 			from: fromEmail,
 			to: toEmail,
-			cc: ccEmail,
 			subject,
 			text,
 			html,
