@@ -7,7 +7,7 @@ import {
 	IDataObject,
 	INodeTypeDescription,
 	INodeType,
-	IWebhookResponseData,
+	IWebhookResonseData,
 } from 'n8n-workflow';
 
 import {
@@ -403,7 +403,7 @@ export class GithubTrigger implements INodeType {
 
 
 
-	async webhook(this: IWebhookFunctions): Promise<IWebhookResponseData> {
+	async webhook(this: IWebhookFunctions): Promise<IWebhookResonseData> {
 		const bodyData = this.getBodyData();
 
 		// Check if the webhook is only the ping from Github to confirm if it workshook_id

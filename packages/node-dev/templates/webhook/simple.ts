@@ -6,7 +6,7 @@ import {
 	IDataObject,
 	INodeTypeDescription,
 	INodeType,
-	IWebhookResponseData,
+	IWebhookResonseData,
 } from 'n8n-workflow';
 
 
@@ -48,7 +48,7 @@ export class ClassNameReplace implements INodeType {
 	};
 
 
-	async webhook(this: IWebhookFunctions): Promise<IWebhookResponseData> {
+	async webhook(this: IWebhookFunctions): Promise<IWebhookResonseData> {
 
 		// The data to return and so start the workflow with
 		const returnData: IDataObject[] = [];

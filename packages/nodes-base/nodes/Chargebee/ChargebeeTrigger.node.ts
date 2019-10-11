@@ -6,7 +6,7 @@ import {
 	IDataObject,
 	INodeTypeDescription,
 	INodeType,
-	IWebhookResponseData,
+	IWebhookResonseData,
 } from 'n8n-workflow';
 
 
@@ -222,7 +222,7 @@ export class ChargebeeTrigger implements INodeType {
 
 	};
 
-	async webhook(this: IWebhookFunctions): Promise<IWebhookResponseData> {
+	async webhook(this: IWebhookFunctions): Promise<IWebhookResonseData> {
 		const bodyData = this.getBodyData() as IDataObject;
 		const req = this.getRequestObject();
 

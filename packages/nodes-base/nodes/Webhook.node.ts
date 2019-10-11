@@ -6,7 +6,7 @@ import {
 	IDataObject,
 	INodeTypeDescription,
 	INodeType,
-	IWebhookResponseData,
+	IWebhookResonseData,
 } from 'n8n-workflow';
 
 import * as basicAuth from 'basic-auth';
@@ -207,7 +207,7 @@ export class Webhook implements INodeType {
 	};
 
 
-	async webhook(this: IWebhookFunctions): Promise<IWebhookResponseData> {
+	async webhook(this: IWebhookFunctions): Promise<IWebhookResonseData> {
 		const authentication = this.getNodeParameter('authentication', 0) as string;
 		const req = this.getRequestObject();
 		const resp = this.getResponseObject();
