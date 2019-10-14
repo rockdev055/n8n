@@ -7,7 +7,7 @@ import {
 	IDataObject,
 	INodeTypeDescription,
 	INodeType,
-	IWebhookResponseData,
+	IWebhookResonseData,
 } from 'n8n-workflow';
 
 import {
@@ -138,7 +138,7 @@ export class AsanaTrigger implements INodeType {
 
 
 
-	async webhook(this: IWebhookFunctions): Promise<IWebhookResponseData> {
+	async webhook(this: IWebhookFunctions): Promise<IWebhookResonseData> {
 		const bodyData = this.getBodyData() as IDataObject;
 		const headerData = this.getHeaderData() as IDataObject;
 		const req = this.getRequestObject();
