@@ -6,7 +6,7 @@ import {
 import {
 	INodeTypeDescription,
 	INodeType,
-	IWebhookResponseData,
+	IWebhookResonseData,
 } from 'n8n-workflow';
 
 import {
@@ -102,7 +102,7 @@ export class TelegramTrigger implements INodeType {
 					},
 				],
 				required: true,
-				default: [],
+				default: ['*'],
 				description: 'The update types to listen to.',
 			},
 		],
@@ -151,7 +151,7 @@ export class TelegramTrigger implements INodeType {
 
 
 
-	async webhook(this: IWebhookFunctions): Promise<IWebhookResponseData> {
+	async webhook(this: IWebhookFunctions): Promise<IWebhookResonseData> {
 		const bodyData = this.getBodyData();
 
 		return {

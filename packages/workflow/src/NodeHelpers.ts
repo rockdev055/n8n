@@ -56,6 +56,7 @@ export function displayParameter(nodeValues: INodeParameters, parameter: INodePr
 				return false;
 			}
 		}
+		return true;
 	}
 
 	if (parameter.displayOptions.hide) {

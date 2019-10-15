@@ -1,5 +1,3 @@
-import { get } from 'lodash';
-
 import { IExecuteFunctions } from 'n8n-core';
 import {
 	GenericValue,
@@ -150,6 +148,8 @@ export class Merge implements INodeType {
 
 
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
+		// const itemsInput2 = this.getInputData(1);
+
 		const returnData: INodeExecutionData[] = [];
 
 		const mode = this.getNodeParameter('mode', 0) as string;
@@ -264,26 +264,25 @@ export class Merge implements INodeType {
 			} = {};
 			let entry: INodeExecutionData;
 			for (entry of dataInput2) {
-				const key = get(entry.json, propertyName2);
-				if (!entry.json || !key) {
+				if (!entry.json || !entry.json.hasOwnProperty(propertyName2)) {
 					// Entry does not have the property so skip it
 					continue;
 				}
 
-				copyData[key as string] = entry;
+				copyData[entry.json[propertyName2] as string] = entry;
 			}
 
 			// Copy data on entries
 			let referenceValue: GenericValue;
 			let key: string;
 			for (entry of dataInput1) {
-				referenceValue = get(entry.json, propertyName1);
 
-				if (!referenceValue) {
+				if (!entry.json || !entry.json.hasOwnProperty(propertyName1)) {
 					// Entry does not have the property so skip it
 					continue;
 				}
 
+				referenceValue = entry.json[propertyName1];
 
 				if (!['string', 'number'].includes(typeof referenceValue)) {
 					continue;

@@ -48,7 +48,6 @@ export class Function implements INodeType {
 		// Define the global objects for the custom function
 		const sandbox = {
 			getNodeParameter: this.getNodeParameter,
-			getWorkflowStaticData: this.getWorkflowStaticData,
 			helpers: this.helpers,
 			items,
 			// To be able to access data of other items
