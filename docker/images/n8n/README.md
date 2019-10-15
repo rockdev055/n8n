@@ -12,12 +12,13 @@ so also used with internal tools.
 ## Contents
 
 - [Demo](#demo)
+- [Available integrations](#available-integrations)
 - [Documentation](#documentation)
 - [Start n8n in Docker](#start-n8n-in-docker)
 - [Start with tunnel](#start-with-tunnel)
 - [Securing n8n](#securing-n8n)
 - [Persist data](#persist-data)
-- [Passing Senstive Data via File](#passing-senstive-data-via-file)
+- [Passing Sensitive Data via File](#passing-sensitive-data-via-file)
 - [What does n8n mean and how do you pronounce it](#what-does-n8n-mean-and-how-do-you-pronounce-it)
 - [Support](#support)
 - [Upgrading](#upgrading)
@@ -29,6 +30,11 @@ so also used with internal tools.
 [:tv: A short demo (< 3 min)](https://www.youtube.com/watch?v=3w7xIMKLVAg)
 which shows how to create a simple workflow which automatically sends a new
 Slack notification every time a Github repository received or lost a star.
+
+
+## Available integrations
+
+n8n has 50+ different nodes to automate workflows. The list can be found on: [https://n8n.io/nodes](https://n8n.io/nodes)
 
 
 ## Documentation
@@ -169,7 +175,7 @@ docker run -it --rm \
 A full working setup with docker-compose can be found [here](https://github.com/n8n-io/n8n/blob/master/docker/compose/withPostgres/README.md)
 
 
-## Passing Senstive Data via File
+## Passing Sensitive Data via File
 
 To avoid passing sensitive information via environment variables "_FILE" may be
 appended to some environment variables. It will then load the data from a file
@@ -202,12 +208,12 @@ docker build --build-arg N8N_VERSION=0.18.1 -t n8nio/n8n:0.18.1 .
 **Short answer:** It means "nodemation"
 
 **Long answer:** I get that question quite often (more often than I expected)
-so decided it is probably best to answer it here. While looking for a
-good name for the project with a free domain I realized very fast that all the
-good ones I could think of were already taken. So, in the end, I choose
+so I decided it is probably best to answer it here. While looking for a
+good name for the project with a free domain I realized very quickly that all the
+good ones I could think of were already taken. So, in the end, I chose
 nodemation. "node-" in the sense that it uses a Node-View and that it uses
-Node.js and "-mation" for "automation" what the project is supposed to help with.
-Did however not like how long the name was and could not imagine writing
+Node.js and "-mation" for "automation" which is what the project is supposed to help with.
+However, I did not like how long the name was and I could not imagine writing
 something that long every time in the CLI. That is when I then ended up on
 "n8n". Sure does not work perfectly but does neither for Kubernetes (k8s) and
 did not hear anybody complain there. So I guess it should be ok.
@@ -232,3 +238,5 @@ Before you upgrade to the latest version make sure to check here if there are an
 ## License
 
 n8n is licensed under [**Apache 2.0 with Commons Clause**](https://github.com/n8n-io/n8n/blob/master/packages/cli/LICENSE.md)
+
+Additional information about license can be found in the [FAQ](https://docs.n8n.io/#/faq?id=license)

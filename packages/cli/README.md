@@ -13,6 +13,7 @@ so also used with internal tools.
 
 <!-- TOC -->
 - [Demo](#demo)
+- [Available integrations](#available-integrations)
 - [Documentation](#documentation)
 - [Give n8n a spin](#give-n8n-a-spin)
 - [Installation](#installation)
@@ -31,6 +32,11 @@ so also used with internal tools.
 [:tv: A short demo (< 3 min)](https://www.youtube.com/watch?v=3w7xIMKLVAg)
 which shows how to create a simple workflow which automatically sends a new
 Slack notification every time a Github repository received or lost a star.
+
+
+## Available integrations
+
+n8n has 50+ different nodes to automate workflows. The list can be found on: [https://n8n.io/nodes](https://n8n.io/nodes)
 
 
 ## Documentation
@@ -63,12 +69,12 @@ If you are interested in a hosted version of n8n on our infrastructure please co
 **Short answer:** It means "nodemation"
 
 **Long answer:** I get that question quite often (more often than I expected)
-so decided it is probably best to answer it here. While looking for a
-good name for the project with a free domain I realized very fast that all the
-good ones I could think of were already taken. So, in the end, I choose
+so I decided it is probably best to answer it here. While looking for a
+good name for the project with a free domain I realized very quickly that all the
+good ones I could think of were already taken. So, in the end, I chose
 nodemation. "node-" in the sense that it uses a Node-View and that it uses
-Node.js and "-mation" for "automation" what the project is supposed to help with.
-Did however not like how long the name was and could not imagine writing
+Node.js and "-mation" for "automation" which is what the project is supposed to help with.
+However, I did not like how long the name was and I could not imagine writing
 something that long every time in the CLI. That is when I then ended up on
 "n8n". Sure does not work perfectly but does neither for Kubernetes (k8s) and
 did not hear anybody complain there. So I guess it should be ok.
@@ -91,6 +97,8 @@ Before you upgrade to the latest version make sure to check here if there are an
 ## License
 
 [Apache 2.0 with Commons Clause](https://github.com/n8n-io/n8n/blob/master/packages/cli/LICENSE.md)
+
+Additional information about license can be found in the [FAQ](https://docs.n8n.io/#/faq?id=license)
 
 
 ## Development
