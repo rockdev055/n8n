@@ -1,6 +1,5 @@
 import * as localtunnel from 'localtunnel';
 import {
-	TUNNEL_SUBDOMAIN_ENV,
 	UserSettings,
 } from "n8n-core";
 import { Command, flags } from '@oclif/command';
@@ -15,8 +14,8 @@ import {
 	GenericHelpers,
 	LoadNodesAndCredentials,
 	NodeTypes,
-	Server,
 	TestWebhooks,
+	Server,
 } from "../src";
 
 const tunnel = promisify(localtunnel);
@@ -121,14 +120,7 @@ export class Start extends Command {
 				if (flags.tunnel === true) {
 					this.log('\nWaiting for tunnel ...');
 
-					let tunnelSubdomain;
-					if (process.env[TUNNEL_SUBDOMAIN_ENV] !== undefined && process.env[TUNNEL_SUBDOMAIN_ENV] !== '') {
-						tunnelSubdomain = process.env[TUNNEL_SUBDOMAIN_ENV];
-					} else if (userSettings.tunnelSubdomain !== undefined) {
-						tunnelSubdomain = userSettings.tunnelSubdomain;
-					}
-
-					if (tunnelSubdomain === undefined) {
+					if (userSettings.tunnelSubdomain === undefined) {
 						// When no tunnel subdomain did exist yet create a new random one
 						const availableCharacters = 'abcdefghijklmnopqrstuvwxyz0123456789';
 						userSettings.tunnelSubdomain = Array.from({ length: 24 }).map(() => {
@@ -140,7 +132,7 @@ export class Start extends Command {
 
 					const tunnelSettings: localtunnel.TunnelConfig = {
 						host: 'https://hooks.n8n.cloud',
-						subdomain: tunnelSubdomain,
+						subdomain: userSettings.tunnelSubdomain,
 					};
 
 					const port = config.get('port') as number;
