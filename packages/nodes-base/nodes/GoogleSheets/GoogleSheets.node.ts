@@ -11,8 +11,6 @@ import {
 	IGoogleAuthCredentials,
 	ILookupValues,
 	ISheetUpdateData,
-	ValueInputOption,
-	ValueRenderOption,
 } from './GoogleSheet';
 
 
@@ -260,110 +258,6 @@ export class GoogleSheets implements INodeType {
 				description: 'The name of the key to identify which<br />data should be updated in the sheet.',
 			},
 
-			{
-				displayName: 'Options',
-				name: 'options',
-				type: 'collection',
-				placeholder: 'Add Option',
-				default: {},
-				options: [
-					{
-						displayName: 'Value Input Mode',
-						name: 'valueInputMode',
-						type: 'options',
-						displayOptions: {
-							show: {
-								'/operation': [
-									'append',
-									'update',
-								],
-							},
-						},
-						options: [
-							{
-								name: 'RAW',
-								value: 'RAW',
-								description: 'The values will not be parsed and will be stored as-is.',
-							},
-							{
-								name: 'User Entered',
-								value: 'USER_ENTERED',
-								description: 'The values will be parsed as if the user typed them into the UI. Numbers will stay as numbers, but strings may be converted to numbers, dates, etc. following the same rules that are applied when entering text into a cell via the Google Sheets UI.'
-							},
-						],
-						default: 'RAW',
-						description: 'Determines how data should be interpreted.',
-					},
-					{
-						displayName: 'Value Render Mode',
-						name: 'valueRenderMode',
-						type: 'options',
-						displayOptions: {
-							show: {
-								'/operation': [
-									'lookup',
-									'read',
-								],
-							},
-						},
-						options: [
-							{
-								name: 'Formatted Value',
-								value: 'FORMATTED_VALUE',
-								description: 'Values will be calculated & formatted in the reply according to the cell\'s formatting.Formatting is based on the spreadsheet\'s locale, not the requesting user\'s locale.For example, if A1 is 1.23 and A2 is =A1 and formatted as currency, then A2 would return "$1.23".',
-							},
-							{
-								name: 'Formula',
-								value: 'FORMULA',
-								description: '	Values will not be calculated. The reply will include the formulas. For example, if A1 is 1.23 and A2 is =A1 and formatted as currency, then A2 would return "=A1".',
-							},
-							{
-								name: 'Unformatted Value',
-								value: 'UNFORMATTED_VALUE',
-								description: 'Values will be calculated, but not formatted in the reply. For example, if A1 is 1.23 and A2 is =A1 and formatted as currency, then A2 would return the number 1.23.'
-							},
-						],
-						default: 'UNFORMATTED_VALUE',
-						description: 'Determines how values should be rendered in the output.',
-					},
-					{
-						displayName: 'Value Render Mode',
-						name: 'valueRenderMode',
-						type: 'options',
-						displayOptions: {
-							show: {
-								'/operation': [
-									'update',
-								],
-								'/rawData': [
-									false
-								],
-							},
-						},
-						options: [
-							{
-								name: 'Formatted Value',
-								value: 'FORMATTED_VALUE',
-								description: 'Values will be calculated & formatted in the reply according to the cell\'s formatting.Formatting is based on the spreadsheet\'s locale, not the requesting user\'s locale.For example, if A1 is 1.23 and A2 is =A1 and formatted as currency, then A2 would return "$1.23".',
-							},
-							{
-								name: 'Formula',
-								value: 'FORMULA',
-								description: '	Values will not be calculated. The reply will include the formulas. For example, if A1 is 1.23 and A2 is =A1 and formatted as currency, then A2 would return "=A1".',
-							},
-							{
-								name: 'Unformatted Value',
-								value: 'UNFORMATTED_VALUE',
-								description: 'Values will be calculated, but not formatted in the reply. For example, if A1 is 1.23 and A2 is =A1 and formatted as currency, then A2 would return the number 1.23.'
-							},
-						],
-						default: 'UNFORMATTED_VALUE',
-						description: 'Determines how values should be rendered in the output.',
-					},
-
-				],
-			}
-
 		],
 	};
 
@@ -387,10 +281,6 @@ export class GoogleSheets implements INodeType {
 
 		const operation = this.getNodeParameter('operation', 0) as string;
 
-		const options = this.getNodeParameter('options', 0, {}) as IDataObject;
-
-		const valueInputMode = (options.valueInputMode || 'RAW') as ValueInputOption;
-		const valueRenderMode = (options.valueRenderMode || 'FORMATTED_VALUE') as ValueRenderOption;
 
 		if (operation === 'append') {
 			// ----------------------------------
@@ -406,7 +296,7 @@ export class GoogleSheets implements INodeType {
 			});
 
 			// Convert data into array format
-			const data = await sheet.appendSheetData(setData, range, keyRow, valueInputMode);
+			const data = await sheet.appendSheetData(setData, range, keyRow);
 
 			// TODO: Should add this data somewhere
 			// TODO: Should have something like add metadata which does not get passed through
@@ -417,7 +307,7 @@ export class GoogleSheets implements INodeType {
 			//         lookup
 			// ----------------------------------
 
-			const sheetData = await sheet.getData(range, valueRenderMode);
+			const sheetData = await sheet.getData(range);
 
 			if (sheetData === undefined) {
 				return [];
@@ -446,7 +336,7 @@ export class GoogleSheets implements INodeType {
 
 			const rawData = this.getNodeParameter('rawData', 0) as boolean;
 
-			const sheetData = await sheet.getData(range, valueRenderMode);
+			const sheetData = await sheet.getData(range);
 
 			let returnData: IDataObject[];
 			if (!sheetData) {
@@ -486,7 +376,7 @@ export class GoogleSheets implements INodeType {
 					});
 				}
 
-				const data = await sheet.batchUpdate(updateData, valueInputMode);
+				const data = await sheet.batchUpdate(updateData);
 			} else {
 				const keyName = this.getNodeParameter('key', 0) as string;
 				const keyRow = this.getNodeParameter('keyRow', 0) as number;
@@ -497,7 +387,7 @@ export class GoogleSheets implements INodeType {
 					setData.push(item.json);
 				});
 
-				const data = await sheet.updateSheetData(setData, keyName, range, keyRow, dataStartRow, valueInputMode, valueRenderMode);
+				const data = await sheet.updateSheetData(setData, keyName, range, keyRow, dataStartRow);
 			}
 			// TODO: Should add this data somewhere
 			// TODO: Should have something like add metadata which does not get passed through
