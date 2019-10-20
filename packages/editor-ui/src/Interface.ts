@@ -53,6 +53,8 @@ declare module 'jsplumb' {
 	}
 }
 
+
+
 // EndpointOptions from jsplumb seems incomplete and wrong so we define an own one
 export interface IEndpointOptions {
 	anchor?: any; // tslint:disable-line:no-any
@@ -350,6 +352,7 @@ export interface IPushDataExecutionStarted {
 	workflowId: string;
 	workflowName?: string;
 }
+
 
 export interface IPushDataExecutionFinished {
 	data: IRun;

@@ -23,7 +23,6 @@ import {
 	IWorkflowExecuteAdditionalData,
 	IWorkflowExecuteHooks,
 	WorkflowExecuteMode,
-	INodeParameters,
 } from 'n8n-workflow';
 
 import * as config from '../config';
@@ -246,7 +245,7 @@ const hooks = (mode: WorkflowExecuteMode, workflowData: IWorkflowBase, execution
  * @param {IWorkflowCredentials} credentials
  * @returns {Promise<IWorkflowExecuteAdditionalData>}
  */
-export async function getBase(mode: WorkflowExecuteMode, credentials: IWorkflowCredentials,currentNodeParameters: INodeParameters[] = []): Promise<IWorkflowExecuteAdditionalData> {
+export async function getBase(mode: WorkflowExecuteMode, credentials: IWorkflowCredentials): Promise<IWorkflowExecuteAdditionalData> {
 	const urlBaseWebhook = WebhookHelpers.getWebhookBaseUrl();
 
 	const timezone = config.get('generic.timezone') as string;
@@ -264,7 +263,6 @@ export async function getBase(mode: WorkflowExecuteMode, credentials: IWorkflowC
 		timezone,
 		webhookBaseUrl,
 		webhookTestBaseUrl,
-		currentNodeParameters
 	};
 }
 

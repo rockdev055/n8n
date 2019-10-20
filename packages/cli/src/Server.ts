@@ -525,7 +525,6 @@ class App {
 		this.app.get('/rest/node-parameter-options', ResponseHelper.send(async (req: express.Request, res: express.Response): Promise<INodePropertyOptions[]> => {
 			const nodeType = req.query.nodeType;
 			let credentials: INodeCredentials | undefined = undefined;
-			const currentNodeParameters = req.query.currentNodeParameters;
 			if (req.query.credentials !== undefined) {
 				credentials = JSON.parse(req.query.credentials);
 			}
@@ -538,7 +537,7 @@ class App {
 
 			const workflowData = loadDataInstance.getWorkflowData() as IWorkflowBase;
 			const workflowCredentials = await WorkflowCredentials(workflowData.nodes);
-			const additionalData = await WorkflowExecuteAdditionalData.getBase(executionMode, workflowCredentials,currentNodeParameters);
+			const additionalData = await WorkflowExecuteAdditionalData.getBase(executionMode, workflowCredentials);
 
 			return loadDataInstance.getOptions(methodName, additionalData);
 		}));
