@@ -9,4 +9,3 @@ package-lock.json
 yarn.lock
 google-generated-credentials.json
 _START_PACKAGE
-.env
