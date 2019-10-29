@@ -3,14 +3,13 @@ import {
 	IExecuteSingleFunctions,
 } from 'n8n-core';
 import {
-	IDataObject,
 	INodeTypeDescription,
 	INodeExecutionData,
 	INodeType,
 } from 'n8n-workflow';
 
 import { createTransport } from 'nodemailer';
-import SMTPTransport = require('nodemailer/lib/smtp-transport');
+
 
 export class EmailSend implements INodeType {
 	description: INodeTypeDescription = {
@@ -97,22 +96,6 @@ export class EmailSend implements INodeType {
 				default: '',
 				description: 'Name of the binary properties which contain<br />data which should be added to email as attachment.<br />Multiple ones can be comma separated.',
 			},
-			{
-				displayName: 'Options',
-				name: 'options',
-				type: 'collection',
-				placeholder: 'Add Option',
-				default: {},
-				options: [
-					{
-						displayName: 'Ignore SSL Issues',
-						name: 'allowUnauthorizedCerts',
-						type: 'boolean',
-						default: false,
-						description: 'Do connect even if SSL certificate validation is not possible.',
-					},
-				],
-			},
 		],
 	};
 
@@ -127,7 +110,6 @@ export class EmailSend implements INodeType {
 		const text = this.getNodeParameter('text') as string;
 		const html = this.getNodeParameter('html') as string;
 		const attachmentPropertyString = this.getNodeParameter('attachments') as string;
-		const options = this.getNodeParameter('options', {}) as IDataObject;
 
 		const credentials = this.getCredentials('smtp');
 
@@ -135,24 +117,16 @@ export class EmailSend implements INodeType {
 			throw new Error('No credentials got returned!');
 		}
 
-		const connectionOptions: SMTPTransport.Options = {
+		const transporter = createTransport({
+			// @ts-ignore
 			host: credentials.host as string,
 			port: credentials.port as number,
 			secure: credentials.secure as boolean,
-			// @ts-ignore
 			auth: {
 				user: credentials.user,
 				pass: credentials.password,
 			}
-		};
-
-		if (options.allowUnauthorizedCerts === true) {
-			connectionOptions.tls = {
-				rejectUnauthorized: false
-			};
-		}
-
-		const transporter = createTransport(connectionOptions);
+		});
 
 		// setup email data with unicode symbols
 		const mailOptions = {
