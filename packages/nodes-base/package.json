@@ -1,6 +1,6 @@
 {
     "name": "n8n-nodes-base",
-    "version": "0.26.2",
+    "version": "0.25.0",
     "description": "Base nodes of n8n",
     "license": "SEE LICENSE IN LICENSE.md",
     "homepage": "https://n8n.io",
@@ -28,6 +28,7 @@
         "credentials": [
             "dist/credentials/ActiveCampaignApi.credentials.js",
             "dist/credentials/AirtableApi.credentials.js",
+            "dist/credentials/Amqp.credentials.js",
             "dist/credentials/AsanaApi.credentials.js",
             "dist/credentials/Aws.credentials.js",
             "dist/credentials/ChargebeeApi.credentials.js",
@@ -59,6 +60,8 @@
         "nodes": [
             "dist/nodes/ActiveCampaign/ActiveCampaign.node.js",
             "dist/nodes/Airtable/Airtable.node.js",
+            "dist/nodes/Amqp/Amqp.node.js",
+            "dist/nodes/Amqp/AmqpTrigger.node.js",
             "dist/nodes/Asana/Asana.node.js",
             "dist/nodes/Asana/AsanaTrigger.node.js",
             "dist/nodes/Aws/AwsLambda.node.js",
@@ -89,7 +92,6 @@
             "dist/nodes/Mailgun/Mailgun.node.js",
             "dist/nodes/Mattermost/Mattermost.node.js",
             "dist/nodes/Merge.node.js",
-            "dist/nodes/MoveBinaryData.node.js",
             "dist/nodes/MongoDb/MongoDb.node.js",
             "dist/nodes/NextCloud/NextCloud.node.js",
             "dist/nodes/NoOp.node.js",
@@ -159,6 +161,7 @@
         "pdf-parse": "^1.1.1",
         "pg-promise": "^9.0.3",
         "redis": "^2.8.0",
+        "rhea": "^1.0.11",
         "rss-parser": "^3.7.0",
         "vm2": "^3.6.10",
         "xlsx": "^0.14.3",

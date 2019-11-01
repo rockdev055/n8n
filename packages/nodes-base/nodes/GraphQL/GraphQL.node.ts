@@ -144,7 +144,7 @@ export class GraphQL implements INodeType {
 				displayName: 'Response Data Property Name',
 				name: 'dataPropertyName',
 				type: 'string',
-				default: 'data',
+				default: 'response',
 				required: true,
 				displayOptions: {
 					show: {
