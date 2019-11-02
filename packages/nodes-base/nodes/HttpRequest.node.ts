@@ -196,11 +196,11 @@ export class HttpRequest implements INodeType {
 			},
 
 			{
-				displayName: 'JSON/RAW Parameters',
+				displayName: 'JSON Parameters',
 				name: 'jsonParameters',
 				type: 'boolean',
 				default: false,
-				description: 'If the query and/or body parameter should be set via the value-key pair UI or JSON/RAW',
+				description: 'If the query and/or body parameter should be set via the UI or raw as JSON',
 			},
 
 			{
@@ -229,10 +229,6 @@ export class HttpRequest implements INodeType {
 								value: 'json'
 							},
 							{
-								name: 'RAW/Custom',
-								value: 'raw'
-							},
-							{
 								name: 'Form-Data Multipart',
 								value: 'multipart-form-data'
 							},
@@ -243,24 +239,6 @@ export class HttpRequest implements INodeType {
 						],
 						default: 'json',
 						description: 'Content-Type to use to send body parameters.',
-					},
-					{
-						displayName: 'MIME Type',
-						name: 'bodyContentCustomMIMEType',
-						type: 'string',
-						default: '',
-						placeholder: 'text/xml',
-						description: 'Specify the mime type for raw/custom body type',
-						required: false,
-						displayOptions: {
-							show: {
-								'/requestMethod': [
-									'PATCH',
-									'POST',
-									'PUT',
-								],
-							},
-						},
 					},
 					{
 						displayName: 'Full Response',
@@ -379,7 +357,7 @@ export class HttpRequest implements INodeType {
 					},
 				},
 				default: '',
-				description: 'Body parameters as JSON or RAW.',
+				description: 'Body parameters as JSON.',
 			},
 			{
 				displayName: 'Body Parameters',
@@ -576,13 +554,13 @@ export class HttpRequest implements INodeType {
 					requestOptions[optionData.name] = tempValue;
 
 					// @ts-ignore
-					if (typeof requestOptions[optionData.name] !== 'object' && options.bodyContentType !== 'raw') {
-						// If it is not an object && bodyContentType is not 'raw' it must be JSON so parse it
+					if (typeof requestOptions[optionData.name] !== 'object') {
+						// If it is not an object it must be JSON so parse it
 						try {
 							// @ts-ignore
 							requestOptions[optionData.name] = JSON.parse(requestOptions[optionData.name]);
 						} catch (e) {
-							throw new Error(`The data in "${optionData.displayName}" is no valid JSON. Set Body Content Type to "RAW/Custom" for XML or other types of payloads`);
+							throw new Error(`The data in "${optionData.displayName}" is no valid JSON.`);
 						}
 					}
 				}
@@ -614,14 +592,6 @@ export class HttpRequest implements INodeType {
 				}
 			}
 
-			// Add Content Type if any are set
-			if (options.bodyContentCustomMIMEType) {
-				if(requestOptions.headers === undefined) {
-					requestOptions.headers = {};
-				}
-				requestOptions.headers['Content-Type'] = options.bodyContentCustomMIMEType;
-			}
-
 			// Add credentials if any are set
 			if (httpBasicAuth !== undefined) {
 				requestOptions.auth = {
@@ -642,8 +612,6 @@ export class HttpRequest implements INodeType {
 
 			if (responseFormat === 'file') {
 				requestOptions.encoding = null;
-			} else if(options.bodyContentType === 'raw') {
-				requestOptions.json = false;
 			} else {
 				requestOptions.json = true;
 			}
