@@ -268,20 +268,6 @@ export class GoogleSheets implements INodeType {
 				default: {},
 				options: [
 					{
-						displayName: 'Return All Matches',
-						name: 'returnAllMatches',
-						type: 'boolean',
-						default: false,
-						displayOptions: {
-							show: {
-								'/operation': [
-									'lookup',
-								],
-							},
-						},
-						description: 'By default only the first result gets returned. If options gets set all found matches get returned.',
-					},
-					{
 						displayName: 'Value Input Mode',
 						name: 'valueInputMode',
 						type: 'options',
@@ -450,7 +436,7 @@ export class GoogleSheets implements INodeType {
 				});
 			}
 
-			const returnData = await sheet.lookupValues(sheetData, keyRow, dataStartRow, lookupValues, options.returnAllMatches as boolean | undefined);
+			const returnData = await sheet.lookupValues(sheetData, keyRow, dataStartRow, lookupValues);
 
 			return [this.helpers.returnJsonArray(returnData)];
 		} else if (operation === 'read') {
