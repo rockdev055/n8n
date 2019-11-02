@@ -6,7 +6,7 @@ import {
 	INodeTypeDescription,
 } from 'n8n-workflow';
 
-import * as pgPromise from 'pg-promise';
+import { MongoClient } from 'mongodb';
 
 
 /**
@@ -34,23 +34,23 @@ function getItemCopy(items: INodeExecutionData[], properties: string[]): IDataOb
 }
 
 
-export class Postgres implements INodeType {
+export class MongoDb implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'Postgres',
-		name: 'postgres',
-		icon: 'file:postgres.png',
+		displayName: 'MongoDB',
+		name: 'mongoDb',
+		icon: 'file:mongoDb.png',
 		group: ['input'],
 		version: 1,
-		description: 'Gets, add and update data in Postgres.',
+		description: 'Find, insert and update documents in MongoDB.',
 		defaults: {
-			name: 'Postgres',
-			color: '#336791',
+			name: 'MongoDB',
+			color: '#13AA52',
 		},
 		inputs: ['main'],
 		outputs: ['main'],
 		credentials: [
 			{
-				name: 'postgres',
+				name: 'mongoDb',
 				required: true,
 			}
 		],
@@ -61,30 +61,39 @@ export class Postgres implements INodeType {
 				type: 'options',
 				options: [
 					{
-						name: 'Execute Query',
-						value: 'executeQuery',
-						description: 'Executes a SQL query.',
+						name: 'Find',
+						value: 'find',
+						description: 'Find documents.',
 					},
 					{
 						name: 'Insert',
 						value: 'insert',
-						description: 'Insert rows in database.',
+						description: 'Insert documents.',
 					},
 					{
 						name: 'Update',
 						value: 'update',
-						description: 'Updates rows in database.',
+						description: 'Updates documents.',
 					},
 				],
-				default: 'insert',
+				default: 'find',
 				description: 'The operation to perform.',
 			},
 
+			{
+				displayName: 'Collection',
+				name: 'collection',
+				type: 'string',
+				required: true,
+				default: '',
+				description: 'MongoDB Collection'
+			},
+
 			// ----------------------------------
-			//         executeQuery
+			//         find
 			// ----------------------------------
 			{
-				displayName: 'Query',
+				displayName: 'Query (JSON format)',
 				name: 'query',
 				type: 'string',
 				typeOptions: {
@@ -93,14 +102,14 @@ export class Postgres implements INodeType {
 				displayOptions: {
 					show: {
 						operation: [
-							'executeQuery'
+							'find'
 						],
 					},
 				},
-				default: '',
-				placeholder: 'SELECT id, name FROM product WHERE id < 40',
+				default: '{}',
+				placeholder: `{ "birth": { "$gt": "1950-01-01" } }`,
 				required: true,
-				description: 'The SQL query to execute.',
+				description: 'MongoDB Find query.',
 			},
 
 
@@ -108,8 +117,8 @@ export class Postgres implements INodeType {
 			//         insert
 			// ----------------------------------
 			{
-				displayName: 'Table',
-				name: 'table',
+				displayName: 'Fields',
+				name: 'fields',
 				type: 'string',
 				displayOptions: {
 					show: {
@@ -119,44 +128,14 @@ export class Postgres implements INodeType {
 					},
 				},
 				default: '',
-				required: true,
-				description: 'Name of the table in which to insert data to.',
-			},
-			{
-				displayName: 'Columns',
-				name: 'columns',
-				type: 'string',
-				displayOptions: {
-					show: {
-						operation: [
-							'insert'
-						],
-					},
-				},
-				default: '',
-				placeholder: 'id,name,description',
-				description: 'Comma separated list of the properties which should used as columns for the new rows.',
+				placeholder: 'name,description',
+				description: 'Comma separated list of the fields to be included into the new document.',
 			},
 
 
 			// ----------------------------------
 			//         update
 			// ----------------------------------
-			{
-				displayName: 'Table',
-				name: 'table',
-				type: 'string',
-				displayOptions: {
-					show: {
-						operation: [
-							'update'
-						],
-					},
-				},
-				default: '',
-				required: true,
-				description: 'Name of the table in which to update data in',
-			},
 			{
 				displayName: 'Update Key',
 				name: 'updateKey',
@@ -173,8 +152,8 @@ export class Postgres implements INodeType {
 				description: 'Name of the property which decides which rows in the database should be updated. Normally that would be "id".',
 			},
 			{
-				displayName: 'Columns',
-				name: 'columns',
+				displayName: 'Fields',
+				name: 'fields',
 				type: 'string',
 				displayOptions: {
 					show: {
@@ -185,7 +164,7 @@ export class Postgres implements INodeType {
 				},
 				default: '',
 				placeholder: 'name,description',
-				description: 'Comma separated list of the properties which should used as columns for rows to update.',
+				description: 'Comma separated list of the fields to be included into the new document.',
 			},
 
 		]
@@ -194,32 +173,37 @@ export class Postgres implements INodeType {
 
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 
-		const credentials = this.getCredentials('postgres');
+		const credentials = this.getCredentials('mongoDb');
 
 		if (credentials === undefined) {
 			throw new Error('No credentials got returned!');
 		}
 
-		const pgp = pgPromise();
+		let connectionUri = '';
 
-		const db = pgp(`postgres://${credentials.user}:${credentials.password}@${credentials.host}:${credentials.port}/${credentials.database}`);
+		if (credentials.port) {
+			connectionUri = `mongodb://${credentials.user}:${credentials.password}@${credentials.host}:${credentials.port}`;
+		} else {
+			connectionUri = `mongodb+srv://${credentials.user}:${credentials.password}@${credentials.host}`;
+		}
+
+		const client = await MongoClient.connect(connectionUri, { useNewUrlParser: true, useUnifiedTopology: true });
+		const mdb = client.db(credentials.database as string);
 
 		let returnItems = [];
 
 		const items = this.getInputData();
 		const operation = this.getNodeParameter('operation', 0) as string;
 
-		if (operation === 'executeQuery') {
+		if (operation === 'find') {
 			// ----------------------------------
-			//         executeQuery
+			//         find
 			// ----------------------------------
 
-			const queries: string[] = [];
-			for (let i = 0; i < items.length; i++) {
-				queries.push(this.getNodeParameter('query', i) as string);
-			}
-
-			const queryResult = await db.any(pgp.helpers.concat(queries));
+			const queryResult = await mdb
+				.collection(this.getNodeParameter('collection', 0) as string)
+				.find(JSON.parse(this.getNodeParameter('query', 0) as string))
+				.toArray();
 
 			returnItems = this.helpers.returnJsonArray(queryResult as IDataObject[]);
 
@@ -228,65 +212,65 @@ export class Postgres implements INodeType {
 			//         insert
 			// ----------------------------------
 
-			const table = this.getNodeParameter('table', 0) as string;
-			const columnString = this.getNodeParameter('columns', 0) as string;
-
-			const columns = columnString.split(',').map(column => column.trim());
-
-			const cs = new pgp.helpers.ColumnSet(columns, { table });
-
 			// Prepare the data to insert and copy it to be returned
-			const insertItems = getItemCopy(items, columns);
+			const fields = (this.getNodeParameter('fields', 0) as string)
+				.split(',')
+				.map(f => f.trim())
+				.filter(f => !!f);
 
-			// Generate the multi-row insert query and return the id of new row
-			const query = pgp.helpers.insert(insertItems, cs) + ' RETURNING id';
+			const insertItems = getItemCopy(items, fields);
 
-			// Executing the query to insert the data
-			const insertData = await db.many(query);
+			const { insertedIds } = await mdb
+				.collection(this.getNodeParameter('collection', 0) as string)
+				.insertMany(insertItems);
 
 			// Add the id to the data
-			for (let i = 0; i < insertData.length; i++) {
+			for (const i of Object.keys(insertedIds)) {
 				returnItems.push({
 					json: {
-						...insertData[i],
-						...insertItems[i],
+						...insertItems[parseInt(i, 10)],
+						id: insertedIds[parseInt(i, 10)] as string,
 					}
 				});
 			}
-
 		} else if (operation === 'update') {
 			// ----------------------------------
 			//         update
 			// ----------------------------------
 
-			const table = this.getNodeParameter('table', 0) as string;
-			const updateKey = this.getNodeParameter('updateKey', 0) as string;
-			const columnString = this.getNodeParameter('columns', 0) as string;
+			const fields = (this.getNodeParameter('fields', 0) as string)
+				.split(',')
+				.map(f => f.trim())
+				.filter(f => !!f);
 
-			const columns = columnString.split(',').map(column => column.trim());
+			let updateKey = this.getNodeParameter('updateKey', 0) as string;
+			updateKey = updateKey.trim();
 
-			// Make sure that the updateKey does also get queried
-			if (!columns.includes(updateKey)) {
-				columns.unshift(updateKey);
+			if (!fields.includes(updateKey)) {
+				fields.push(updateKey);
 			}
 
 			// Prepare the data to update and copy it to be returned
-			const updateItems = getItemCopy(items, columns);
+			const updateItems = getItemCopy(items, fields);
 
-			// Generate the multi-row update query
-			const query = pgp.helpers.update(updateItems, columns, table) + ' WHERE v.' + updateKey + ' = t.' + updateKey;
+			for (const item of updateItems) {
+				if (item[updateKey] === undefined) {
+					continue;
+				}
 
-			// Executing the query to update the data
-			await db.none(query);
+				const filter: { [key: string] :string } = {};
+				filter[updateKey] = item[updateKey] as string;
 
-			returnItems = this.helpers.returnJsonArray(updateItems	 as IDataObject[]);
+				await mdb
+					.collection(this.getNodeParameter('collection', 0) as string)
+					.updateOne(filter, { $set: item });
+			}
+
+			returnItems = this.helpers.returnJsonArray(updateItems as IDataObject[]);
 
 		} else {
 			throw new Error(`The operation "${operation}" is not supported!`);
 		}
-
-		// Close the connection
-		await pgp.end();
 
 		return this.prepareOutputData(returnItems);
 	}
