@@ -40,7 +40,6 @@ import {
 	faEye,
 	faExclamationTriangle,
 	faExternalLinkAlt,
-	faExchangeAlt,
 	faFile,
 	faFileCode,
 	faFileDownload,
@@ -112,7 +111,6 @@ library.add(faEnvelope);
 library.add(faEye);
 library.add(faExclamationTriangle);
 library.add(faExternalLinkAlt);
-library.add(faExchangeAlt);
 library.add(faFile);
 library.add(faFileCode);
 library.add(faFileDownload);
