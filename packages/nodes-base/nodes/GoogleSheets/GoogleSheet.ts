@@ -1,7 +1,6 @@
 import { IDataObject } from 'n8n-workflow';
 import { google } from 'googleapis';
 import { JWT } from 'google-auth-library';
-import { getAuthenticationClient } from './GoogleApi';
 
 const Sheets = google.sheets('v4'); // tslint:disable-line:variable-name
 
@@ -136,7 +135,18 @@ export class GoogleSheet {
      * Returns the authentication client needed to access spreadsheet
      */
 	async getAuthenticationClient(): Promise<JWT> {
-		return getAuthenticationClient(this.credentials.email, this.credentials.privateKey, this.scopes);
+		const client = new google.auth.JWT(
+			this.credentials.email,
+			undefined,
+			this.credentials.privateKey,
+			this.scopes,
+			undefined
+		);
+
+		// TODO: Check later if this or the above should be cached
+		await client.authorize();
+
+		return client;
 	}
 
 
