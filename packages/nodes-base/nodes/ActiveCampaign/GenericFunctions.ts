@@ -9,12 +9,6 @@ import {
 
 import { OptionsWithUri } from 'request';
 
-export interface IProduct {
-	fields: {
-		item?: object[];
-	};
-}
-
 
 /**
  * Make an API request to ActiveCampaign
