@@ -48,11 +48,6 @@ export class GoogleSheets implements INodeType {
 						description: 'Appends the data to a Sheet',
 					},
 					{
-						name: 'Clear',
-						value: 'clear',
-						description: 'Clears data from a Sheet',
-					},
-					{
 						name: 'Lookup',
 						value: 'lookup',
 						description: 'Looks for a specific column value and then returns the matching row'
@@ -177,7 +172,6 @@ export class GoogleSheets implements INodeType {
 					hide: {
 						operation: [
 							'append',
-							'clear',
 						],
 						rawData: [
 							true
@@ -199,9 +193,6 @@ export class GoogleSheets implements INodeType {
 				},
 				displayOptions: {
 					hide: {
-						operation: [
-							'clear',
-						],
 						rawData: [
 							true
 						],
@@ -275,31 +266,7 @@ export class GoogleSheets implements INodeType {
 				type: 'collection',
 				placeholder: 'Add Option',
 				default: {},
-				displayOptions: {
-					show: {
-						operation: [
-							'append',
-							'lookup',
-							'read',
-							'update',
-						],
-					},
-				},
 				options: [
-					{
-						displayName: 'Return All Matches',
-						name: 'returnAllMatches',
-						type: 'boolean',
-						default: false,
-						displayOptions: {
-							show: {
-								'/operation': [
-									'lookup',
-								],
-							},
-						},
-						description: 'By default only the first result gets returned. If options gets set all found matches get returned.',
-					},
 					{
 						displayName: 'Value Input Mode',
 						name: 'valueInputMode',
@@ -445,15 +412,6 @@ export class GoogleSheets implements INodeType {
 			// TODO: Should have something like add metadata which does not get passed through
 
 			return this.prepareOutputData(items);
-		} else if (operation === 'clear') {
-			// ----------------------------------
-			//         clear
-			// ----------------------------------
-
-			await sheet.clearData(range);
-
-			const items = this.getInputData();
-			return this.prepareOutputData(items);
 		} else if (operation === 'lookup') {
 			// ----------------------------------
 			//         lookup
@@ -478,7 +436,7 @@ export class GoogleSheets implements INodeType {
 				});
 			}
 
-			const returnData = await sheet.lookupValues(sheetData, keyRow, dataStartRow, lookupValues, options.returnAllMatches as boolean | undefined);
+			const returnData = await sheet.lookupValues(sheetData, keyRow, dataStartRow, lookupValues);
 
 			return [this.helpers.returnJsonArray(returnData)];
 		} else if (operation === 'read') {
