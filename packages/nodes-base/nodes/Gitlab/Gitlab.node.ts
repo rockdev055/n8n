@@ -260,23 +260,6 @@ export class Gitlab implements INodeType {
 				description: 'The body of the issue.',
 			},
 			{
-				displayName: 'Due Date',
-				name: 'due_date',
-				type: 'dateTime',
-				displayOptions: {
-					show: {
-						operation: [
-							'create',
-						],
-						resource: [
-							'issue',
-						],
-					},
-				},
-				default: '',
-				description: 'Due Date for issue.',
-			},
-			{
 				displayName: 'Labels',
 				name: 'labels',
 				type: 'collection',
@@ -334,7 +317,6 @@ export class Gitlab implements INodeType {
 					},
 				],
 			},
-
 
 			// ----------------------------------
 			//         issue:createComment
@@ -427,7 +409,7 @@ export class Gitlab implements INodeType {
 					},
 					{
 						displayName: 'Body',
-						name: 'description',
+						name: 'body',
 						type: 'string',
 						typeOptions: {
 							rows: 5,
@@ -491,13 +473,6 @@ export class Gitlab implements INodeType {
 								description: 'User to assign issue too.',
 							},
 						],
-					},
-					{
-						displayName: 'Due Date',
-						name: 'due_date',
-						type: 'dateTime',
-						default: '',
-						description: 'Due Date for issue.',
 					},
 				],
 			},
@@ -854,7 +829,6 @@ export class Gitlab implements INodeType {
 
 					body.title = this.getNodeParameter('title', i) as string;
 					body.description = this.getNodeParameter('body', i) as string;
-					body.due_date = this.getNodeParameter('due_date', i) as string;
 					const labels = this.getNodeParameter('labels', i) as IDataObject[];
 
 					const assigneeIds = this.getNodeParameter('assignee_ids', i) as IDataObject[];
@@ -879,7 +853,7 @@ export class Gitlab implements INodeType {
 					//         edit
 					// ----------------------------------
 
-					requestMethod = 'PUT';
+					requestMethod = 'PATCH';
 
 					const issueNumber = this.getNodeParameter('issueNumber', i) as string;
 

@@ -45,27 +45,6 @@ export class GoogleSheet {
 	}
 
 
-	/**
-	 * Clears values from a sheet
-	 *
-	 * @param {string} range
-	 * @returns {Promise<object>}
-	 * @memberof GoogleSheet
-	 */
-	async clearData(range: string): Promise<object> {
-		const client = await this.getAuthenticationClient();
-
-		const response = await Sheets.spreadsheets.values.clear(
-			{
-				auth: client,
-				spreadsheetId: this.id,
-				range,
-			}
-		);
-
-		return response.data;
-	}
-
     /**
      * Returns the cell values
      */
@@ -312,7 +291,7 @@ export class GoogleSheet {
 				// Property exists so add it to the data to update
 
 				// Get the column name in which the property data can be found
-				updateColumnName = String.fromCharCode(rangeStart.toUpperCase().charCodeAt(0) + keyColumnOrder.indexOf(propertyName));
+				updateColumnName = String.fromCharCode(characterCode + keyColumnOrder.indexOf(propertyName));
 
 				updateData.push({
 					range: `${sheet ? sheet + '!' : ''}${updateColumnName}${updateRowIndex}`,

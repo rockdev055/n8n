@@ -54,10 +54,6 @@ export class Cron implements INodeType {
 								type: 'options',
 								options: [
 									{
-										name: 'Every Minute',
-										value: 'everyMinute'
-									},
-									{
 										name: 'Every Hour',
 										value: 'everyHour'
 									},
@@ -94,7 +90,6 @@ export class Cron implements INodeType {
 										mode: [
 											'custom',
 											'everyHour',
-											'everyMinute'
 										],
 									},
 								},
@@ -113,7 +108,6 @@ export class Cron implements INodeType {
 									hide: {
 										mode: [
 											'custom',
-											'everyMinute'
 										],
 									},
 								},
@@ -230,10 +224,6 @@ export class Cron implements INodeType {
 				cronTime = [];
 				if (item.mode === 'custom') {
 					cronTimes.push(item.cronExpression as string);
-					continue;
-				}
-				if (item.mode === 'everyMinute') {
-					cronTimes.push(`${Math.floor(Math.random() * 60).toString()} * * * * *`);
 					continue;
 				}
 

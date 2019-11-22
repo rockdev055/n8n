@@ -159,14 +159,9 @@ export async function getUserSettings(settingsPath?: string, ignoreCache?: boole
 	}
 
 	const settingsFile = await fsReadFile(settingsPath, 'utf8');
+	settingsCache = JSON.parse(settingsFile);
 
-	try {
-		settingsCache = JSON.parse(settingsFile);
-	} catch (error) {
-		throw new Error(`Error parsing n8n-config file "${settingsPath}". It does not seem to be valid JSON.`);
-	}
-
-	return settingsCache as IUserSettings;
+	return JSON.parse(settingsFile) as IUserSettings;
 }
 
 

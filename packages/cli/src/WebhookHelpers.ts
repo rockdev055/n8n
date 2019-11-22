@@ -76,8 +76,6 @@ export function getWorkflowWebhooks(workflow: Workflow, additionalData: IWorkflo
 	let parentNodes: string[] | undefined;
 	if (destinationNode !== undefined) {
 		parentNodes = workflow.getParentNodes(destinationNode);
-		// Also add the destination node in case it itself is a webhook node
-		parentNodes.push(destinationNode);
 	}
 
 	for (const node of Object.values(workflow.nodes)) {

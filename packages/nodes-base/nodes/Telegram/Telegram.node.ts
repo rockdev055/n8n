@@ -433,7 +433,7 @@ export class Telegram implements INodeType {
 					},
 				},
 				required: true,
-				description: 'Unique identifier for the target chat or username of the target<br />channel (in the format @channelusername). To find your chat id ask @get_id_bot.',
+				description: 'Unique identifier for the target chat or username of the target<br />channel (in the format @channelusername).',
 			},
 			{
 				displayName: 'Message ID',
