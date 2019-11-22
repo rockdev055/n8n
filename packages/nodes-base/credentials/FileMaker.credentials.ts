@@ -4,20 +4,25 @@ import {
 } from 'n8n-workflow';
 
 
-export class NextCloudApi implements ICredentialType {
-	name = 'nextCloudApi';
-	displayName = 'NextCloud API';
+export class FileMaker implements ICredentialType {
+	name = 'FileMaker';
+	displayName = 'fileMaker';
 	properties = [
 		{
-			displayName: 'Web DAV URL',
-			name: 'webDavUrl',
+			displayName: 'Host',
+			name: 'host',
 			type: 'string' as NodePropertyTypes,
-			placeholder: 'https://nextcloud.example.com/remote.php/webdav/',
 			default: '',
 		},
 		{
-			displayName: 'User',
-			name: 'user',
+			displayName: 'Database',
+			name: 'db',
+			type: 'string' as NodePropertyTypes,
+			default: '',
+		},
+		{
+			displayName: 'Login',
+			name: 'login',
 			type: 'string' as NodePropertyTypes,
 			default: '',
 		},
@@ -25,6 +30,9 @@ export class NextCloudApi implements ICredentialType {
 			displayName: 'Password',
 			name: 'password',
 			type: 'string' as NodePropertyTypes,
+			typeOptions: {
+				password: true,
+			},
 			default: '',
 		},
 	];
