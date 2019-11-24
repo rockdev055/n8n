@@ -4,27 +4,55 @@ import {
 	IExecuteFunctions,
 	IHookFunctions,
 	ILoadOptionsFunctions,
-	IExecuteSingleFunctions
+	IExecuteSingleFunctions,
+	BINARY_ENCODING
 } from 'n8n-core';
 
 import {
 	IDataObject,
 } from 'n8n-workflow';
 
-export async function intercomApiRequest(this: IHookFunctions | IExecuteFunctions | IExecuteSingleFunctions | ILoadOptionsFunctions, endpoint: string, method: string, body: any = {}, query?: IDataObject, uri?: string): Promise<any> { // tslint:disable-line:no-any
-	const credentials = this.getCredentials('intercomApi');
+export async function paypalApiRequest(this: IHookFunctions | IExecuteFunctions | IExecuteSingleFunctions | ILoadOptionsFunctions, endpoint: string, method: string, body: any = {}, query?: IDataObject, uri?: string): Promise<any> { // tslint:disable-line:no-any
+	const credentials = this.getCredentials('paypalApi');
+	let tokenInfo;
 	if (credentials === undefined) {
 		throw new Error('No credentials got returned!');
 	}
+	// @ts-ignore
+	const env = {
+		'sanbox': 'https://api.sandbox.paypal.com',
+		'live': 'https://api.paypal.com'
+	}[credentials.env as string];
 
-	const headerWithAuthentication = Object.assign({},
-		{ Authorization: `Bearer ${credentials.apiKey}`, Accept: 'application/json' });
+	const data = new Buffer(`${credentials.clientId}:${credentials.secret}`).toString(BINARY_ENCODING);
+	let headerWithAuthentication = Object.assign({},
+		{ Authorization: `Basic ${data}`, 'Content-Type': 'application/x-www-form-urlencoded' });
+		let options: OptionsWithUri = {
+			headers: headerWithAuthentication,
+			method,
+			qs: query,
+			uri: `${env}/v1/oauth2/token`,
+			body,
+			json: true
+		};
+	try {
+		tokenInfo = await this.helpers.request!(options);
+	} catch (error) {
+		const errorMessage = error.response.body.message || error.response.body.Message;
 
-	const options: OptionsWithUri = {
+		if (errorMessage !== undefined) {
+			throw errorMessage;
+		}
+		throw error.response.body;
+	}
+	headerWithAuthentication = Object.assign({ },
+		{ Authorization: `Bearer ${tokenInfo.access_token}`, 'Content-Type': 'application/json' });
+
+	options = {
 		headers: headerWithAuthentication,
 		method,
 		qs: query,
-		uri: uri || `https://api.intercom.io${endpoint}`,
+		uri: uri || `${env}/v1${endpoint}`,
 		body,
 		json: true
 	};
@@ -58,7 +86,7 @@ export async function intercomApiRequestAllItems(this: IHookFunctions | IExecute
 	let uri: string | undefined;
 
 	do {
-		responseData = await intercomApiRequest.call(this, endpoint, method, body, query, uri);
+		responseData = await paypalApiRequest.call(this, endpoint, method, body, query, uri);
 		uri = responseData.pages.next;
 		returnData.push.apply(returnData, responseData[propertyName]);
 	} while (
