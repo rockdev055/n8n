@@ -71,6 +71,7 @@ async function getAccessToken(this: IHookFunctions | IExecuteFunctions | IExecut
 		throw error.response.body;
 	}
 }
+
 /**
  * Make an API request to paginated paypal endpoint
  * and return all results
