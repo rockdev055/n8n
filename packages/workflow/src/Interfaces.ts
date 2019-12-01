@@ -343,7 +343,7 @@ export interface INodeProperties {
 
 export interface INodePropertyOptions {
 	name: string;
-	value: string | number;
+	value: string;
 	description?: string;
 }
 

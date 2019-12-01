@@ -5,8 +5,7 @@ import {
 } from "n8n-core";
 import { Command, flags } from '@oclif/command';
 const open = require('open');
-import { promisify } from 'util';
-import { dirname } from 'path';
+import { promisify } from "util";
 
 import * as config from '../config';
 import {
@@ -21,10 +20,6 @@ import {
 } from "../src";
 
 const tunnel = promisify(localtunnel);
-
-// // Add support for internationalization
-// const fullIcuPath = require.resolve('full-icu');
-// process.env.NODE_ICU_DATA = dirname(fullIcuPath);
 
 let activeWorkflowRunner: ActiveWorkflowRunner.ActiveWorkflowRunner | undefined;
 let processExistCode = 0;
