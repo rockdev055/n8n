@@ -3,20 +3,19 @@ import {
 	NodePropertyTypes,
 } from 'n8n-workflow';
 
-
-export class RocketchatApi implements ICredentialType {
-	name = 'rocketchatApi';
-	displayName = 'Rocket API';
+export class JiraSoftwareCloudApi implements ICredentialType {
+	name = 'jiraSoftwareCloudApi';
+	displayName = 'Jira SW Cloud API';
 	properties = [
 		{
-			displayName: 'User Id',
-			name: 'userId',
+			displayName: 'Email',
+			name: 'email',
 			type: 'string' as NodePropertyTypes,
 			default: '',
 		},
 		{
-			displayName: 'Auth Key',
-			name: 'authKey',
+			displayName: 'API Token',
+			name: 'apiToken',
 			type: 'string' as NodePropertyTypes,
 			default: '',
 		},
@@ -25,7 +24,6 @@ export class RocketchatApi implements ICredentialType {
 			name: 'domain',
 			type: 'string' as NodePropertyTypes,
 			default: '',
-			placeholder: 'https://n8n.rocket.chat',
 		},
 	];
 }

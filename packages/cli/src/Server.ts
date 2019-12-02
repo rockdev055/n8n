@@ -230,10 +230,7 @@ class App {
 		});
 
 		// Support application/json type post data
-		this.app.use(bodyParser.json({ limit: "16mb", verify: (req, res, buf) => {
-			// @ts-ignore
-			req.rawBody = buf;
-		}}));
+		this.app.use(bodyParser.json({ limit: "16mb" }));
 
 		// Make sure that Vue history mode works properly
 		this.app.use(history({
