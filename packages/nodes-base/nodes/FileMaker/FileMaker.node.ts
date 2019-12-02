@@ -38,7 +38,7 @@ export class FileMaker implements INodeType {
 		outputs: ['main'],
 		credentials: [
 			{
-				name: 'fileMaker',
+				name: 'FileMaker',
 				required: true,
 			},
 		],
@@ -676,14 +676,20 @@ export class FileMaker implements INodeType {
 			// Get all the available topics to display them to user so that he can
 			// select them easily
 			async getLayouts(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
-				let returnData: INodePropertyOptions[];
+				const returnData: INodePropertyOptions[] = [];
 
+				let layouts;
 				try {
-					returnData = await layoutsApiRequest.call(this);
+					layouts = await layoutsApiRequest.call(this);
 				} catch (err) {
 					throw new Error(`FileMaker Error: ${err}`);
 				}
-
+				for (const layout of layouts) {
+					returnData.push({
+						name: layout.name,
+						value: layout.name,
+					});
+				}
 				return returnData;
 			},
 			async getResponseLayouts(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {

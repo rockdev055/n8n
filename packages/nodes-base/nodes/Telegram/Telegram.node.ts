@@ -199,11 +199,11 @@ export class Telegram implements INodeType {
 				displayOptions: {
 					show: {
 						operation: [
-							'get',
-							'leave',
-							'member',
-							'setDescription',
-							'setTitle',
+							'getChat',
+							'leaveChat',
+							'getChatMember',
+							'setChatDescription',
+							'setChatTitle',
 							'sendAudio',
 							'sendChatAction',
 							'sendDocument',
