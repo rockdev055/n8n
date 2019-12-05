@@ -49,14 +49,6 @@ export class Mattermost implements INodeType {
 						name: 'Message',
 						value: 'message',
 					},
-					{
-						name: 'User',
-						value: 'user',
-					},
-					{
-						name: 'Post',
-						value: 'post',
-					},
 				],
 				default: 'message',
 				description: 'The resource to operate on.',
@@ -89,15 +81,11 @@ export class Mattermost implements INodeType {
 						value: 'create',
 						description: 'Create a new channel',
 					},
-					{
-						name: 'Statistics',
-						value: 'statistics',
-						description: 'Get statistics for a channel.',
-					},
 				],
 				default: 'create',
 				description: 'The operation to perform.',
 			},
+
 			{
 				displayName: 'Operation',
 				name: 'operation',
@@ -265,31 +253,8 @@ export class Mattermost implements INodeType {
 				},
 				description: 'The ID of the user to invite into channel.',
 			},
-			// ----------------------------------
-			//         channel:statistics
-			// ----------------------------------
-			{
-				displayName: 'Channel ID',
-				name: 'channelId',
-				type: 'options',
-				typeOptions: {
-					loadOptionsMethod: 'getChannels',
-				},
-				options: [],
-				default: '',
-				required: true,
-				displayOptions: {
-					show: {
-						operation: [
-							'statistics'
-						],
-						resource: [
-							'channel',
-						],
-					},
-				},
-				description: 'The ID of the channel to get the statistics from.',
-			},
+
+
 
 			// ----------------------------------
 			//         message
@@ -555,96 +520,7 @@ export class Mattermost implements INodeType {
 					},
 				],
 			},
-			// ----------------------------------
-			//              user
-			// ----------------------------------
-			{
-				displayName: 'Operation',
-				name: 'operation',
-				type: 'options',
-				displayOptions: {
-					show: {
-						resource: [
-							'user',
-						],
-					},
-				},
-				options: [
-					{
-						name: 'Desactive',
-						value: 'desactive',
-						description: 'Deactivates the user and revokes all its sessions by archiving its user object.',
-					},
-				],
-				default: '',
-				description: 'The operation to perform.',
-			},
-			// ----------------------------------
-			//         user:desactivate
-			// ----------------------------------
-			{
-				displayName: 'User ID',
-				name: 'userId',
-				type: 'string',
-				required: true,
-				displayOptions: {
-					show: {
-						resource: [
-							'user',
-						],
-						operation: [
-							'desactive',
-						],
-					},
-				},
-				default: '',
-				description: 'User GUID'
-			},
-			// ----------------------------------
-			//             post
-			// ----------------------------------
-			{
-				displayName: 'Operation',
-				name: 'operation',
-				type: 'options',
-				displayOptions: {
-					show: {
-						resource: [
-							'post',
-						],
-					},
-				},
-				options: [
-					{
-						name: 'Delete',
-						value: 'delete',
-						description: 'Soft deletes a post, by marking the post as deleted in the database. Soft deleted posts will not be returned in post queries.',
-					},
-				],
-				default: '',
-				description: 'The operation to perform.',
-			},
-			// ----------------------------------
-			//         post:delete
-			// ----------------------------------
-			{
-				displayName: 'Post ID',
-				name: 'postId',
-				type: 'string',
-				required: true,
-				displayOptions: {
-					show: {
-						resource: [
-							'post',
-						],
-						operation: [
-							'delete',
-						],
-					},
-				},
-				default: '',
-				description: 'ID of the post to delete',
-			},
+
 		],
 	};
 
@@ -787,14 +663,6 @@ export class Mattermost implements INodeType {
 
 					endpoint = `channels/${channelId}/members`;
 
-				} else if (operation === 'statistics') {
-					// ----------------------------------
-					//         channel:statistics
-					// ----------------------------------
-
-					requestMethod = 'GET';
-					const channelId = this.getNodeParameter('channelId', i) as string;
-					endpoint = `channels/${channelId}/stats`;
 				}
 			} else if (resource === 'message') {
 				if (operation === 'post') {
@@ -833,26 +701,7 @@ export class Mattermost implements INodeType {
 					const otherOptions = this.getNodeParameter('otherOptions', i) as IDataObject;
 					Object.assign(body, otherOptions);
 				}
-			} else if (resource === 'user') {
-				if (operation === 'desactive') {
-					// ----------------------------------
-					//          user:desactive
-					// ----------------------------------
-					const userId = this.getNodeParameter('userId', i) as string;
-					requestMethod = 'DELETE';
-					endpoint = `users/${userId}`;
-				}
-			} else if (resource === 'post') {
-				if (operation === 'delete') {
-					// ----------------------------------
-					//          post:delete
-					// ----------------------------------
-					const postId = this.getNodeParameter('postId', i) as string;
-					requestMethod = 'DELETE';
-					endpoint = `posts/${postId}`;
-				}
-			}
-			else {
+			} else {
 				throw new Error(`The resource "${resource}" is not known!`);
 			}
 
