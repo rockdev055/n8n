@@ -220,13 +220,7 @@ export function getNodeParameter(workflow: Workflow, runExecutionData: IRunExecu
 		throw new Error(`Could not get parameter "${parameterName}"!`);
 	}
 
-	let returnData;
-	try {
-		returnData = workflow.getParameterValue(value, runExecutionData, runIndex, itemIndex, node.name, connectionInputData);
-	} catch (e) {
-		e.message += ` [Error in parameter: "${parameterName}"]`;
-		throw e;
-	}
+	const returnData = workflow.getParameterValue(value, runExecutionData, runIndex, itemIndex, node.name, connectionInputData);
 
 	return returnData;
 }

@@ -1,5 +1,7 @@
 import { INodeProperties } from "n8n-workflow";
 
+import { allCurrencies } from './currencies';
+
 export const connectionOperations = [
 	{
 		displayName: 'Operation',
