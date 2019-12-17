@@ -171,7 +171,6 @@ import { genericHelpers } from '@/components/mixins/genericHelpers';
 import { restApi } from '@/components/mixins/restApi';
 import { showMessage } from '@/components/mixins/showMessage';
 import { workflowHelpers } from '@/components/mixins/workflowHelpers';
-import { workflowSave } from '@/components/mixins/workflowSave';
 import { workflowRun } from '@/components/mixins/workflowRun';
 
 import { saveAs } from 'file-saver';
@@ -184,7 +183,6 @@ export default mixins(
 	showMessage,
 	workflowHelpers,
 	workflowRun,
-	workflowSave,
 )
 	.extend({
 		name: 'MainHeader',

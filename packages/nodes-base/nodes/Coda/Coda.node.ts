@@ -125,15 +125,15 @@ export class Coda implements INodeType {
 					qs = {};
 					const docId = this.getNodeParameter('docId', i) as string;
 					const tableId = this.getNodeParameter('tableId', i) as string;
-					const options = this.getNodeParameter('options', i) as IDataObject;
+					const additionalFields = this.getNodeParameter('additionalFields', i) as IDataObject;
 					const endpoint = `/docs/${docId}/tables/${tableId}/rows`;
 
-					if (options.keyColumns) {
+					if (additionalFields.keyColumns) {
 						// @ts-ignore
-						items[i].json['keyColumns'] = options.keyColumns.split(',') as string[];
+						items[i].json['keyColumns'] = additionalFields.keyColumns.split(',') as string[];
 					}
-					if (options.disableParsing) {
-						qs.disableParsing = options.disableParsing as boolean;
+					if (additionalFields.disableParsing) {
+						qs.disableParsing = additionalFields.disableParsing as boolean;
 					}
 
 					const cells = [];

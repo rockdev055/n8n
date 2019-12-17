@@ -87,10 +87,10 @@ export const tableFields = [
 		description: 'The table to create the row in.',
 	},
 	{
-		displayName: 'Options',
-		name: 'options',
+		displayName: 'Additional Fields',
+		name: 'additionalFields',
 		type: 'collection',
-		placeholder: 'Add Option',
+		placeholder: 'Add Field',
 		default: {},
 		displayOptions: {
 			show: {
