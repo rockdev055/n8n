@@ -119,6 +119,7 @@ export class Webhook implements INodeType {
 				default: 'GET',
 				description: 'The HTTP method to liste to.',
 			},
+
 			{
 				displayName: 'Path',
 				name: 'path',
@@ -204,6 +205,7 @@ export class Webhook implements INodeType {
 				},
 				description: 'Name of the binary property to return',
 			},
+
 			{
 				displayName: 'Options',
 				name: 'options',
@@ -236,45 +238,15 @@ export class Webhook implements INodeType {
 						default: 'data',
 						description: 'Name of the property to return the data of instead of the whole JSON.',
 					},
-					{
-						displayName: 'Raw Body',
-						name: 'rawBody',
-						type: 'boolean',
-						default: false,
-						description: 'Raw body (binary)',
-					},
 				],
 			},
-			{
-				displayName: 'Options',
-				name: 'options',
-				type: 'collection',
-				displayOptions: {
-					show: {
-						responseMode: [
-							'onReceived',
-						],
-					},
-				},
-				placeholder: 'Add Option',
-				default: {},
-				options: [
-					{
-						displayName: 'Raw Body',
-						name: 'rawBody',
-						type: 'boolean',
-						default: false,
-						description: 'Raw body (binary)',
-					},
-				],
-			},
+
 		],
 	};
 
 
 	async webhook(this: IWebhookFunctions): Promise<IWebhookResponseData> {
 		const authentication = this.getNodeParameter('authentication', 0) as string;
-		const options = this.getNodeParameter('options', 0) as string;
 		const req = this.getRequestObject();
 		const resp = this.getResponseObject();
 		const headers = this.getHeaderData();
@@ -316,27 +288,20 @@ export class Webhook implements INodeType {
 				return authorizationError(resp, realm, 403);
 			}
 		}
-		const response = {
-			json: {
+
+		const returnData: IDataObject[] = [];
+
+		returnData.push(
+			{
 				body: this.getBodyData(),
 				headers,
 				query: this.getQueryData(),
-			},
-		};
-		// @ts-ignore
-		if (options.rawBody) {
-			// @ts-ignore
-			response.binary = {
-				// @ts-ignore
-				data: req.rawBody.toString('base64'),
-			};
-		}
+			}
+		);
 
 		return {
 			workflowData: [
-				[
-					response,
-				],
+				this.helpers.returnJsonArray(returnData)
 			],
 		};
 	}
