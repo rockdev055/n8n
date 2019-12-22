@@ -1,5 +1,6 @@
 
 import {
+	IProcessMessageDataHook,
 	IWorkflowExecutionDataProcessWithExecution,
 	NodeTypes,
 	WorkflowExecuteAdditionalData,
@@ -17,9 +18,10 @@ import {
 	INodeTypeData,
 	IRun,
 	ITaskData,
+	IWorkflowExecuteHooks,
 	Workflow,
-	WorkflowHooks,
 } from 'n8n-workflow';
+import { ChildProcess } from 'child_process';
 
 export class WorkflowRunnerProcess {
 	data: IWorkflowExecutionDataProcessWithExecution | undefined;
@@ -59,8 +61,9 @@ export class WorkflowRunnerProcess {
 		await nodeTypes.init(nodeTypesData);
 
 		this.workflow = new Workflow(this.data.workflowData.id as string | undefined, this.data.workflowData!.nodes, this.data.workflowData!.connections, this.data.workflowData!.active, nodeTypes, this.data.workflowData!.staticData);
-		const additionalData = await WorkflowExecuteAdditionalData.getBase(this.data.credentials);
+		const additionalData = await WorkflowExecuteAdditionalData.getBase(this.data.executionMode, this.data.credentials);
 		additionalData.hooks = this.getProcessForwardHooks();
+
 
 		if (this.data.executionData !== undefined) {
 			this.workflowExecute = new WorkflowExecute(additionalData, this.data.executionMode, this.data.executionData);
@@ -108,10 +111,11 @@ export class WorkflowRunnerProcess {
 	 * the parent process where they then can be executed with access
 	 * to database and to PushService
 	 *
+	 * @param {ChildProcess} process
 	 * @returns
 	 */
-	getProcessForwardHooks(): WorkflowHooks {
-		const hookFunctions = {
+	getProcessForwardHooks(): IWorkflowExecuteHooks {
+		return {
 			nodeExecuteBefore: [
 				async (nodeName: string): Promise<void> => {
 					this.sendHookToParentProcess('nodeExecuteBefore', [nodeName]);
@@ -133,8 +137,6 @@ export class WorkflowRunnerProcess {
 				},
 			]
 		};
-
-		return new WorkflowHooks(hookFunctions, this.data!.executionMode, this.data!.executionId, this.data!.workflowData, { sessionId: this.data!.sessionId, retryOf: this.data!.retryOf as string });
 	}
 
 }
