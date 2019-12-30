@@ -34,7 +34,6 @@ import {
 	faClone,
 	faCloud,
 	faCopy,
-	faCut,
 	faDotCircle,
 	faEdit,
 	faEnvelope,
@@ -107,7 +106,6 @@ library.add(faCogs);
 library.add(faClone);
 library.add(faCloud);
 library.add(faCopy);
-library.add(faCut);
 library.add(faDotCircle);
 library.add(faEdit);
 library.add(faEnvelope);

@@ -23,7 +23,7 @@ module.exports = {
 	css: {
 		loaderOptions: {
 			sass: {
-				prependData: `
+				data: `
 					@import "@/n8n-theme-variables.scss";
 				`,
 			},

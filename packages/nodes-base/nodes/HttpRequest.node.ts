@@ -25,7 +25,6 @@ export class HttpRequest implements INodeType {
 		icon: 'fa:at',
 		group: ['input'],
 		version: 1,
-		subtitle: '={{$parameter["requestMethod"] + ": " + $parameter["url"]}}',
 		description: 'Makes a HTTP request and returns the received data',
 		defaults: {
 			name: 'HTTP Request',

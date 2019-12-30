@@ -21,10 +21,14 @@
 </template>
 
 <script lang="ts">
+import Vue from 'vue';
+
 import {
 	IBinaryData,
+	IBinaryKeyData,
 	IRunData,
 	IRunExecutionData,
+	Workflow,
 } from 'n8n-workflow';
 
 import { nodeHelpers } from '@/components/mixins/nodeHelpers';

@@ -1,6 +1,6 @@
 {
     "name": "n8n-nodes-base",
-    "version": "0.36.0",
+    "version": "0.35.0",
     "description": "Base nodes of n8n",
     "license": "SEE LICENSE IN LICENSE.md",
     "homepage": "https://n8n.io",
@@ -73,7 +73,8 @@
             "dist/credentials/MandrillApi.credentials.js",
             "dist/credentials/TodoistApi.credentials.js",
             "dist/credentials/TypeformApi.credentials.js",
-            "dist/credentials/VeroApi.credentials.js"
+            "dist/credentials/VeroApi.credentials.js",
+            "dist/credentials/WordpressApi.credentials.js"
         ],
         "nodes": [
             "dist/nodes/ActiveCampaign/ActiveCampaign.node.js",
@@ -109,7 +110,6 @@
             "dist/nodes/Google/GoogleDrive.node.js",
             "dist/nodes/Google/GoogleSheets.node.js",
             "dist/nodes/GraphQL/GraphQL.node.js",
-            "dist/nodes/HtmlExtract/HtmlExtract.node.js",
             "dist/nodes/HttpRequest.node.js",
             "dist/nodes/Hubspot/Hubspot.node.js",
             "dist/nodes/If.node.js",
@@ -126,7 +126,8 @@
             "dist/nodes/MoveBinaryData.node.js",
             "dist/nodes/MongoDb/MongoDb.node.js",
             "dist/nodes/MySql/MySql.node.js",
-            "dist/nodes/NextCloud/NextCloud.node.js",
+			"dist/nodes/NextCloud/NextCloud.node.js",
+			"dist/nodes/Mandrill/Mandrill.node.js",
             "dist/nodes/NoOp.node.js",
             "dist/nodes/OpenWeatherMap.node.js",
             "dist/nodes/Pipedrive/Pipedrive.node.js",
@@ -158,17 +159,14 @@
             "dist/nodes/Typeform/TypeformTrigger.node.js",
             "dist/nodes/Vero/Vero.node.js",
             "dist/nodes/WriteBinaryFile.node.js",
-            "dist/nodes/Webhook.node.js",
-            "dist/nodes/Xml.node.js",
-            "dist/nodes/Mandrill/Mandrill.node.js",
-            "dist/nodes/Todoist/Todoist.node.js",
-            "dist/nodes/Xml.node.js"
+			"dist/nodes/Webhook.node.js",
+			"dist/nodes/Wordpress/Wordpress.node.js",
+			"dist/nodes/Xml.node.js"
         ]
     },
     "devDependencies": {
         "@types/aws4": "^1.5.1",
         "@types/basic-auth": "^1.1.2",
-        "@types/cheerio": "^0.22.15",
         "@types/cron": "^1.6.1",
         "@types/express": "^4.16.1",
         "@types/gm": "^1.18.2",
@@ -186,16 +184,15 @@
         "n8n-workflow": "~0.18.0",
         "ts-jest": "^24.0.2",
         "tslint": "^5.17.0",
-        "typescript": "~3.7.4"
+        "typescript": "~3.5.2"
     },
     "dependencies": {
         "aws4": "^1.8.0",
         "basic-auth": "^2.0.1",
-        "cheerio": "^1.0.0-rc.3",
         "cron": "^1.6.0",
         "glob-promise": "^3.4.0",
         "gm": "^1.23.1",
-        "googleapis": "^46.0.0",
+        "googleapis": "^42.0.0",
         "imap-simple": "^4.3.0",
         "lodash.get": "^4.4.2",
         "lodash.set": "^4.3.2",
