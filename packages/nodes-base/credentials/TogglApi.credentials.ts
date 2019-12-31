@@ -3,9 +3,10 @@ import {
 	NodePropertyTypes,
 } from 'n8n-workflow';
 
-export class WordpressApi implements ICredentialType {
-	name = 'wordpressApi';
-	displayName = 'Wordpress API';
+
+export class TogglApi implements ICredentialType {
+	name = 'togglApi';
+	displayName = 'Toggl API';
 	properties = [
 		{
 			displayName: 'Username',
@@ -16,12 +17,6 @@ export class WordpressApi implements ICredentialType {
 		{
 			displayName: 'Password',
 			name: 'password',
-			type: 'string' as NodePropertyTypes,
-			default: '',
-		},
-		{
-			displayName: 'Domain',
-			name: 'domain',
 			type: 'string' as NodePropertyTypes,
 			default: '',
 		},
