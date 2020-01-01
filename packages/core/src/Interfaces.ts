@@ -8,16 +8,13 @@ import {
 	ILoadOptionsFunctions as ILoadOptionsFunctionsBase,
 	INodeExecutionData,
 	INodeType,
-	IPollFunctions as IPollFunctionsBase,
-	IPollResponse,
 	ITriggerFunctions as ITriggerFunctionsBase,
-	ITriggerResponse,
 	IWebhookFunctions as IWebhookFunctionsBase,
 	IWorkflowSettings as IWorkflowSettingsWorkflow,
-	Workflow,
  } from 'n8n-workflow';
 
 
+import * as request from 'request';
 import * as requestPromise from 'request-promise-native';
 
 interface Constructable<T> {
@@ -34,7 +31,7 @@ export interface IProcessMessage {
 export interface IExecuteFunctions extends IExecuteFunctionsBase {
 	helpers: {
 		prepareBinaryData(binaryData: Buffer, filePath?: string, mimeType?: string): Promise<IBinaryData>;
-		request: requestPromise.RequestPromiseAPI,
+		request: request.RequestAPI<requestPromise.RequestPromise, requestPromise.RequestPromiseOptions, request.RequiredUriUrl>,
 		returnJsonArray(jsonData: IDataObject | IDataObject[]): INodeExecutionData[];
 	};
 }
@@ -43,16 +40,7 @@ export interface IExecuteFunctions extends IExecuteFunctionsBase {
 export interface IExecuteSingleFunctions extends IExecuteSingleFunctionsBase {
 	helpers: {
 		prepareBinaryData(binaryData: Buffer, filePath?: string, mimeType?: string): Promise<IBinaryData>;
-		request: requestPromise.RequestPromiseAPI,
-	};
-}
-
-
-export interface IPollFunctions extends IPollFunctionsBase {
-	helpers: {
-		prepareBinaryData(binaryData: Buffer, filePath?: string, mimeType?: string): Promise<IBinaryData>;
-		request: requestPromise.RequestPromiseAPI,
-		returnJsonArray(jsonData: IDataObject | IDataObject[]): INodeExecutionData[];
+		request: request.RequestAPI < requestPromise.RequestPromise, requestPromise.RequestPromiseOptions, request.RequiredUriUrl >,
 	};
 }
 
@@ -60,19 +48,9 @@ export interface IPollFunctions extends IPollFunctionsBase {
 export interface ITriggerFunctions extends ITriggerFunctionsBase {
 	helpers: {
 		prepareBinaryData(binaryData: Buffer, filePath?: string, mimeType?: string): Promise<IBinaryData>;
-		request: requestPromise.RequestPromiseAPI,
+		request: request.RequestAPI<requestPromise.RequestPromise, requestPromise.RequestPromiseOptions, request.RequiredUriUrl>,
 		returnJsonArray(jsonData: IDataObject | IDataObject[]): INodeExecutionData[];
 	};
-}
-
-
-export interface ITriggerTime {
-	mode: string;
-	hour: number;
-	minute: number;
-	dayOfMonth: number;
-	weekeday: number;
-	[key: string]: string | number;
 }
 
 
@@ -83,14 +61,14 @@ export interface IUserSettings {
 
 export interface ILoadOptionsFunctions extends ILoadOptionsFunctionsBase {
 	helpers: {
-		request?: requestPromise.RequestPromiseAPI,
+		request?: request.RequestAPI<requestPromise.RequestPromise, requestPromise.RequestPromiseOptions, request.RequiredUriUrl>,
 	};
 }
 
 
 export interface IHookFunctions extends IHookFunctionsBase {
 	helpers: {
-		request: requestPromise.RequestPromiseAPI,
+		request: request.RequestAPI<requestPromise.RequestPromise, requestPromise.RequestPromiseOptions, request.RequiredUriUrl>,
 	};
 }
 
@@ -98,7 +76,7 @@ export interface IHookFunctions extends IHookFunctionsBase {
 export interface IWebhookFunctions extends IWebhookFunctionsBase {
 	helpers: {
 		prepareBinaryData(binaryData: Buffer, filePath?: string, mimeType?: string): Promise<IBinaryData>;
-		request: requestPromise.RequestPromiseAPI,
+		request: request.RequestAPI<requestPromise.RequestPromise, requestPromise.RequestPromiseOptions, request.RequiredUriUrl>,
 		returnJsonArray(jsonData: IDataObject | IDataObject[]): INodeExecutionData[];
 	};
 }
@@ -119,11 +97,4 @@ export interface INodeDefinitionFile {
 // Is identical to TaskDataConnections but does not allow null value to be used as input for nodes
 export interface INodeInputDataConnections {
 	[key: string]: INodeExecutionData[][];
-}
-
-
-export interface IWorkflowData {
-	pollResponse?: IPollResponse;
-	triggerResponse?: ITriggerResponse;
-	workflow: Workflow;
 }
