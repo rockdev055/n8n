@@ -20,7 +20,6 @@ import {
 import {
 	IDataObject,
 	IExecuteData,
-	IExecuteWorkflowInfo,
 	INode,
 	INodeParameters,
 	INodeExecutionData,
@@ -271,12 +270,8 @@ function hookFunctionsSave(parentProcessMode?: string): IWorkflowExecuteHooks {
  * @param {INodeExecutionData[]} [inputData]
  * @returns {(Promise<Array<INodeExecutionData[] | null>>)}
  */
-export async function executeWorkflow(workflowInfo: IExecuteWorkflowInfo, additionalData: IWorkflowExecuteAdditionalData, inputData?: INodeExecutionData[]): Promise<Array<INodeExecutionData[] | null>> {
+export async function executeWorkflow(workflowId: string, additionalData: IWorkflowExecuteAdditionalData, inputData?: INodeExecutionData[]): Promise<Array<INodeExecutionData[] | null>> {
 	const mode = 'integrated';
-
-	if (workflowInfo.id === undefined && workflowInfo.code === undefined) {
-		throw new Error(`No information about the workflow to execute found. Please provide either the "id" or "code"!`);
-	}
 
 	if (Db.collections!.Workflow === null) {
 		// The first time executeWorkflow gets called the Database has
@@ -284,19 +279,14 @@ export async function executeWorkflow(workflowInfo: IExecuteWorkflowInfo, additi
 		await Db.init();
 	}
 
-	let workflowData: IWorkflowBase | undefined;
-	if (workflowInfo.id !== undefined) {
-		workflowData = await Db.collections!.Workflow!.findOne(workflowInfo.id);
-		if (workflowData === undefined) {
-			throw new Error(`The workflow with the id "${workflowInfo.id}" does not exist.`);
-		}
-	} else {
-		workflowData = workflowInfo.code;
+	const workflowData = await Db.collections!.Workflow!.findOne(workflowId);
+	if (workflowData === undefined) {
+		throw new Error(`The workflow with the id "${workflowId}" does not exist.`);
 	}
 
 	const nodeTypes = NodeTypes();
 
-	const workflow = new Workflow(workflowInfo.id, workflowData!.nodes, workflowData!.connections, workflowData!.active, nodeTypes, workflowData!.staticData);
+	const workflow = new Workflow(workflowId as string | undefined, workflowData!.nodes, workflowData!.connections, workflowData!.active, nodeTypes, workflowData!.staticData);
 
 	// Does not get used so set it simply to empty string
 	const executionId = '';
@@ -304,7 +294,7 @@ export async function executeWorkflow(workflowInfo: IExecuteWorkflowInfo, additi
 	// Create new additionalData to have different workflow loaded and to call
 	// different webooks
 	const additionalDataIntegrated = await getBase(additionalData.credentials);
-	additionalDataIntegrated.hooks = getWorkflowHooksIntegrated(mode, executionId, workflowData!, { parentProcessMode: additionalData.hooks!.mode });
+	additionalDataIntegrated.hooks = getWorkflowHooksIntegrated(mode, executionId, workflowData, { parentProcessMode: additionalData.hooks!.mode });
 
 	// Find Start-Node
 	const requiredNodeTypes = ['n8n-nodes-base.start'];

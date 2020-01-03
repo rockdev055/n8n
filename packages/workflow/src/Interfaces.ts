@@ -154,7 +154,7 @@ export interface IExecuteContextData {
 
 
 export interface IExecuteFunctions {
-	executeWorkflow(workflowInfo: IExecuteWorkflowInfo, inputData?: INodeExecutionData[]): Promise<any>; // tslint:disable-line:no-any
+	executeWorkflow(workflowId: string, inputData?: INodeExecutionData[]): Promise<any>; // tslint:disable-line:no-any
 	getContext(type: string): IContextObject;
 	getCredentials(type: string): ICredentialDataDecryptedObject | undefined;
 	getInputData(inputIndex?: number, inputName?: string): INodeExecutionData[];
@@ -184,11 +184,6 @@ export interface IExecuteSingleFunctions {
 	helpers: {
 		[key: string]: (...args: any[]) => any //tslint:disable-line:no-any
 	};
-}
-
-export interface IExecuteWorkflowInfo {
-	code?: IWorkflowBase;
-	id?: string;
 }
 
 export interface ILoadOptionsFunctions {
@@ -641,7 +636,7 @@ export interface IWorkflowExecuteHooks {
 export interface IWorkflowExecuteAdditionalData {
 	credentials: IWorkflowCredentials;
 	encryptionKey: string;
-	executeWorkflow: (workflowInfo: IExecuteWorkflowInfo, additionalData: IWorkflowExecuteAdditionalData, inputData?: INodeExecutionData[]) => Promise<any>; // tslint:disable-line:no-any
+	executeWorkflow: (workflowId: string, additionalData: IWorkflowExecuteAdditionalData, inputData?: INodeExecutionData[]) => Promise<any>; // tslint:disable-line:no-any
 	// hooks?: IWorkflowExecuteHooks;
 	hooks?: WorkflowHooks;
 	httpResponse?: express.Response;
