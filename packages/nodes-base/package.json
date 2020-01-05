@@ -31,6 +31,7 @@
             "dist/credentials/Amqp.credentials.js",
             "dist/credentials/AsanaApi.credentials.js",
             "dist/credentials/Aws.credentials.js",
+            "dist/credentials/BitbucketApi.credentials.js",
             "dist/credentials/ChargebeeApi.credentials.js",
             "dist/credentials/CodaApi.credentials.js",
             "dist/credentials/DropboxApi.credentials.js",
@@ -75,8 +76,7 @@
             "dist/credentials/TypeformApi.credentials.js",
             "dist/credentials/TogglApi.credentials.js",
             "dist/credentials/VeroApi.credentials.js",
-            "dist/credentials/WordpressApi.credentials.js",
-            "dist/credentials/ZendeskApi.credentials.js"
+            "dist/credentials/WordpressApi.credentials.js"
         ],
         "nodes": [
             "dist/nodes/ActiveCampaign/ActiveCampaign.node.js",
@@ -87,6 +87,7 @@
             "dist/nodes/Asana/AsanaTrigger.node.js",
             "dist/nodes/Aws/AwsLambda.node.js",
             "dist/nodes/Aws/AwsSns.node.js",
+            "dist/nodes/Bitbucket/BitbucketTrigger.node.js",
             "dist/nodes/Chargebee/Chargebee.node.js",
             "dist/nodes/Chargebee/ChargebeeTrigger.node.js",
             "dist/nodes/Cron.node.js",
@@ -164,10 +165,9 @@
             "dist/nodes/Toggl/TogglTrigger.node.js",
             "dist/nodes/Vero/Vero.node.js",
             "dist/nodes/WriteBinaryFile.node.js",
-            "dist/nodes/Webhook.node.js",
-            "dist/nodes/Wordpress/Wordpress.node.js",
-            "dist/nodes/Xml.node.js",
-            "dist/nodes/Zendesk/ZendeskTrigger.node.js"
+			"dist/nodes/Webhook.node.js",
+			"dist/nodes/Wordpress/Wordpress.node.js",
+			"dist/nodes/Xml.node.js"
         ]
     },
     "devDependencies": {
