@@ -1,6 +1,6 @@
 {
     "name": "n8n-nodes-base",
-    "version": "0.39.0",
+    "version": "0.38.0",
     "description": "Base nodes of n8n",
     "license": "SEE LICENSE IN LICENSE.md",
     "homepage": "https://n8n.io",
@@ -34,7 +34,6 @@
             "dist/credentials/ChargebeeApi.credentials.js",
             "dist/credentials/CodaApi.credentials.js",
             "dist/credentials/DropboxApi.credentials.js",
-            "dist/credentials/EventbriteApi.credentials.js",
             "dist/credentials/FreshdeskApi.credentials.js",
             "dist/credentials/FileMaker.credentials.js",
             "dist/credentials/FlowApi.credentials.js",
@@ -72,11 +71,12 @@
             "dist/credentials/TwilioApi.credentials.js",
             "dist/credentials/TypeformApi.credentials.js",
             "dist/credentials/MandrillApi.credentials.js",
-			"dist/credentials/TodoistApi.credentials.js",
-			"dist/credentials/TypeformApi.credentials.js",
-			"dist/credentials/TogglApi.credentials.js",
+            "dist/credentials/TodoistApi.credentials.js",
+            "dist/credentials/TypeformApi.credentials.js",
+            "dist/credentials/TogglApi.credentials.js",
             "dist/credentials/VeroApi.credentials.js",
-            "dist/credentials/WordpressApi.credentials.js"
+            "dist/credentials/WordpressApi.credentials.js",
+            "dist/credentials/ZendeskApi.credentials.js"
         ],
         "nodes": [
             "dist/nodes/ActiveCampaign/ActiveCampaign.node.js",
@@ -99,7 +99,6 @@
             "dist/nodes/ErrorTrigger.node.js",
             "dist/nodes/ExecuteCommand.node.js",
             "dist/nodes/ExecuteWorkflow.node.js",
-            "dist/nodes/Eventbrite/EventbriteTrigger.node.js",
             "dist/nodes/FileMaker/FileMaker.node.js",
             "dist/nodes/Freshdesk/Freshdesk.node.js",
             "dist/nodes/Flow/Flow.node.js",
@@ -165,9 +164,10 @@
             "dist/nodes/Toggl/TogglTrigger.node.js",
             "dist/nodes/Vero/Vero.node.js",
             "dist/nodes/WriteBinaryFile.node.js",
-			"dist/nodes/Webhook.node.js",
-			"dist/nodes/Wordpress/Wordpress.node.js",
-			"dist/nodes/Xml.node.js"
+            "dist/nodes/Webhook.node.js",
+            "dist/nodes/Wordpress/Wordpress.node.js",
+            "dist/nodes/Xml.node.js",
+            "dist/nodes/Zendesk/ZendeskTrigger.node.js"
         ]
     },
     "devDependencies": {
@@ -189,7 +189,7 @@
         "@types/xml2js": "^0.4.3",
         "gulp": "^4.0.0",
         "jest": "^24.9.0",
-        "n8n-workflow": "~0.20.0",
+        "n8n-workflow": "~0.19.0",
         "ts-jest": "^24.0.2",
         "tslint": "^5.17.0",
         "typescript": "~3.7.4"
@@ -209,7 +209,7 @@
         "lodash.unset": "^4.5.2",
         "mongodb": "^3.3.2",
         "mysql2": "^2.0.1",
-        "n8n-core": "~0.20.0",
+        "n8n-core": "~0.19.0",
         "nodemailer": "^5.1.1",
         "pdf-parse": "^1.1.1",
         "pg-promise": "^9.0.3",
