@@ -332,7 +332,6 @@ export type EditorTypes = 'code';
 export interface INodePropertyTypeOptions {
 	alwaysOpenEditWindow?: boolean; // Supported by: string
 	editor?: EditorTypes;        // Supported by: string
-	loadOptionsDependsOn?: string[];  // Supported by: options
 	loadOptionsMethod?: string;  // Supported by: options
 	maxValue?: number;           // Supported by: number
 	minValue?: number;           // Supported by: number
@@ -342,7 +341,7 @@ export interface INodePropertyTypeOptions {
 	numberStepSize?: number;     // Supported by: number
 	password?: boolean;          // Supported by: string
 	rows?: number;               // Supported by: string
-	[key: string]: boolean | number | string | EditorTypes | undefined | string[];
+	[key: string]: boolean | number | string | EditorTypes | undefined;
 }
 
 export interface IDisplayOptions {

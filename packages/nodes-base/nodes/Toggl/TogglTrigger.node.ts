@@ -11,7 +11,7 @@ import { togglApiRequest } from './GenericFunctions';
 
 export class TogglTrigger implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'Toggl Trigger',
+		displayName: 'Toggl',
 		name: 'toggl',
 		icon: 'file:toggl.png',
 		group: ['trigger'],
