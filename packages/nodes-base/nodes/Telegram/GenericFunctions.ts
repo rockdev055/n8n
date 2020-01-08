@@ -73,15 +73,10 @@ export function addAdditionalFields(this: IExecuteFunctions, body: IDataObject, 
 	const additionalFields = this.getNodeParameter('additionalFields', index) as IDataObject;
 	Object.assign(body, additionalFields);
 
-	const operation = this.getNodeParameter('operation', index) as string;
-
 	// Add the reply markup
-	let replyMarkupOption = '';
-	if (operation !== 'sendMediaGroup') {
-		replyMarkupOption = this.getNodeParameter('replyMarkup', index) as string;
-		if (replyMarkupOption === 'none') {
-			return;
-		}
+	const replyMarkupOption = this.getNodeParameter('replyMarkup', index) as string;
+	if (replyMarkupOption === 'none') {
+		return;
 	}
 
 	body.reply_markup = {} as IMarkupForceReply | IMarkupReplyKeyboardRemove | ITelegramInlineReply | ITelegramReplyKeyboard;

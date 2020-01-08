@@ -4,7 +4,6 @@ import {
 
 import {
 	IDataObject,
-	INodeExecutionData,
 	INodeTypeDescription,
 	INodeType,
 	IWebhookResponseData,
@@ -120,6 +119,7 @@ export class Webhook implements INodeType {
 				default: 'GET',
 				description: 'The HTTP method to liste to.',
 			},
+
 			{
 				displayName: 'Path',
 				name: 'path',
@@ -127,7 +127,7 @@ export class Webhook implements INodeType {
 				default: '',
 				placeholder: 'webhook',
 				required: true,
-				description: 'The path to listen to. Slashes("/") in the path are not allowed.',
+				description: 'The path to listen to',
 			},
 			{
 				displayName: 'Response Code',
@@ -205,10 +205,21 @@ export class Webhook implements INodeType {
 				},
 				description: 'Name of the binary property to return',
 			},
+
 			{
 				displayName: 'Options',
 				name: 'options',
 				type: 'collection',
+				displayOptions: {
+					show: {
+						responseData: [
+							'firstEntryJson',
+						],
+						responseMode: [
+							'lastNode',
+						],
+					},
+				},
 				placeholder: 'Add Option',
 				default: {},
 				options: [
@@ -216,16 +227,6 @@ export class Webhook implements INodeType {
 						displayName: 'Response Content-Type',
 						name: 'responseContentType',
 						type: 'string',
-						displayOptions: {
-							show: {
-								'/responseData': [
-									'firstEntryJson',
-								],
-								'/responseMode': [
-									'lastNode',
-								],
-							},
-						},
 						default: '',
 						placeholder: 'application/xml',
 						description: 'Set a custom content-type to return if another one as the "application/json" should be returned.',
@@ -234,35 +235,18 @@ export class Webhook implements INodeType {
 						displayName: 'Property Name',
 						name: 'responsePropertyName',
 						type: 'string',
-						displayOptions: {
-							show: {
-								'/responseData': [
-									'firstEntryJson',
-								],
-								'/responseMode': [
-									'lastNode',
-								],
-							},
-						},
 						default: 'data',
 						description: 'Name of the property to return the data of instead of the whole JSON.',
 					},
-					{
-						displayName: 'Raw Body',
-						name: 'rawBody',
-						type: 'boolean',
-						default: false,
-						description: 'Raw body (binary)',
-					},
 				],
 			},
+
 		],
 	};
 
 
 	async webhook(this: IWebhookFunctions): Promise<IWebhookResponseData> {
 		const authentication = this.getNodeParameter('authentication', 0) as string;
-		const options = this.getNodeParameter('options', 0) as IDataObject;
 		const req = this.getRequestObject();
 		const resp = this.getResponseObject();
 		const headers = this.getHeaderData();
@@ -305,31 +289,19 @@ export class Webhook implements INodeType {
 			}
 		}
 
-		// @ts-ignore
-		const mimeType = headers['content-type'] || 'application/json';
+		const returnData: IDataObject[] = [];
 
-		const response: INodeExecutionData = {
-			json: {
+		returnData.push(
+			{
 				body: this.getBodyData(),
 				headers,
 				query: this.getQueryData(),
-			},
-		};
-		if (options.rawBody) {
-			response.binary = {
-				data: {
-					// @ts-ignore
-					data: req.rawBody.toString('base64'),
-					mimeType,
-				}
-			};
-		}
+			}
+		);
 
 		return {
 			workflowData: [
-				[
-					response,
-				],
+				this.helpers.returnJsonArray(returnData)
 			],
 		};
 	}

@@ -102,7 +102,6 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import { MessageBoxInputData } from 'element-ui/types/message-box';
 import { jsPlumb, Endpoint, OnConnectionBindInfo } from 'jsplumb';
 import { NODE_NAME_PREFIX, PLACEHOLDER_EMPTY_WORKFLOW_ID } from '@/constants';
 import { copyPaste } from '@/components/mixins/copyPaste';
@@ -807,7 +806,6 @@ export default mixins(
 				}
 
 				this.$store.commit('setLastSelectedNode', node.name);
-				this.$store.commit('setLastSelectedNodeOutputIndex', null);
 
 				if (setActive === true) {
 					this.$store.commit('setActiveNode', node.name);
@@ -938,13 +936,12 @@ export default mixins(
 
 				// Check if there is a last selected node
 				const lastSelectedNode = this.$store.getters.lastSelectedNode;
-				const lastSelectedNodeOutputIndex = this.$store.getters.lastSelectedNodeOutputIndex;
 				if (lastSelectedNode) {
 					// If a node is active then add the new node directly after the current one
 					// newNodeData.position = [activeNode.position[0], activeNode.position[1] + 60];
 					newNodeData.position = this.getNewNodePosition(
 						[lastSelectedNode.position[0] + 150, lastSelectedNode.position[1]],
-						[100, 0],
+						[100, 0]
 					);
 				} else {
 					// If no node is active find a free spot
@@ -963,28 +960,26 @@ export default mixins(
 					this.nodeSelectedByName(newNodeData.name, true);
 				});
 
-				const outputIndex = lastSelectedNodeOutputIndex || 0;
-
 				if (lastSelectedNode) {
 					// If a node is last selected then connect between the active and its child ones
 					await Vue.nextTick();
 
 					// Add connections of active node to newly created one
 					let connections = this.$store.getters.connectionsByNodeName(
-						lastSelectedNode.name,
+						lastSelectedNode.name
 					);
 					connections = JSON.parse(JSON.stringify(connections));
 
 					for (const type of Object.keys(connections)) {
-						if (outputIndex <= connections[type].length) {
-							connections[type][outputIndex].forEach((connectionInfo: IConnection) => {
+						for (let inputIndex = 0; inputIndex < connections[type].length; inputIndex++) {
+							connections[type][inputIndex].forEach((connectionInfo: IConnection) => {
 								// Remove currenct connection
 
 								const connectionDataDisonnect = [
 									{
 										node: lastSelectedNode.name,
 										type,
-										index: outputIndex,
+										index: inputIndex,
 									},
 									connectionInfo,
 								] as [IConnection, IConnection];
@@ -995,7 +990,7 @@ export default mixins(
 									{
 										node: newNodeData.name,
 										type,
-										index: 0,
+										index: inputIndex,
 									},
 									connectionInfo,
 								] as [IConnection, IConnection];
@@ -1012,7 +1007,7 @@ export default mixins(
 						{
 							node: lastSelectedNode.name,
 							type: 'main',
-							index: outputIndex,
+							index: 0,
 						},
 						{
 							node: newNodeData.name,
@@ -1067,9 +1062,6 @@ export default mixins(
 					// to it.
 					const sourceNodeName = this.$store.getters.getNodeNameByIndex(info.sourceId.slice(NODE_NAME_PREFIX.length));
 					this.$store.commit('setLastSelectedNode', sourceNodeName);
-
-					const sourceInfo = info.getParameters();
-					this.$store.commit('setLastSelectedNodeOutputIndex', sourceInfo.index);
 
 					// Display the node-creator
 					this.createNodeActive = true;
@@ -1407,7 +1399,7 @@ export default mixins(
 
 				newNodeData.position = this.getNewNodePosition(
 					[node.position[0], node.position[1] + 150],
-					[0, 150],
+					[0, 150]
 				);
 
 				await this.addNodes([newNodeData]);
@@ -1505,7 +1497,7 @@ export default mixins(
 						nameInput.select();
 					}
 
-					const promptResponse = await promptResponsePromise as MessageBoxInputData;
+					const promptResponse = await promptResponsePromise;
 
 					this.renameNode(currentName, promptResponse.value);
 				} catch (e) {}
@@ -1603,7 +1595,7 @@ export default mixins(
 						for (const type of Object.keys(connections[sourceNode])) {
 							for (let sourceIndex = 0; sourceIndex < connections[sourceNode][type].length; sourceIndex++) {
 								connections[sourceNode][type][sourceIndex].forEach((
-									targetData,
+									targetData
 								) => {
 									connectionData = [
 										{

@@ -57,7 +57,6 @@ import mixins from 'vue-typed-mixins';
 
 export default mixins(
 	copyPaste,
-	showMessage,
 	workflowHelpers,
 )
 	.extend({

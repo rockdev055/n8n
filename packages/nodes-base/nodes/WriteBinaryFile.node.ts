@@ -60,11 +60,11 @@ export class WriteBinaryFile implements INodeType {
 		const fileName = this.getNodeParameter('fileName') as string;
 
 		if (item.binary === undefined) {
-			throw new Error('No binary data set. So file can not be written!');
+			return item;
 		}
 
 		if (item.binary[dataPropertyName] === undefined) {
-			throw new Error(`The binary property "${dataPropertyName}" does not exist. So no file can be written!`);
+			return item;
 		}
 
 		// Write the file to disk

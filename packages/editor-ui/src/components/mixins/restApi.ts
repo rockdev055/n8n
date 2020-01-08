@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import { parse } from 'flatted';
 
-import axios, { AxiosRequestConfig, Method } from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import {
 	IActivationError,
 	ICredentialsDecryptedResponse,
@@ -26,7 +26,6 @@ import {
 	ICredentialType,
 	IDataObject,
 	INodeCredentials,
-	INodeParameters,
 	INodePropertyOptions,
 	INodeTypeDescription,
 } from 'n8n-workflow';
@@ -94,7 +93,7 @@ export const restApi = Vue.extend({
 		restApi (): IRestApi {
 			const self = this;
 			return {
-				async makeRestApiRequest (method: Method, endpoint: string, data?: IDataObject): Promise<any> { // tslint:disable-line:no-any
+				async makeRestApiRequest (method: string, endpoint: string, data?: IDataObject): Promise<any> { // tslint:disable-line:no-any
 					try {
 						const options: AxiosRequestConfig = {
 							method,
@@ -153,12 +152,12 @@ export const restApi = Vue.extend({
 				},
 
 				// Returns all the parameter options from the server
-				getNodeParameterOptions: (nodeType: string, methodName: string, currentNodeParameters: INodeParameters, credentials?: INodeCredentials): Promise<INodePropertyOptions[]> => {
+				getNodeParameterOptions: (nodeType: string, methodName: string, credentials?: INodeCredentials): Promise<INodePropertyOptions[]> => {
 					const sendData = {
 						nodeType,
 						methodName,
 						credentials,
-						currentNodeParameters,
+						currentNodeParameters: this.$store.getters.activeNode.parameters,
 					};
 					return self.restApi().makeRestApiRequest('GET', '/node-parameter-options', sendData);
 				},
@@ -252,21 +251,6 @@ export const restApi = Vue.extend({
 					return self.restApi().makeRestApiRequest('GET', `/credential-types`);
 				},
 
-				// Get OAuth2 Authorization URL using the stored credentials
-				OAuth2CredentialAuthorize: (sendData: ICredentialsResponse): Promise<string> => {
-					return self.restApi().makeRestApiRequest('GET', `/oauth2-credential/auth`, sendData);
-				},
-
-				// Verify OAuth2 provider callback and kick off token generation
-				OAuth2Callback: (code: string, state: string): Promise<string> => {
-					const sendData = {
-						'code': code,
-						'state': state,
-					};
-
-					return self.restApi().makeRestApiRequest('POST', `/oauth2-credential/callback`, sendData);
-				},
-
 				// Returns the execution with the given name
 				getExecution: async (id: string): Promise<IExecutionResponse> => {
 					const response = await self.restApi().makeRestApiRequest('GET', `/executions/${id}`);
@@ -279,24 +263,18 @@ export const restApi = Vue.extend({
 				},
 
 				// Returns the execution with the given name
-				retryExecution: (id: string, loadWorkflow?: boolean): Promise<boolean> => {
-					let sendData;
-					if (loadWorkflow === true) {
-						sendData = {
-							loadWorkflow: true,
-						};
-					}
-					return self.restApi().makeRestApiRequest('POST', `/executions/${id}/retry`, sendData);
+				retryExecution: (id: string): Promise<boolean> => {
+					return self.restApi().makeRestApiRequest('POST', `/executions/${id}/retry`);
 				},
 
 				// Returns all saved executions
 				// TODO: For sure needs some kind of default filter like last day, with max 10 results, ...
-				getPastExecutions: (filter: object, limit: number, lastId?: string | number): Promise<IExecutionsListResponse> => {
+				getPastExecutions: (filter: object, limit: number, lastStartedAt?: Date): Promise<IExecutionsListResponse> => {
 					let sendData = {};
 					if (filter) {
 						sendData = {
 							filter,
-							lastId,
+							lastStartedAt,
 							limit,
 						};
 					}

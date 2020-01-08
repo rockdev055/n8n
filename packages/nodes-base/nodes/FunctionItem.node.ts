@@ -64,24 +64,14 @@ export class FunctionItem implements INodeType {
 		const dataProxy = this.getWorkflowDataProxy();
 		Object.assign(sandbox, dataProxy);
 
-		const options = {
+		const vm = new NodeVM({
 			console: 'inherit',
 			sandbox,
 			require: {
-				external: false as boolean | { modules: string[] },
-				builtin: [] as string[],
+				external: false,
+				root: './',
 			}
-		};
-
-		if (process.env.NODE_FUNCTION_ALLOW_BUILTIN) {
-			options.require.builtin = process.env.NODE_FUNCTION_ALLOW_BUILTIN.split(',');
-		}
-
-		if (process.env.NODE_FUNCTION_ALLOW_EXTERNAL) {
-			options.require.external = { modules: process.env.NODE_FUNCTION_ALLOW_EXTERNAL.split(',') };
-		}
-
-		const vm = new NodeVM(options);
+		});
 
 		// Get the code to execute
 		const functionCode = this.getNodeParameter('functionCode') as string;
@@ -90,14 +80,9 @@ export class FunctionItem implements INodeType {
 		let jsonData: IDataObject;
 		try {
 			// Execute the function code
-			jsonData = await vm.run(`module.exports = async function() {${functionCode}}()`, './');
+			jsonData = await vm.run(`module.exports = async function() {${functionCode}}()`);
 		} catch (e) {
 			return Promise.reject(e);
-		}
-
-		// Do very basic validation of the data
-		if (jsonData === undefined) {
-			throw new Error('No data got returned. Always an object has to be returned!');
 		}
 
 		return {

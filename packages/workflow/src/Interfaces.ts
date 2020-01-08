@@ -1,5 +1,4 @@
 import { Workflow } from './Workflow';
-import { WorkflowHooks } from './WorkflowHooks';
 import * as express from 'express';
 
 export interface IBinaryData {
@@ -107,10 +106,6 @@ export interface IDataObject {
 }
 
 
-export interface IGetExecutePollFunctions {
-	(workflow: Workflow, node: INode, additionalData: IWorkflowExecuteAdditionalData, mode: WorkflowExecuteMode): IPollFunctions;
-}
-
 export interface IGetExecuteTriggerFunctions {
 	(workflow: Workflow, node: INode, additionalData: IWorkflowExecuteAdditionalData, mode: WorkflowExecuteMode): ITriggerFunctions;
 }
@@ -154,7 +149,6 @@ export interface IExecuteContextData {
 
 
 export interface IExecuteFunctions {
-	executeWorkflow(workflowInfo: IExecuteWorkflowInfo, inputData?: INodeExecutionData[]): Promise<any>; // tslint:disable-line:no-any
 	getContext(type: string): IContextObject;
 	getCredentials(type: string): ICredentialDataDecryptedObject | undefined;
 	getInputData(inputIndex?: number, inputName?: string): INodeExecutionData[];
@@ -162,7 +156,6 @@ export interface IExecuteFunctions {
 	getNodeParameter(parameterName: string, itemIndex: number, fallbackValue?: any): NodeParameterValue | INodeParameters | NodeParameterValue[] | INodeParameters[] | object; //tslint:disable-line:no-any
 	getWorkflowDataProxy(itemIndex: number): IWorkflowDataProxyData;
 	getWorkflowStaticData(type: string): IDataObject;
-	getRestApiUrl(): string;
 	getTimezone(): string;
 	prepareOutputData(outputData: INodeExecutionData[], outputIndex?: number): Promise<INodeExecutionData[][]>;
 	helpers: {
@@ -177,7 +170,6 @@ export interface IExecuteSingleFunctions {
 	getInputData(inputIndex?: number, inputName?: string): INodeExecutionData;
 	getMode(): WorkflowExecuteMode;
 	getNodeParameter(parameterName: string, fallbackValue?: any): NodeParameterValue | INodeParameters | NodeParameterValue[] | INodeParameters[] | object; //tslint:disable-line:no-any
-	getRestApiUrl(): string;
 	getTimezone(): string;
 	getWorkflowDataProxy(): IWorkflowDataProxyData;
 	getWorkflowStaticData(type: string): IDataObject;
@@ -186,18 +178,12 @@ export interface IExecuteSingleFunctions {
 	};
 }
 
-export interface IExecuteWorkflowInfo {
-	code?: IWorkflowBase;
-	id?: string;
-}
-
 export interface ILoadOptionsFunctions {
 	getCredentials(type: string): ICredentialDataDecryptedObject | undefined;
 	getNodeParameter(parameterName: string, fallbackValue?: any): NodeParameterValue | INodeParameters | NodeParameterValue[] | INodeParameters[] | object; //tslint:disable-line:no-any
 	getCurrentNodeParameter(parameterName: string): NodeParameterValue | INodeParameters | NodeParameterValue[] | INodeParameters[] | object | undefined;
 	getCurrentNodeParameters(): INodeParameters | undefined;
 	getTimezone(): string;
-	getRestApiUrl(): string;
 	helpers: {
 		[key: string]: ((...args: any[]) => any) | undefined; //tslint:disable-line:no-any
 	};
@@ -217,25 +203,11 @@ export interface IHookFunctions {
 	};
 }
 
-export interface IPollFunctions {
-	__emit(data: INodeExecutionData[][]): void;
-	getCredentials(type: string): ICredentialDataDecryptedObject | undefined;
-	getMode(): WorkflowExecuteMode;
-	getNodeParameter(parameterName: string, fallbackValue?: any): NodeParameterValue | INodeParameters | NodeParameterValue[] | INodeParameters[] | object; //tslint:disable-line:no-any
-	getRestApiUrl(): string;
-	getTimezone(): string;
-	getWorkflowStaticData(type: string): IDataObject;
-	helpers: {
-		[key: string]: (...args: any[]) => any //tslint:disable-line:no-any
-	};
-}
-
 export interface ITriggerFunctions {
 	emit(data: INodeExecutionData[][]): void;
 	getCredentials(type: string): ICredentialDataDecryptedObject | undefined;
 	getMode(): WorkflowExecuteMode;
 	getNodeParameter(parameterName: string, fallbackValue?: any): NodeParameterValue | INodeParameters | NodeParameterValue[] | INodeParameters[] | object; //tslint:disable-line:no-any
-	getRestApiUrl(): string;
 	getTimezone(): string;
 	getWorkflowStaticData(type: string): IDataObject;
 	helpers: {
@@ -307,7 +279,6 @@ export interface INodeExecutionData {
 
 
 export interface INodeExecuteFunctions {
-	getExecutePollFunctions: IGetExecutePollFunctions;
 	getExecuteTriggerFunctions: IGetExecuteTriggerFunctions;
 	getExecuteFunctions: IGetExecuteFunctions;
 	getExecuteSingleFunctions: IGetExecuteSingleFunctions;
@@ -332,7 +303,6 @@ export type EditorTypes = 'code';
 export interface INodePropertyTypeOptions {
 	alwaysOpenEditWindow?: boolean; // Supported by: string
 	editor?: EditorTypes;        // Supported by: string
-	loadOptionsDependsOn?: string[];  // Supported by: options
 	loadOptionsMethod?: string;  // Supported by: options
 	maxValue?: number;           // Supported by: number
 	minValue?: number;           // Supported by: number
@@ -342,7 +312,7 @@ export interface INodePropertyTypeOptions {
 	numberStepSize?: number;     // Supported by: number
 	password?: boolean;          // Supported by: string
 	rows?: number;               // Supported by: string
-	[key: string]: boolean | number | string | EditorTypes | undefined | string[];
+	[key: string]: boolean | number | string | EditorTypes | undefined;
 }
 
 export interface IDisplayOptions {
@@ -387,10 +357,6 @@ export interface IParameterDependencies {
 	[key: string]: string[];
 }
 
-export interface IPollResponse {
-	closeFunction?: () => Promise<void>;
-}
-
 export interface ITriggerResponse {
 	closeFunction?: () => Promise<void>;
 	// To manually trigger the run
@@ -404,7 +370,6 @@ export interface INodeType {
 	description: INodeTypeDescription;
 	execute?(this: IExecuteFunctions): Promise<INodeExecutionData[][] | null>;
 	executeSingle?(this: IExecuteSingleFunctions): Promise<INodeExecutionData>;
-	poll?(this: IPollFunctions): Promise<INodeExecutionData[][] | null>;
 	trigger?(this: ITriggerFunctions): Promise<ITriggerResponse | undefined>;
 	webhook?(this: IWebhookFunctions): Promise<IWebhookResponseData>;
 	hooks?: {
@@ -476,7 +441,6 @@ export interface INodeTypeDescription {
 	properties: INodeProperties[];
 	credentials?: INodeCredentialDescription[];
 	maxNodes?: number; // How many nodes of that type can be created in a workflow
-	polling?: boolean;
 	subtitle?: string;
 	hooks?: {
 		[key: string]: INodeHookDescription[] | undefined;
@@ -610,18 +574,6 @@ export interface IWaitingForExecution {
 }
 
 
-export interface IWorkflowBase {
-	id?: number | string | any; // tslint:disable-line:no-any
-	name: string;
-	active: boolean;
-	createdAt: Date;
-	updatedAt: Date;
-	nodes: INode[];
-	connections: IConnections;
-	settings?: IWorkflowSettings;
-	staticData?: IDataObject;
-}
-
 export interface IWorkflowCredentials {
 	// Credential type
 	[key: string]: {
@@ -629,7 +581,6 @@ export interface IWorkflowCredentials {
 		[key: string]: ICredentialsEncrypted;
 	};
 }
-
 
 export interface IWorkflowExecuteHooks {
 	[key: string]: Array<((...args: any[]) => Promise<void>)> | undefined; // tslint:disable-line:no-any
@@ -642,26 +593,16 @@ export interface IWorkflowExecuteHooks {
 export interface IWorkflowExecuteAdditionalData {
 	credentials: IWorkflowCredentials;
 	encryptionKey: string;
-	executeWorkflow: (workflowInfo: IExecuteWorkflowInfo, additionalData: IWorkflowExecuteAdditionalData, inputData?: INodeExecutionData[]) => Promise<any>; // tslint:disable-line:no-any
-	// hooks?: IWorkflowExecuteHooks;
-	hooks?: WorkflowHooks;
+	hooks?: IWorkflowExecuteHooks;
 	httpResponse?: express.Response;
 	httpRequest?: express.Request;
-	restApiUrl: string;
 	timezone: string;
 	webhookBaseUrl: string;
 	webhookTestBaseUrl: string;
 	currentNodeParameters? : INodeParameters[];
 }
 
-export type WorkflowExecuteMode = 'cli' | 'error' | 'integrated' | 'internal' | 'manual' | 'retry' | 'trigger' | 'webhook';
-
-export interface IWorkflowHooksOptionalParameters {
-	parentProcessMode?: string;
-	retryOf?: string;
-	sessionId?: string;
-}
-
+export type WorkflowExecuteMode = 'cli' | 'error' | 'internal' | 'manual' | 'retry' | 'trigger' | 'webhook';
 
 export interface IWorkflowSettings {
 	[key: string]: IDataObject | string | number | boolean | undefined;

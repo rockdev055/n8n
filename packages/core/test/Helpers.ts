@@ -1,7 +1,6 @@
 import { set } from 'lodash';
 
 import {
-	IExecuteWorkflowInfo,
 	INodeExecutionData,
 	INodeParameters,
 	INodeType,
@@ -9,9 +8,7 @@ import {
 	INodeTypeData,
 	IRun,
 	ITaskData,
-	IWorkflowBase,
 	IWorkflowExecuteAdditionalData,
-	WorkflowHooks,
 } from 'n8n-workflow';
 
 import {
@@ -251,33 +248,20 @@ export function NodeTypes(): NodeTypesClass {
 
 
 export function WorkflowExecuteAdditionalData(waitPromise: IDeferredPromise<IRun>, nodeExecutionOrder: string[]): IWorkflowExecuteAdditionalData {
-	const hookFunctions = {
-		nodeExecuteAfter: [
-			async (nodeName: string, data: ITaskData): Promise<void> => {
-				nodeExecutionOrder.push(nodeName);
-			},
-		],
-		workflowExecuteAfter: [
-			async (fullRunData: IRun): Promise<void> => {
-				waitPromise.resolve(fullRunData);
-			},
-		],
-	};
-
-	const workflowData: IWorkflowBase = {
-		name: '',
-		createdAt: new Date(),
-		updatedAt: new Date(),
-		active: true,
-		nodes: [],
-		connections: {},
-	};
-
 	return {
 		credentials: {},
-		hooks: new WorkflowHooks(hookFunctions, 'trigger', '1', workflowData),
-		executeWorkflow: async (workflowInfo: IExecuteWorkflowInfo): Promise<any> => {}, // tslint:disable-line:no-any
-		restApiUrl: '',
+		hooks: {
+			nodeExecuteAfter: [
+				async (nodeName: string, data: ITaskData): Promise<void> => {
+					nodeExecutionOrder.push(nodeName);
+				},
+			],
+			workflowExecuteAfter: [
+				async (fullRunData: IRun): Promise<void> => {
+					waitPromise.resolve(fullRunData);
+				},
+			],
+		},
 		encryptionKey: 'test',
 		timezone: 'America/New_York',
 		webhookBaseUrl: 'webhook',

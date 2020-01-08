@@ -5,7 +5,8 @@ import {
 } from "n8n-core";
 import { Command, flags } from '@oclif/command';
 const open = require('open');
-// import { dirname } from 'path';
+import { promisify } from 'util';
+import { dirname } from 'path';
 
 import * as config from '../config';
 import {
@@ -19,6 +20,7 @@ import {
 	TestWebhooks,
 } from "../src";
 
+const tunnel = promisify(localtunnel);
 
 // // Add support for internationalization
 // const fullIcuPath = require.resolve('full-icu');
@@ -149,7 +151,7 @@ export class Start extends Command {
 					const port = config.get('port') as number;
 
 					// @ts-ignore
-					const webhookTunnel = await localtunnel(port, tunnelSettings);
+					const webhookTunnel = await tunnel(port, tunnelSettings);
 
 					process.env.WEBHOOK_TUNNEL_URL = webhookTunnel.url + '/';
 					this.log(`Tunnel URL: ${process.env.WEBHOOK_TUNNEL_URL}\n`);
@@ -176,7 +178,7 @@ export class Start extends Command {
 						Start.openBrowser();
 					}
 					this.log(`\nPress "o" to open in Browser.`);
-					process.stdin.on("data", (key: string) => {
+					process.stdin.on("data", (key) => {
 						if (key === 'o') {
 							Start.openBrowser();
 							inputText = '';

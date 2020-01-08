@@ -69,37 +69,26 @@ export const nodeBase = mixins(nodeIndex).extend({
 	methods: {
 		__addNode (node: INodeUi) {
 			// TODO: Later move the node-connection definitions to a special file
-
-			let nodeTypeData = this.$store.getters.nodeType(node.type);
-
 			const nodeConnectors: IConnectionsUi = {
 				main: {
 					input: {
 						uuid: '-input',
 						maxConnections: -1,
 						endpoint: 'Rectangle',
-						endpointStyle: {
-							width: nodeTypeData && nodeTypeData.outputs.length > 2 ? 9 : 10,
-							height: nodeTypeData && nodeTypeData.outputs.length > 2 ? 18 : 24,
-							fill: '#777',
-							stroke: '#777',
-							lineWidth: 0,
-						},
+						endpointStyle: { width: 10, height: 24, fill: '#777', stroke: '#777', lineWidth: 0 },
 						dragAllowedWhenFull: true,
 					},
 					output: {
 						uuid: '-output',
 						maxConnections: -1,
 						endpoint: 'Dot',
-						endpointStyle: {
-							radius: nodeTypeData && nodeTypeData.outputs.length > 2 ? 7 : 11,
-							fill: '#555',
-							outlineStroke: 'none',
-						},
+						endpointStyle: { radius: 11, fill: '#555', outlineStroke: 'none' },
 						dragAllowedWhenFull: true,
 					},
 				},
 			};
+
+			let nodeTypeData = this.$store.getters.nodeType(node.type);
 
 			if (!nodeTypeData) {
 				// If node type is not know use by default the base.noOp data to display it
@@ -124,12 +113,6 @@ export const nodeBase = mixins(nodeIndex).extend({
 						[0, 0.5, -1, 0],
 						[0, 0.75, -1, 0],
 					],
-					4: [
-						[0, 0.2, -1, 0],
-						[0, 0.4, -1, 0],
-						[0, 0.6, -1, 0],
-						[0, 0.8, -1, 0],
-					],
 				},
 				output: {
 					1: [
@@ -143,12 +126,6 @@ export const nodeBase = mixins(nodeIndex).extend({
 						[1, 0.25, 1, 0],
 						[1, 0.5, 1, 0],
 						[1, 0.75, 1, 0],
-					],
-					4: [
-						[1, 0.2, 1, 0],
-						[1, 0.4, 1, 0],
-						[1, 0.6, 1, 0],
-						[1, 0.8, 1, 0],
 					],
 				},
 			};

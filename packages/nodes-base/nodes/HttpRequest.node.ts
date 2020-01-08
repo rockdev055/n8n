@@ -25,7 +25,6 @@ export class HttpRequest implements INodeType {
 		icon: 'fa:at',
 		group: ['input'],
 		version: 1,
-		subtitle: '={{$parameter["requestMethod"] + ": " + $parameter["url"]}}',
 		description: 'Makes a HTTP request and returns the received data',
 		defaults: {
 			name: 'HTTP Request',
@@ -540,7 +539,6 @@ export class HttpRequest implements INodeType {
 				headers: {},
 				method: requestMethod,
 				uri: url,
-				gzip: true,
 				rejectUnauthorized: !this.getNodeParameter('allowUnauthorizedCerts', itemIndex, false) as boolean,
 			};
 
@@ -639,14 +637,6 @@ export class HttpRequest implements INodeType {
 					pass: httpDigestAuth.password as string,
 					sendImmediately: false,
 				};
-			}
-
-			if (responseFormat === 'json') {
-				requestOptions.headers!['accept'] = 'application/json,text/*;q=0.99';
-			} else if (responseFormat === 'string') {
-				requestOptions.headers!['accept'] = 'application/json,text/html,application/xhtml+xml,application/xml,text/*;q=0.9, */*;q=0.1';
-			} else {
-				requestOptions.headers!['accept'] = 'application/json,text/html,application/xhtml+xml,application/xml,text/*;q=0.9, image/*;q=0.8, */*;q=0.7';
 			}
 
 			if (responseFormat === 'file') {

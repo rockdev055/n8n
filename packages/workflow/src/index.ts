@@ -1,7 +1,6 @@
 export * from './Interfaces';
 export * from './Workflow';
 export * from './WorkflowDataProxy';
-export * from './WorkflowHooks';
 
 import * as NodeHelpers from './NodeHelpers';
 import * as ObservableObject from './ObservableObject';

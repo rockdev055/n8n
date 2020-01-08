@@ -56,7 +56,6 @@ export const store = new Vuex.Store({
 		versionCli: '0.0.0',
 		workflowExecutionData: null as IExecutionResponse | null,
 		lastSelectedNode: null as string | null,
-		lastSelectedNodeOutputIndex: null as number | null,
 		nodeIndex: [] as Array<string | null>,
 		nodeTypes: [] as INodeTypeDescription[],
 		nodeViewOffsetPosition: [0, 0] as XYPositon,
@@ -502,10 +501,6 @@ export const store = new Vuex.Store({
 			state.lastSelectedNode = nodeName;
 		},
 
-		setLastSelectedNodeOutputIndex (state, outputIndex: number | null) {
-			state.lastSelectedNodeOutputIndex = outputIndex;
-		},
-
 		setWorkflowExecutionData (state, workflowResultData: IExecutionResponse | null) {
 			state.workflowExecutionData = workflowResultData;
 		},
@@ -716,9 +711,6 @@ export const store = new Vuex.Store({
 		},
 		lastSelectedNode: (state, getters): INodeUi | null => {
 			return getters.nodeByName(state.lastSelectedNode);
-		},
-		lastSelectedNodeOutputIndex: (state, getters): number | null => {
-			return state.lastSelectedNodeOutputIndex;
 		},
 
 		// Active Execution
