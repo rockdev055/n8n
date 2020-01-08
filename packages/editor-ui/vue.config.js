@@ -12,6 +12,7 @@ module.exports = {
 		},
 	},
 	configureWebpack: {
+		devtool: 'source-map',
 		plugins: [
 			new GoogleFontsPlugin({
 				fonts: [
@@ -23,7 +24,7 @@ module.exports = {
 	css: {
 		loaderOptions: {
 			sass: {
-				data: `
+				prependData: `
 					@import "@/n8n-theme-variables.scss";
 				`,
 			},

@@ -7,8 +7,12 @@ import {
 	getConnectionManager,
 } from 'typeorm';
 import * as bodyParser from 'body-parser';
+require('body-parser-xml')(bodyParser);
 import * as history from 'connect-history-api-fallback';
 import * as requestPromise from 'request-promise-native';
+import * as _ from 'lodash';
+import * as clientOAuth2 from 'client-oauth2';
+import * as csrf from 'csrf';
 
 import {
 	ActiveExecutions,
@@ -188,8 +192,8 @@ class App {
 				}
 
 				const jwkClient = jwks({ cache: true, jwksUri });
-				function getKey(header: any, callback: Function) {
-					jwkClient.getSigningKey(header.kid, (err: Error, key: any) => {
+				function getKey(header: any, callback: Function) { // tslint:disable-line:no-any
+					jwkClient.getSigningKey(header.kid, (err: Error, key: any) => { // tslint:disable-line:no-any
 						if (err) throw ResponseHelper.jwtAuthAuthorizationError(res, err.message);
 
 						const signingKey = key.publicKey || key.rsaPublicKey;
@@ -230,7 +234,18 @@ class App {
 		});
 
 		// Support application/json type post data
-		this.app.use(bodyParser.json({ limit: "16mb" }));
+		this.app.use(bodyParser.json({ limit: "16mb", verify: (req, res, buf) => {
+			// @ts-ignore
+			req.rawBody = buf;
+		}}));
+
+		// Support application/xml type post data
+		// @ts-ignore
+		this.app.use(bodyParser.xml({ limit: "16mb", xmlParseOptions: {
+			normalize: true,     // Trim whitespace inside text nodes
+			normalizeTags: true, // Transform tags to lowercase
+			explicitArray: false // Only put properties in array if length > 1
+		  } }));
 
 		// Make sure that Vue history mode works properly
 		this.app.use(history({
@@ -485,7 +500,7 @@ class App {
 			if (WorkflowHelpers.isWorkflowIdValid(workflowData.id) === true && (runData === undefined || startNodes === undefined || startNodes.length === 0 || destinationNode === undefined)) {
 				// Webhooks can only be tested with saved workflows
 				const credentials = await WorkflowCredentials(workflowData.nodes);
-				const additionalData = await WorkflowExecuteAdditionalData.getBase(executionMode, credentials);
+				const additionalData = await WorkflowExecuteAdditionalData.getBase(credentials);
 				const nodeTypes = NodeTypes();
 				const workflowInstance = new Workflow(workflowData.id, workflowData.nodes, workflowData.connections, false, nodeTypes, undefined, workflowData.settings);
 				const needsWebhook = await this.testWebhooks.needsWebhookData(workflowData, workflowInstance, additionalData, executionMode, sessionId, destinationNode);
@@ -532,13 +547,12 @@ class App {
 			const methodName = req.query.methodName;
 
 			const nodeTypes = NodeTypes();
-			const executionMode = 'manual';
 
 			const loadDataInstance = new LoadNodeParameterOptions(nodeType, nodeTypes, credentials);
 
 			const workflowData = loadDataInstance.getWorkflowData() as IWorkflowBase;
 			const workflowCredentials = await WorkflowCredentials(workflowData.nodes);
-			const additionalData = await WorkflowExecuteAdditionalData.getBase(executionMode, workflowCredentials, currentNodeParameters);
+			const additionalData = await WorkflowExecuteAdditionalData.getBase(workflowCredentials, currentNodeParameters);
 
 			return loadDataInstance.getOptions(methodName, additionalData);
 		}));
@@ -710,6 +724,8 @@ class App {
 
 			// Encrypt the data
 			const credentials = new Credentials(incomingData.name, incomingData.type, incomingData.nodesAccess);
+			_.unset(incomingData.data, 'csrfSecret');
+			_.unset(incomingData.data, 'oauthTokenData');
 			credentials.setData(incomingData.data, encryptionKey);
 			const newCredentialsData = credentials.getDataToSave() as unknown as ICredentialsDb;
 
@@ -829,7 +845,137 @@ class App {
 			return returnData;
 		}));
 
+		// ----------------------------------------
+		// OAuth2-Credential/Auth
+		// ----------------------------------------
 
+
+		// Returns all the credential types which are defined in the loaded n8n-modules
+		this.app.get('/rest/oauth2-credential/auth', ResponseHelper.send(async (req: express.Request, res: express.Response): Promise<string> => {
+			if (req.query.id === undefined) {
+				throw new Error('Required credential id is missing!');
+			}
+
+			const result = await Db.collections.Credentials!.findOne(req.query.id);
+			if (result === undefined) {
+				res.status(404).send('The credential is not known.');
+				return '';
+			}
+
+			let encryptionKey = undefined;
+			encryptionKey = await UserSettings.getEncryptionKey();
+			if (encryptionKey === undefined) {
+				throw new Error('No encryption key got found to decrypt the credentials!');
+			}
+
+			const credentials = new Credentials(result.name, result.type, result.nodesAccess, result.data);
+			(result as ICredentialsDecryptedDb).data = credentials.getData(encryptionKey!);
+			(result as ICredentialsDecryptedResponse).id = result.id.toString();
+
+			const oauthCredentials = (result as ICredentialsDecryptedDb).data;
+			if (oauthCredentials === undefined) {
+				throw new Error('Unable to read OAuth credentials');
+			}
+
+			let token = new csrf();
+			// Generate a CSRF prevention token and send it as a OAuth2 state stringma/ERR
+			oauthCredentials.csrfSecret = token.secretSync();
+			const state = {
+				'token': token.create(oauthCredentials.csrfSecret),
+				'cid': req.query.id
+			}
+			const stateEncodedStr = Buffer.from(JSON.stringify(state)).toString('base64') as string;
+
+			const oAuthObj = new clientOAuth2({
+				clientId: _.get(oauthCredentials, 'clientId') as string,
+				clientSecret: _.get(oauthCredentials, 'clientSecret', '') as string,
+				accessTokenUri: _.get(oauthCredentials, 'accessTokenUrl', '') as string,
+				authorizationUri: _.get(oauthCredentials, 'authUrl', '') as string,
+				redirectUri: _.get(oauthCredentials, 'callbackUrl', WebhookHelpers.getWebhookBaseUrl()) as string,
+				scopes: _.split(_.get(oauthCredentials, 'scope', 'openid,') as string, ','),
+				state: stateEncodedStr
+			});
+
+			credentials.setData(oauthCredentials, encryptionKey);
+			const newCredentialsData = credentials.getDataToSave() as unknown as ICredentialsDb;
+
+			// Add special database related data
+			newCredentialsData.updatedAt = this.getCurrentDate();
+
+			// Update the credentials in DB
+			await Db.collections.Credentials!.update(req.query.id, newCredentialsData);
+
+			return oAuthObj.code.getUri();
+		}));
+
+		// ----------------------------------------
+		// OAuth2-Credential/Callback
+		// ----------------------------------------
+
+		// Verify and store app code. Generate access tokens and store for respective credential.
+		this.app.get('/rest/oauth2-credential/callback', ResponseHelper.send(async (req: express.Request, res: express.Response): Promise<string> => {
+			const {code, state: stateEncoded} = req.query;
+			if (code === undefined || stateEncoded === undefined) {
+				throw new Error('Insufficient parameters for OAuth2 callback')
+			}
+
+			let state;
+			try {
+				state = JSON.parse(Buffer.from(stateEncoded, 'base64').toString());
+			} catch (error) {
+				throw new Error('Invalid state format returned');
+			}
+
+			const result = await Db.collections.Credentials!.findOne(state.cid);
+			if (result === undefined) {
+				res.status(404).send('The credential is not known.');
+				return '';
+			}
+
+			let encryptionKey = undefined;
+			encryptionKey = await UserSettings.getEncryptionKey();
+			if (encryptionKey === undefined) {
+				throw new Error('No encryption key got found to decrypt the credentials!');
+			}
+
+			const credentials = new Credentials(result.name, result.type, result.nodesAccess, result.data);
+			(result as ICredentialsDecryptedDb).data = credentials.getData(encryptionKey!);
+			const oauthCredentials = (result as ICredentialsDecryptedDb).data;
+			if (oauthCredentials === undefined) {
+				throw new Error('Unable to read OAuth credentials');
+			}
+
+			let token = new csrf();
+			if (oauthCredentials.csrfSecret === undefined || !token.verify(oauthCredentials.csrfSecret as string, state.token)) {
+				res.status(404).send('The OAuth2 callback state is invalid.');
+				return '';
+			}
+
+			const oAuthObj = new clientOAuth2({
+				clientId: _.get(oauthCredentials, 'clientId') as string,
+				clientSecret: _.get(oauthCredentials, 'clientSecret', '') as string,
+				accessTokenUri: _.get(oauthCredentials, 'accessTokenUrl', '') as string,
+				authorizationUri: _.get(oauthCredentials, 'authUrl', '') as string,
+				redirectUri: _.get(oauthCredentials, 'callbackUrl', WebhookHelpers.getWebhookBaseUrl()) as string,
+				scopes: _.split(_.get(oauthCredentials, 'scope', 'openid,') as string, ',')
+			});
+
+			const oauthToken = await oAuthObj.code.getToken(req.originalUrl);
+			if (oauthToken === undefined) {
+				throw new Error('Unable to get access tokens');
+			}
+
+			oauthCredentials.oauthTokenData = JSON.stringify(oauthToken.data);
+			_.unset(oauthCredentials, 'csrfSecret');
+			credentials.setData(oauthCredentials, encryptionKey);
+			const newCredentialsData = credentials.getDataToSave() as unknown as ICredentialsDb;
+			// Add special database related data
+			newCredentialsData.updatedAt = this.getCurrentDate();
+			// Save the credentials in DB
+			await Db.collections.Credentials!.update(state.cid, newCredentialsData);
+
+			return 'Success!';
+		}));
 
 		// ----------------------------------------
 		// Executions
@@ -850,8 +996,8 @@ class App {
 			}
 
 			const countFilter = JSON.parse(JSON.stringify(filter));
-			if (req.query.lastStartedAt) {
-				filter.startedAt = LessThan(req.query.lastStartedAt);
+			if (req.query.lastId) {
+				filter.id = LessThan(req.query.lastId);
 			}
 			countFilter.select = ['id'];
 
@@ -868,7 +1014,7 @@ class App {
 				],
 				where: filter,
 				order: {
-					startedAt: "DESC",
+					id: 'DESC',
 				},
 				take: limit,
 			});
@@ -944,6 +1090,18 @@ class App {
 				retryOf: req.params.id,
 				workflowData: fullExecutionData.workflowData,
 			};
+
+			if (req.body.loadWorkflow === true) {
+				// Loads the currently saved workflow to execute instead of the
+				// one saved at the time of the execution.
+				const workflowId = fullExecutionData.workflowData.id;
+				data.workflowData = await Db.collections.Workflow!.findOne(workflowId) as IWorkflowBase;
+
+				if (data.workflowData === undefined) {
+					throw new Error(`The workflow with the ID "${workflowId}" could not be found and so the data not be loaded for the retry.`);
+				}
+			}
+
 			const workflowRunner = new WorkflowRunner();
 			const executionId = await workflowRunner.run(data);
 
