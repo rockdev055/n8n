@@ -86,16 +86,6 @@ export class Mattermost implements INodeType {
 						description: 'Create a new channel',
 					},
 					{
-						name: 'Delete',
-						value: 'delete',
-						description: 'Soft-deletes a channel',
-					},
-					{
-						name: 'Restore',
-						value: 'restore',
-						description: 'Restores a soft-deleted channel',
-					},
-					{
 						name: 'Statistics',
 						value: 'statistics',
 						description: 'Get statistics for a channel.',
@@ -230,56 +220,6 @@ export class Mattermost implements INodeType {
 
 
 			// ----------------------------------
-			//         channel:delete
-			// ----------------------------------
-			{
-				displayName: 'Channel ID',
-				name: 'channelId',
-				type: 'options',
-				typeOptions: {
-					loadOptionsMethod: 'getChannels',
-				},
-				options: [],
-				default: '',
-				required: true,
-				displayOptions: {
-					show: {
-						operation: [
-							'delete'
-						],
-						resource: [
-							'channel',
-						],
-					},
-				},
-				description: 'The ID of the channel to soft-delete.',
-			},
-
-
-			// ----------------------------------
-			//         channel:restore
-			// ----------------------------------
-			{
-				displayName: 'Channel ID',
-				name: 'channelId',
-				type: 'string',
-				default: '',
-				required: true,
-				displayOptions: {
-					show: {
-						operation: [
-							'restore'
-						],
-						resource: [
-							'channel',
-						],
-					},
-				},
-				description: 'The ID of the channel to restore.',
-			},
-
-
-			// ----------------------------------
 			//         channel:addUser
 			// ----------------------------------
 			{
@@ -326,8 +266,6 @@ export class Mattermost implements INodeType {
 				},
 				description: 'The ID of the user to invite into channel.',
 			},
-
-
 			// ----------------------------------
 			//         channel:statistics
 			// ----------------------------------
@@ -691,7 +629,8 @@ export class Mattermost implements INodeType {
 
 	methods = {
 		loadOptions: {
-			// Get all the available channels
+			// Get all the available workspaces to display them to user so that he can
+			// select them easily
 			async getChannels(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
 				const endpoint = 'channels';
 				const responseData = await apiRequest.call(this, 'GET', endpoint, {});
@@ -814,24 +753,6 @@ export class Mattermost implements INodeType {
 
 					const type = this.getNodeParameter('type', i) as string;
 					body.type = type === 'public' ? 'O' : 'P';
-
-				} else if (operation === 'delete') {
-					// ----------------------------------
-					//         channel:delete
-					// ----------------------------------
-
-					requestMethod = 'DELETE';
-					const channelId = this.getNodeParameter('channelId', i) as string;
-					endpoint = `channels/${channelId}`;
-
-				} else if (operation === 'restore') {
-					// ----------------------------------
-					//         channel:restore
-					// ----------------------------------
-
-					requestMethod = 'POST';
-					const channelId = this.getNodeParameter('channelId', i) as string;
-					endpoint = `channels/${channelId}/restore`;
 
 				} else if (operation === 'addUser') {
 					// ----------------------------------
