@@ -2,8 +2,6 @@ import { Workflow } from './Workflow';
 import { WorkflowHooks } from './WorkflowHooks';
 import * as express from 'express';
 
-export type IAllExecuteFunctions = IExecuteFunctions | IExecuteSingleFunctions | IHookFunctions | ILoadOptionsFunctions | IPollFunctions | ITriggerFunctions | IWebhookFunctions;
-
 export interface IBinaryData {
 	[key: string]: string | undefined;
 	data: string;
@@ -60,7 +58,6 @@ export interface ICredentialsEncrypted {
 export interface ICredentialType {
 	name: string;
 	displayName: string;
-	extends?: string[];
 	properties: INodeProperties[];
 }
 
@@ -81,7 +78,7 @@ export interface ICredentialData {
 }
 
 // The encrypted credentials which the nodes can access
-export type CredentialInformation = string | number | boolean | IDataObject;
+export type CredentialInformation = string | number | boolean;
 
 
 // The encrypted credentials which the nodes can access
@@ -652,7 +649,6 @@ export interface IWorkflowExecuteAdditionalData {
 	httpRequest?: express.Request;
 	restApiUrl: string;
 	timezone: string;
-	updateCredentials: (name: string, type: string, data: ICredentialDataDecryptedObject, encryptionKey: string) => Promise<void>;
 	webhookBaseUrl: string;
 	webhookTestBaseUrl: string;
 	currentNodeParameters? : INodeParameters[];

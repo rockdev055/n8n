@@ -2,7 +2,6 @@ import * as express from 'express';
 import {
 	dirname as pathDirname,
 	join as pathJoin,
-	resolve as pathResolve,
 } from 'path';
 import {
 	getConnectionManager,
@@ -11,9 +10,6 @@ import * as bodyParser from 'body-parser';
 require('body-parser-xml')(bodyParser);
 import * as history from 'connect-history-api-fallback';
 import * as requestPromise from 'request-promise-native';
-import * as _ from 'lodash';
-import * as clientOAuth2 from 'client-oauth2';
-import * as csrf from 'csrf';
 
 import {
 	ActiveExecutions,
@@ -658,6 +654,10 @@ class App {
 				throw new Error('No encryption key got found to encrypt the credentials!');
 			}
 
+			if (incomingData.name === '') {
+				throw new Error('Credentials have to have a name set!');
+			}
+
 			// Check if credentials with the same name and type exist already
 			const findQuery = {
 				where: {
@@ -697,6 +697,10 @@ class App {
 
 			const id = req.params.id;
 
+			if (incomingData.name === '') {
+				throw new Error('Credentials have to have a name set!');
+			}
+
 			// Add the date for newly added node access permissions
 			for (const nodeAccess of incomingData.nodesAccess) {
 				if (!nodeAccess.date) {
@@ -725,8 +729,6 @@ class App {
 
 			// Encrypt the data
 			const credentials = new Credentials(incomingData.name, incomingData.type, incomingData.nodesAccess);
-			_.unset(incomingData.data, 'csrfSecret');
-			_.unset(incomingData.data, 'oauthTokenData');
 			credentials.setData(incomingData.data, encryptionKey);
 			const newCredentialsData = credentials.getDataToSave() as unknown as ICredentialsDb;
 
@@ -758,7 +760,11 @@ class App {
 			const findQuery = {} as FindManyOptions;
 
 			// Make sure the variable has an expected value
-			req.query.includeData = (req.query.includeData === 'true' || req.query.includeData === true);
+			if (req.query.includeData === 'true') {
+				req.query.includeData = true;
+			} else {
+				req.query.includeData = false;
+			}
 
 			if (req.query.includeData !== true) {
 				// Return only the fields we need
@@ -842,143 +848,6 @@ class App {
 			return returnData;
 		}));
 
-		// ----------------------------------------
-		// OAuth2-Credential/Auth
-		// ----------------------------------------
-
-
-		// Authorize OAuth Data
-		this.app.get('/rest/oauth2-credential/auth', ResponseHelper.send(async (req: express.Request, res: express.Response): Promise<string> => {
-			if (req.query.id === undefined) {
-				throw new Error('Required credential id is missing!');
-			}
-
-			const result = await Db.collections.Credentials!.findOne(req.query.id);
-			if (result === undefined) {
-				res.status(404).send('The credential is not known.');
-				return '';
-			}
-
-			let encryptionKey = undefined;
-			encryptionKey = await UserSettings.getEncryptionKey();
-			if (encryptionKey === undefined) {
-				throw new Error('No encryption key got found to decrypt the credentials!');
-			}
-
-			const credentials = new Credentials(result.name, result.type, result.nodesAccess, result.data);
-			(result as ICredentialsDecryptedDb).data = credentials.getData(encryptionKey!);
-			(result as ICredentialsDecryptedResponse).id = result.id.toString();
-
-			const oauthCredentials = (result as ICredentialsDecryptedDb).data;
-			if (oauthCredentials === undefined) {
-				throw new Error('Unable to read OAuth credentials');
-			}
-
-			const token = new csrf();
-			// Generate a CSRF prevention token and send it as a OAuth2 state stringma/ERR
-			oauthCredentials.csrfSecret = token.secretSync();
-			const state = {
-				token: token.create(oauthCredentials.csrfSecret),
-				cid: req.query.id
-			};
-			const stateEncodedStr = Buffer.from(JSON.stringify(state)).toString('base64') as string;
-
-			const oAuthObj = new clientOAuth2({
-				clientId: _.get(oauthCredentials, 'clientId') as string,
-				clientSecret: _.get(oauthCredentials, 'clientSecret', '') as string,
-				accessTokenUri: _.get(oauthCredentials, 'accessTokenUrl', '') as string,
-				authorizationUri: _.get(oauthCredentials, 'authUrl', '') as string,
-				redirectUri: `${WebhookHelpers.getWebhookBaseUrl()}rest/oauth2-credential/callback`,
-				scopes: _.split(_.get(oauthCredentials, 'scope', 'openid,') as string, ','),
-				state: stateEncodedStr,
-			});
-
-			credentials.setData(oauthCredentials, encryptionKey);
-			const newCredentialsData = credentials.getDataToSave() as unknown as ICredentialsDb;
-
-			// Add special database related data
-			newCredentialsData.updatedAt = this.getCurrentDate();
-
-			// Update the credentials in DB
-			await Db.collections.Credentials!.update(req.query.id, newCredentialsData);
-
-			return oAuthObj.code.getUri();
-		}));
-
-		// ----------------------------------------
-		// OAuth2-Credential/Callback
-		// ----------------------------------------
-
-		// Verify and store app code. Generate access tokens and store for respective credential.
-		this.app.get('/rest/oauth2-credential/callback', async (req: express.Request, res: express.Response) => {
-			const {code, state: stateEncoded} = req.query;
-
-			if (code === undefined || stateEncoded === undefined) {
-				throw new Error('Insufficient parameters for OAuth2 callback');
-			}
-
-			let state;
-			try {
-				state = JSON.parse(Buffer.from(stateEncoded, 'base64').toString());
-			} catch (error) {
-				const errorResponse = new ResponseHelper.ResponseError('Invalid state format returned', undefined, 503);
-				return ResponseHelper.sendErrorResponse(res, errorResponse);
-			}
-
-			const result = await Db.collections.Credentials!.findOne(state.cid);
-			if (result === undefined) {
-				const errorResponse = new ResponseHelper.ResponseError('The credential is not known.', undefined, 404);
-				return ResponseHelper.sendErrorResponse(res, errorResponse);
-			}
-
-			let encryptionKey = undefined;
-			encryptionKey = await UserSettings.getEncryptionKey();
-			if (encryptionKey === undefined) {
-				const errorResponse = new ResponseHelper.ResponseError('No encryption key got found to decrypt the credentials!', undefined, 503);
-				return ResponseHelper.sendErrorResponse(res, errorResponse);
-			}
-
-			const credentials = new Credentials(result.name, result.type, result.nodesAccess, result.data);
-			(result as ICredentialsDecryptedDb).data = credentials.getData(encryptionKey!);
-			const oauthCredentials = (result as ICredentialsDecryptedDb).data;
-			if (oauthCredentials === undefined) {
-				const errorResponse = new ResponseHelper.ResponseError('Unable to read OAuth credentials!', undefined, 503);
-				return ResponseHelper.sendErrorResponse(res, errorResponse);
-			}
-
-			const token = new csrf();
-			if (oauthCredentials.csrfSecret === undefined || !token.verify(oauthCredentials.csrfSecret as string, state.token)) {
-				const errorResponse = new ResponseHelper.ResponseError('The OAuth2 callback state is invalid!', undefined, 404);
-				return ResponseHelper.sendErrorResponse(res, errorResponse);
-			}
-
-			const oAuthObj = new clientOAuth2({
-				clientId: _.get(oauthCredentials, 'clientId') as string,
-				clientSecret: _.get(oauthCredentials, 'clientSecret', '') as string,
-				accessTokenUri: _.get(oauthCredentials, 'accessTokenUrl', '') as string,
-				authorizationUri: _.get(oauthCredentials, 'authUrl', '') as string,
-				redirectUri: `${WebhookHelpers.getWebhookBaseUrl()}rest/oauth2-credential/callback`,
-				scopes: _.split(_.get(oauthCredentials, 'scope', 'openid,') as string, ',')
-			});
-
-			const oauthToken = await oAuthObj.code.getToken(req.originalUrl);
-
-			if (oauthToken === undefined) {
-				const errorResponse = new ResponseHelper.ResponseError('Unable to get access tokens!', undefined, 404);
-				return ResponseHelper.sendErrorResponse(res, errorResponse);
-			}
-
-			oauthCredentials.oauthTokenData = JSON.stringify(oauthToken.data);
-			_.unset(oauthCredentials, 'csrfSecret');
-			credentials.setData(oauthCredentials, encryptionKey);
-			const newCredentialsData = credentials.getDataToSave() as unknown as ICredentialsDb;
-			// Add special database related data
-			newCredentialsData.updatedAt = this.getCurrentDate();
-			// Save the credentials in DB
-			await Db.collections.Credentials!.update(state.cid, newCredentialsData);
-
-			res.sendFile(pathResolve('templates/oauth-callback.html'));
-		});
 
 
 		// ----------------------------------------
