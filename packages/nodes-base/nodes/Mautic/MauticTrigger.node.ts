@@ -1,4 +1,8 @@
 import {
+	parse as urlParse,
+} from 'url';
+
+import {
 	IHookFunctions,
 	IWebhookFunctions,
 } from 'n8n-core';
@@ -13,27 +17,26 @@ import {
 } from 'n8n-workflow';
 
 import {
-	activeCampaignApiRequest,
-	activeCampaignApiRequestAllItems,
+	mauticApiRequest,
 } from './GenericFunctions';
 
-export class ActiveCampaignTrigger implements INodeType {
+export class MauticTrigger implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'Active Campaign Trigger',
-		name: 'activeCampaignTrigger',
-		icon: 'file:activeCampaign.png',
+		displayName: 'Mautic Trigger',
+		name: 'mauticTrigger',
+		icon: 'file:mautic.png',
 		group: ['trigger'],
 		version: 1,
-		description: 'Handle Active Campaign events via webhooks',
+		description: 'Handle Mautic events via webhooks',
 		defaults: {
-			name: 'ActiveCampaign Trigger',
-			color: '#356ae6',
+			name: 'Mautic Trigger',
+			color: '#52619b',
 		},
 		inputs: [],
 		outputs: ['main'],
 		credentials: [
 			{
-				name: 'activeCampaignApi',
+				name: 'mauticApi',
 				required: true,
 			}
 		],
@@ -50,39 +53,27 @@ export class ActiveCampaignTrigger implements INodeType {
 				displayName: 'Events',
 				name: 'events',
 				type: 'multiOptions',
+				required: true,
 				typeOptions: {
 					loadOptionsMethod: 'getEvents',
 				},
 				default: [],
-				options: [],
-			},
-			{
-				displayName: 'Source',
-				name: 'sources',
-				type: 'multiOptions',
+			},	{
+				displayName: 'Events Order',
+				name: 'eventsOrder',
+				type: 'options',
+				default: '',
 				options: [
 					{
-						name: 'Public',
-						value: 'public',
-						description: 'Run the hooks when a contact triggers the action',
+						name: 'Asc',
+						value: 'ASC',
 					},
 					{
-						name: 'Admin',
-						value: 'admin',
-						description: 'Run the hooks when an admin user triggers the action',
-					},
-					{
-						name: 'Api',
-						value: 'api',
-						description: 'Run the hooks when an API call triggers the action',
-					},
-					{
-						name: 'System',
-						value: 'system',
-						description: 'Run the hooks when automated systems triggers the action',
+						name: 'Desc',
+						value: 'DESC',
 					},
 				],
-				default: [],
+				description: 'Order direction for queued events in one webhook. Can be “DESC” or “ASC”',
 			},
 		],
 	};
@@ -92,13 +83,15 @@ export class ActiveCampaignTrigger implements INodeType {
 			// select them easily
 			async getEvents(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
 				const returnData: INodePropertyOptions[] = [];
-				const events = await activeCampaignApiRequestAllItems.call(this, 'GET', '/api/3/webhook/events', {}, {}, 'webhookEvents');
-				for (const event of events) {
-					const eventName = event;
-					const eventId = event;
+				const { triggers } = await mauticApiRequest.call(this, 'GET', '/hooks/triggers');
+				for (const [key, value] of Object.entries(triggers)) {
+					const eventId = key;
+					const eventName = (value as IDataObject).label as string;
+					const eventDecription = (value as IDataObject).description as string;
 					returnData.push({
 						name: eventName,
 						value: eventId,
+						description: eventDecription,
 					});
 				}
 				return returnData;
@@ -113,9 +106,9 @@ export class ActiveCampaignTrigger implements INodeType {
 				if (webhookData.webhookId === undefined) {
 					return false;
 				}
-				const endpoint = `/api/3/webhooks/${webhookData.webhookId}`;
+				const endpoint = `/hooks/${webhookData.webhookId}`;
 				try {
-					await activeCampaignApiRequest.call(this, 'GET', endpoint, {});
+					await mauticApiRequest.call(this, 'GET', endpoint, {});
 				} catch (e) {
 					return false;
 				}
@@ -125,23 +118,24 @@ export class ActiveCampaignTrigger implements INodeType {
 				const webhookUrl = this.getNodeWebhookUrl('default') as string;
 				const webhookData = this.getWorkflowStaticData('node');
 				const events = this.getNodeParameter('events', 0) as string[];
-				const sources = this.getNodeParameter('sources', 0) as string[];
+				const eventsOrder = this.getNodeParameter('eventsOrder', 0) as string;
+				const urlParts = urlParse(webhookUrl);
 				const body: IDataObject = {
-					webhook: {
-						name: `n8n-webhook:${webhookUrl}`,
-						url: webhookUrl,
-						events,
-						sources,
-					}
+					name: `n8n-webhook:${urlParts.path}`,
+					description: `n8n webhook`,
+					webhookUrl: webhookUrl,
+					triggers: events,
+					eventsOrderbyDir: eventsOrder,
+					isPublished: true,
 				}
-				const { webhook } = await activeCampaignApiRequest.call(this, 'POST', '/api/3/webhooks', body);
-				webhookData.webhookId = webhook.id;
+				const { hook } = await mauticApiRequest.call(this, 'POST', '/hooks/new', body);
+				webhookData.webhookId = hook.id;
 				return true;
 			},
 			async delete(this: IHookFunctions): Promise<boolean> {
 				const webhookData = this.getWorkflowStaticData('node');
 				try {
-					await activeCampaignApiRequest.call(this, 'DELETE', `/api/3/webhooks/${webhookData.webhookId}`, {});
+					await mauticApiRequest.call(this, 'DELETE', `/hooks/${webhookData.webhookId}/delete`);
 				} catch(error) {
 					return false;
 				}
