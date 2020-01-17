@@ -1,6 +1,6 @@
 {
     "name": "n8n-nodes-base",
-    "version": "0.41.1",
+    "version": "0.42.1",
     "description": "Base nodes of n8n",
     "license": "SEE LICENSE IN LICENSE.md",
     "homepage": "https://n8n.io",
@@ -42,6 +42,7 @@
             "dist/credentials/GithubApi.credentials.js",
             "dist/credentials/GitlabApi.credentials.js",
             "dist/credentials/GoogleApi.credentials.js",
+            "dist/credentials/GumroadApi.credentials.js",
             "dist/credentials/HttpBasicAuth.credentials.js",
             "dist/credentials/HttpDigestAuth.credentials.js",
             "dist/credentials/HttpHeaderAuth.credentials.js",
@@ -80,6 +81,7 @@
             "dist/credentials/TogglApi.credentials.js",
             "dist/credentials/VeroApi.credentials.js",
             "dist/credentials/WordpressApi.credentials.js",
+            "dist/credentials/WebflowApi.credentials.js",
             "dist/credentials/ZendeskApi.credentials.js"
         ],
         "nodes": [
@@ -119,6 +121,7 @@
             "dist/nodes/Google/GoogleDrive.node.js",
             "dist/nodes/Google/GoogleSheets.node.js",
             "dist/nodes/GraphQL/GraphQL.node.js",
+            "dist/nodes/Gumroad/GumroadTrigger.node.js",
             "dist/nodes/HtmlExtract/HtmlExtract.node.js",
             "dist/nodes/HttpRequest.node.js",
             "dist/nodes/Hubspot/Hubspot.node.js",
@@ -176,6 +179,7 @@
             "dist/nodes/WriteBinaryFile.node.js",
             "dist/nodes/Webhook.node.js",
             "dist/nodes/Wordpress/Wordpress.node.js",
+            "dist/nodes/Webflow/WebflowTrigger.node.js",
             "dist/nodes/Xml.node.js",
             "dist/nodes/Zendesk/ZendeskTrigger.node.js",
             "dist/nodes/Zendesk/Zendesk.node.js"
@@ -208,7 +212,7 @@
     "dependencies": {
         "aws4": "^1.8.0",
         "basic-auth": "^2.0.1",
-        "camel-case": "^4.1.1",
+        "change-case": "^4.1.1",
         "cheerio": "^1.0.0-rc.3",
         "cron": "^1.7.2",
         "eventsource": "^1.0.7",
