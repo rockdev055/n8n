@@ -656,8 +656,8 @@ export class Mattermost implements INodeType {
 				},
 				options: [
 					{
-						name: 'Deactive',
-						value: 'deactive',
+						name: 'Desactive',
+						value: 'desactive',
 						description: 'Deactivates the user and revokes all its sessions by archiving its user object.',
 					},
 				],
@@ -665,7 +665,7 @@ export class Mattermost implements INodeType {
 				description: 'The operation to perform.',
 			},
 			// ----------------------------------
-			//         user:deactivate
+			//         user:desactivate
 			// ----------------------------------
 			{
 				displayName: 'User ID',
@@ -678,7 +678,7 @@ export class Mattermost implements INodeType {
 							'user',
 						],
 						operation: [
-							'deactive',
+							'desactive',
 						],
 					},
 				},

@@ -50,7 +50,11 @@ export class Trello implements INodeType {
 					{
 						name: 'List',
 						value: 'list',
-					},
+          },
+          {
+            name: "Attachment",
+            value: "attachment"
+          }
 				],
 				default: 'card',
 				description: 'The resource to operate on.',
@@ -544,10 +548,119 @@ export class Trello implements INodeType {
 						name: 'Update',
 						value: 'update',
 						description: 'Update a card',
+          },
+          {
+						name: 'AttachmentList',
+						value: 'attachmentList',
+						description: 'List all attachments',
 					},
 				],
 				default: 'create',
 				description: 'The operation to perform.',
+      },
+
+      			// ----------------------------------
+			//         card:attachmentList
+			// ----------------------------------
+			{
+				displayName: 'Card ID',
+				name: 'id',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						operation: [
+							'attachmentList',
+						],
+						resource: [
+							'card',
+						],
+					},
+				},
+				description: 'The ID of the card to get.',
+			},
+			{
+				displayName: 'Additional Fields',
+				name: 'additionalFields',
+				type: 'collection',
+				placeholder: 'Add Field',
+				displayOptions: {
+					show: {
+						operation: [
+							'attachmentList',
+						],
+						resource: [
+							'card',
+						],
+					},
+				},
+				default: {},
+				options: [
+					{
+						displayName: 'Fields',
+						name: 'fields',
+						type: 'string',
+						default: 'all',
+						description: 'Fields to return. Either "all" or a comma-separated list:<br />badges, checkItemStates, closed, dateLastActivity, desc,<br />descData, due, email, idBoard, idChecklists, idLabels, idList,<br />idMembers, idShort, idAttachmentCover, manualCoverAttachment<br />, labels, name, pos, shortUrl, url',
+					},
+					{
+						displayName: 'Board',
+						name: 'board',
+						type: 'boolean',
+						default: false,
+						description: 'Whether to return the board object the card is on.',
+					},
+					{
+						displayName: 'Board Fields',
+						name: 'board_fields',
+						type: 'string',
+						default: 'all',
+						description: 'Fields to return. Either "all" or a comma-separated list:<br />name, desc, descData, closed, idOrganization, pinned, url, prefs',
+					},
+					{
+						displayName: 'Custom Field Items',
+						name: 'customFieldItems',
+						type: 'boolean',
+						default: false,
+						description: 'Whether to include the customFieldItems.',
+					},
+					{
+						displayName: 'Members',
+						name: 'members',
+						type: 'boolean',
+						default: false,
+						description: 'Whether to return member objects for members on the card.',
+					},
+					{
+						displayName: 'Member Fields',
+						name: 'member_fields',
+						type: 'string',
+						default: 'all',
+						description: 'Fields to return. Either "all" or a comma-separated list:<br />avatarHash, fullName, initials, username',
+					},
+					{
+						displayName: 'Plugin Data',
+						name: 'pluginData',
+						type: 'boolean',
+						default: false,
+						description: 'Whether to include pluginData on the card with the response.',
+					},
+					{
+						displayName: 'Stickers',
+						name: 'stickers',
+						type: 'boolean',
+						default: false,
+						description: 'Whether to include sticker models with the response.',
+					},
+					{
+						displayName: 'Sticker Fields',
+						name: 'sticker_fields',
+						type: 'string',
+						default: 'all',
+						description: 'Fields to return. Either "all" or a comma-separated list of sticker fields.',
+					},
+				],
 			},
 
 			// ----------------------------------
@@ -1211,6 +1324,274 @@ export class Trello implements INodeType {
 						description: 'Whether the acting user is subscribed to the list.',
 					},
 				],
+      },
+
+      // ----------------------------------
+			//         attachment
+      // ----------------------------------
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				displayOptions: {
+					show: {
+						resource: [
+							'attachment',
+						],
+					},
+				},
+				options: [
+          {
+						name: 'Create',
+						value: 'create',
+						description: 'Create a new board',
+					},
+					{
+						name: 'Delete',
+						value: 'delete',
+						description: 'Delete a board',
+					},
+          {
+						name: 'Get',
+						value: 'get',
+						description: 'Get the data of an attachments',
+					},
+          {
+						name: 'List',
+						value: 'list',
+						description: 'List all attachments for the card',
+          }
+				],
+				default: 'list',
+				description: 'The operation to perform.',
+      },
+
+      // ----------------------------------
+			//         attachment:create
+			// ----------------------------------
+			{
+				displayName: 'Card ID',
+				name: 'cardId',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						operation: [
+							'create',
+						],
+						resource: [
+							'attachment',
+						],
+					},
+				},
+				description: 'The ID of the Card to get attachment.',
+      },
+      {
+				displayName: 'Attachment URL',
+				name: 'url',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						operation: [
+							'create',
+						],
+						resource: [
+							'attachment',
+						],
+					},
+				},
+				description: 'The ID of the attachment to get.',
+      },
+      {
+				displayName: 'Attachment Name',
+				name: 'name',
+				type: 'string',
+				default: '',
+				displayOptions: {
+					show: {
+						operation: [
+							'create',
+						],
+						resource: [
+							'attachment',
+						],
+					},
+				},
+				description: 'The ID of the attachment to get.',
+      },
+      {
+				displayName: 'Attachment mimeType',
+				name: 'mimeType',
+				type: 'string',
+				default: '',
+				displayOptions: {
+					show: {
+						operation: [
+							'create',
+						],
+						resource: [
+							'attachment',
+						],
+					},
+				},
+				description: 'The ID of the attachment to get.',
+      },
+
+      // ----------------------------------
+			//         attachment:delete
+      // ----------------------------------
+      {
+				displayName: 'Card ID',
+				name: 'cardId',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						operation: [
+							'delete',
+						],
+						resource: [
+							'attachment',
+						],
+					},
+				},
+				description: 'The ID of the Card to get attachments.',
+      },
+      {
+				displayName: 'Attachment ID',
+				name: 'id',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						operation: [
+							'delete',
+						],
+						resource: [
+							'attachment',
+						],
+					},
+				},
+				description: 'The ID of the attachment to get.',
+      },
+
+      // ----------------------------------
+			//         attachment:list
+			// ----------------------------------
+			{
+				displayName: 'Card ID',
+				name: 'cardId',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						operation: [
+							'list',
+						],
+						resource: [
+							'attachment',
+						],
+					},
+				},
+				description: 'The ID of the Card to get attachments.',
+      },
+      {
+				displayName: 'Additional Fields',
+				name: 'additionalFields',
+				type: 'collection',
+				placeholder: 'Add Field',
+				displayOptions: {
+					show: {
+						operation: [
+							'list',
+						],
+						resource: [
+							'attachment',
+						],
+					},
+				},
+				default: {},
+				options: [
+					{
+						displayName: 'Fields',
+						name: 'fields',
+						type: 'string',
+						default: 'all',
+						description: 'Fields to return. Either "all" or a comma-separated list of fields.',
+					},
+				],
+      },
+
+      // ----------------------------------
+			//         attachment:get
+			// ----------------------------------
+			{
+				displayName: 'Card ID',
+				name: 'cardId',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						operation: [
+							'get',
+						],
+						resource: [
+							'attachment',
+						],
+					},
+				},
+				description: 'The ID of the Card to get attachment.',
+      },
+      {
+				displayName: 'Attachment ID',
+				name: 'id',
+				type: 'string',
+				default: '',
+				required: true,
+				displayOptions: {
+					show: {
+						operation: [
+							'get',
+						],
+						resource: [
+							'attachment',
+						],
+					},
+				},
+				description: 'The ID of the attachment to get.',
+      },
+      {
+				displayName: 'Additional Fields',
+				name: 'additionalFields',
+				type: 'collection',
+				placeholder: 'Add Field',
+				displayOptions: {
+					show: {
+						operation: [
+							'get',
+						],
+						resource: [
+							'attachment',
+						],
+					},
+				},
+				default: {},
+				options: [
+					{
+						displayName: 'Fields',
+						name: 'fields',
+						type: 'string',
+						default: 'all',
+						description: 'Fields to return. Either "all" or a comma-separated list of fields.',
+					},
+				],
 			},
 
 		],
@@ -1420,7 +1801,70 @@ export class Trello implements INodeType {
 					throw new Error(`The operation "${operation}" is not known!`);
 				}
 
-			} else {
+      } else if (resource === 'attachment') {
+
+        if (operation === 'create') {
+          // ----------------------------------
+          //         create
+          // ----------------------------------
+          requestMethod = 'POST';
+
+          const cardId = this.getNodeParameter('cardId', i) as string;
+          const name = this.getNodeParameter('name', i) as string;
+          const url = this.getNodeParameter('url', i) as string;
+          const mimeType = this.getNodeParameter('mimeType', i) as string;
+
+          endpoint = `cards/${cardId}/attachments`;
+
+          Object.assign(qs, {
+            name,
+            mimeType,
+            url
+          });
+
+        } else if (operation === 'delete') {
+          // ----------------------------------
+          //         delete
+          // ----------------------------------
+          requestMethod = 'DELETE';
+
+          const cardId = this.getNodeParameter('cardId', i) as string;
+          const id = this.getNodeParameter('id', i) as string;
+
+          endpoint = `cards/${cardId}/attachments/${id}`;
+
+        } else if (operation === 'get') {
+					// ----------------------------------
+					//         get
+					// ----------------------------------
+
+					requestMethod = 'GET';
+
+          const cardId = this.getNodeParameter('cardId', i) as string;
+          const id = this.getNodeParameter('id', i) as string;
+
+          endpoint = `cards/${cardId}/attachments/${id}`;
+
+          const additionalFields = this.getNodeParameter('additionalFields', i) as IDataObject;
+          Object.assign(qs, additionalFields);
+
+				} else if (operation === 'list') {
+          // ----------------------------------
+          //         list
+          // ----------------------------------
+
+          requestMethod = 'GET';
+
+          const cardId = this.getNodeParameter('cardId', i) as string;
+
+          endpoint = `cards/${cardId}/attachments`;
+
+          const additionalFields = this.getNodeParameter('additionalFields', i) as IDataObject;
+          Object.assign(qs, additionalFields);
+        } else {
+          throw new Error(`The operation "${operation}" is not known!`);
+        }
+      } else {
 				throw new Error(`The resource "${resource}" is not known!`);
 			}
 
