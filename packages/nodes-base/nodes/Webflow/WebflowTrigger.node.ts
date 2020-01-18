@@ -19,7 +19,7 @@ import {
 export class WebflowTrigger implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Webflow Trigger',
-		name: 'webflowTrigger',
+		name: 'webflow',
 		icon: 'file:webflow.png',
 		group: ['trigger'],
 		version: 1,
