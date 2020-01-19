@@ -52,6 +52,11 @@ export class Merge implements INodeType {
 						description: 'Merges data of both inputs. The output will contain items of input 1 merged with data of input 2. Merge happens depending on a defined key.',
 					},
 					{
+						name: 'Multiplex',
+						value: 'multiplex',
+						description: 'Merges each value of one input with each value of the other input. The output will contain (m * n) items where (m) and (n) are lengths of the inputs.'
+					},
+					{
 						name: 'Pass-through',
 						value: 'passThrough',
 						description: 'Passes through data of one input. The output will contain only items of the defined input.',
@@ -174,14 +179,17 @@ export class Merge implements INodeType {
 					{
 						name: 'Always',
 						value: 'always',
+						description: 'Always overwrites everything.',
+					},
+					{
+						name: 'If Blank',
+						value: 'blank',
+						description: 'Overwrites only values of "null", "undefined" or empty string.',
 					},
 					{
 						name: 'If Missing',
 						value: 'undefined',
-					},
-					{
-						name: 'If Blank',
-						value: 'blank'
+						description: 'Only adds values which do not exist yet.',
 					},
 				],
 				default: 'always',
@@ -282,6 +290,23 @@ export class Merge implements INodeType {
 
 				returnData.push(newItem);
 			}
+		} else if (mode === 'multiplex') {
+			const dataInput1 = this.getInputData(0);
+			const dataInput2 = this.getInputData(1);
+
+			if (!dataInput1 || !dataInput2) {
+				return [returnData];
+			}
+
+			let entry1: INodeExecutionData;
+			let entry2: INodeExecutionData;
+
+			for (entry1 of dataInput1) {
+				for (entry2 of dataInput2) {
+					returnData.push({json: {...(entry1.json), ...(entry2.json)}});
+				}
+			}
+			return [returnData];
 		} else if (['keepKeyMatches', 'mergeByKey', 'removeKeyMatches'].includes(mode)) {
 			const dataInput1 = this.getInputData(0);
 			if (!dataInput1) {
@@ -382,11 +407,18 @@ export class Merge implements INodeType {
 						entry = JSON.parse(JSON.stringify(entry));
 
 						for (key of Object.keys(copyData[referenceValue as string].json)) {
-							// TODO: Currently only copies json data and no binary one
-							let value = copyData[referenceValue as string].json[key];
+							if (key === propertyName2) {
+								continue;
+							}
 
-							if (overwrite === 'always' || (overwrite === 'undefined' && ['null', 'undefined'].includes(typeof value)) || (overwrite === 'blank' && !value)) {
-								entry.json[key] = value
+							// TODO: Currently only copies json data and no binary one
+							const value = copyData[referenceValue as string].json[key];
+							if (
+								overwrite === 'always' ||
+								(overwrite === 'undefined' && !entry.json.hasOwnProperty(key)) ||
+								(overwrite === 'blank' && [null, undefined, ''].includes(entry.json[key] as string))
+							) {
+								entry.json[key] = value;
 							}
 						}
 					} else {
