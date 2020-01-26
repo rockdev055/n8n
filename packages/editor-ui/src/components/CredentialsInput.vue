@@ -13,15 +13,35 @@
 			</el-col>
 		</el-row>
 
+		<el-row v-if="isOAuthType" class="oauth-information">
+			<el-col :span="6" class="headline">
+				OAuth
+			</el-col>
+			<el-col :span="18">
+				<span v-if="isOAuthConnected === true">
+					<el-button title="Reconnect OAuth Credentials" @click.stop="oAuth2CredentialAuthorize()" circle>
+						<font-awesome-icon icon="redo" />
+					</el-button>
+					Is connected
+				</span>
+				<span v-else>
+					<el-button title="Connect OAuth Credentials" @click.stop="oAuth2CredentialAuthorize()" circle>
+						<font-awesome-icon icon="sign-in-alt" />
+					</el-button>
+					Is NOT connected
+				</span>
+			</el-col>
+		</el-row>
+
 		<br />
-		<div class="headline">
+		<div class="headline" v-if="credentialProperties.length">
 			Credential Data:
 			<el-tooltip class="credentials-info" placement="top" effect="light">
 				<div slot="content" v-html="helpTexts.credentialsData"></div>
 				<font-awesome-icon icon="question-circle" />
 			</el-tooltip>
 		</div>
-		<el-row v-for="parameter in credentialTypeData.properties" :key="parameter.name" class="parameter-wrapper">
+		<el-row v-for="parameter in credentialProperties" :key="parameter.name" class="parameter-wrapper">
 			<el-col :span="6" class="parameter-name">
 				{{parameter.displayName}}:
 				<el-tooltip placement="top" class="parameter-info" v-if="parameter.description" effect="light">
@@ -77,7 +97,11 @@ import { restApi } from '@/components/mixins/restApi';
 import { nodeHelpers } from '@/components/mixins/nodeHelpers';
 import { showMessage } from '@/components/mixins/showMessage';
 
-import { ICredentialsDecryptedResponse, IUpdateInformation } from '@/Interface';
+import {
+	ICredentialsDecryptedResponse,
+	ICredentialsResponse,
+	IUpdateInformation,
+} from '@/Interface';
 import {
 	CredentialInformation,
 	ICredentialDataDecryptedObject,
@@ -85,6 +109,7 @@ import {
 	ICredentialType,
 	ICredentialNodeAccess,
 	INodeCredentialDescription,
+	INodeProperties,
 	INodeTypeDescription,
 } from 'n8n-workflow';
 
@@ -152,6 +177,21 @@ export default mixins(
 				};
 			});
 		},
+		credentialProperties (): INodeProperties[] {
+			return this.credentialTypeData.properties.filter((propertyData: INodeProperties) => {
+				return !this.credentialTypeData.__overwrittenProperties || !this.credentialTypeData.__overwrittenProperties.includes(propertyData.name);
+			});
+		},
+		isOAuthType (): boolean {
+			return this.credentialTypeData.name === 'oAuth2Api' || (this.credentialTypeData.extends !== undefined && this.credentialTypeData.extends.includes('oAuth2Api'));
+		},
+		isOAuthConnected (): boolean {
+			if (this.isOAuthType === false) {
+				return false;
+			}
+
+			return this.credentialData !== null && !!this.credentialData.data.oauthTokenData;
+		},
 	},
 	methods: {
 		valueChanged (parameterData: IUpdateInformation) {
@@ -162,7 +202,7 @@ export default mixins(
 			tempValue[name] = parameterData.value;
 			Vue.set(this, 'propertyValue', tempValue);
 		},
-		async createCredentials (): Promise<void> {
+		async createCredentials (doNotEmitData?: boolean): Promise<ICredentialsResponse | null> {
 			const nodesAccess = this.nodesAccess.map((nodeType) => {
 				return {
 					nodeType,
@@ -181,13 +221,76 @@ export default mixins(
 				result = await this.restApi().createNewCredentials(newCredentials);
 			} catch (error) {
 				this.$showError(error, 'Problem Creating Credentials', 'There was a problem creating the credentials:');
-				return;
+				return null;
 			}
 
 			// Add also to local store
 			this.$store.commit('addCredentials', result);
 
-			this.$emit('credentialsCreated', result);
+			if (doNotEmitData !== true) {
+				this.$emit('credentialsCreated', result);
+			}
+
+			return result;
+		},
+		async oAuth2CredentialAuthorize () {
+			let url;
+
+			let credentialData = this.credentialData;
+			let newCredentials = false;
+			if (!credentialData) {
+				// Credentials did not get created yet. So create first before
+				// doing oauth authorize
+				credentialData = await this.createCredentials(true);
+				newCredentials = true;
+				if (credentialData === null) {
+					return;
+				}
+			}
+
+			try {
+				url = await this.restApi().oAuth2CredentialAuthorize(credentialData) as string;
+			} catch (error) {
+				this.$showError(error, 'OAuth Authorization Error', 'Error generating authorization URL:');
+				return;
+			}
+
+			const params = `scrollbars=no,resizable=yes,status=no,titlebar=noe,location=no,toolbar=no,menubar=no,width=500,height=700`;
+			const oauthPopup = window.open(url, 'OAuth2 Authorization', params);
+
+			const receiveMessage = (event: MessageEvent) => {
+				// // TODO: Add check that it came from n8n
+				// if (event.origin !== 'http://example.org:8080') {
+				// 	return;
+				// }
+
+				if (event.data === 'success') {
+
+					// Set some kind of data that status changes.
+					// As data does not get displayed directly it does not matter what data.
+					credentialData.data.oauthTokenData = {};
+
+					// Close the window
+					if (oauthPopup) {
+						oauthPopup.close();
+					}
+
+					if (newCredentials === true) {
+						this.$emit('credentialsCreated', credentialData);
+					}
+
+					this.$showMessage({
+						title: 'Connected',
+						message: 'Got connected!',
+						type: 'success',
+					});
+				}
+
+				// Make sure that the event gets removed again
+				window.removeEventListener('message', receiveMessage, false);
+			};
+
+			window.addEventListener('message', receiveMessage, false);
 		},
 		async updateCredentials () {
 			const nodesAccess: ICredentialNodeAccess[] = [];
@@ -299,6 +402,11 @@ export default mixins(
 		margin: 1em 0;
 		color: $--color-primary;
 		line-height: 1.75em;
+	}
+
+	.oauth-information {
+		line-height: 2.5em;
+		margin-top: 2em;
 	}
 
 	.parameter-wrapper {
