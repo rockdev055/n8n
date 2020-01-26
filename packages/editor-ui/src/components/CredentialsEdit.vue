@@ -8,7 +8,7 @@
 						Credential type:
 					</el-col>
 					<el-col :span="18">
-						<el-select v-model="credentialType" filterable placeholder="Select Type" size="small">
+						<el-select v-model="credentialType" placeholder="Select Type" size="small">
 							<el-option
 								v-for="item in credentialTypes"
 								:key="item.name"
@@ -169,21 +169,13 @@ export default mixins(
 	},
 	methods: {
 		getCredentialTypeData (name: string): ICredentialType | null {
-			let credentialData = this.$store.getters.credentialType(name);
-
-			if (credentialData === null || credentialData.extends === undefined) {
-				return credentialData;
+			for (const credentialData of this.credentialTypes) {
+				if (credentialData.name === name) {
+					return credentialData;
+				}
 			}
 
-			// Credentials extends another one. So get the properties of the one it
-			// extends and add them.
-			credentialData = JSON.parse(JSON.stringify(credentialData));
-			for (const credentialTypeName of credentialData.extends) {
-				const data = this.$store.getters.credentialType(credentialTypeName);
-				credentialData.properties.push.apply(credentialData.properties, data.properties);
-			}
-
-			return credentialData;
+			return null;
 		},
 		credentialsCreated (data: ICredentialsDecryptedResponse): void {
 			this.$emit('credentialsCreated', data);
