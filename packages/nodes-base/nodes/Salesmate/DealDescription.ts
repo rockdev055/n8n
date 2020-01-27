@@ -19,9 +19,9 @@ export const dealOperations = [
 				description: 'Create a deal',
 			},
 			{
-				name: 'Delete',
-				value: 'delete',
-				description: 'Delete a deal',
+				name: 'Update',
+				value: 'update',
+				description: 'Update a deal',
 			},
 			{
 				name: 'Get',
@@ -34,9 +34,9 @@ export const dealOperations = [
 				description: 'Get all companies',
 			},
 			{
-				name: 'Update',
-				value: 'update',
-				description: 'Update a deal',
+				name: 'Delete',
+				value: 'delete',
+				description: 'Delete a deal',
 			},
 		],
 		default: 'create',
@@ -691,14 +691,12 @@ export const dealFields = [
 				name: 'fields',
 				type: 'string',
 				default: '',
-				description: 'Comma separated list of fields to return.',
 			},
 			{
 				displayName: 'Sort By',
 				name: 'sortBy',
 				type: 'string',
 				default: '',
-				description: 'The field to sort by.',
 			},
 			{
 				displayName: 'Sort Order',
@@ -706,11 +704,11 @@ export const dealFields = [
 				type: 'options',
 				options: [
 					{
-						name: 'ASC',
+						name: 'Asc',
 						value: 'asc',
 					},
 					{
-						name: 'DESC',
+						name: 'Desc',
 						value: 'desc',
 					},
 				],
@@ -774,11 +772,11 @@ export const dealFields = [
 						type: 'options',
 						options: [
 							{
-								name: 'AND',
+								name: 'And',
 								value: 'AND',
 							},
 							{
-								name: 'OR',
+								name: 'Or',
 								value: 'OR',
 							},
 						],
