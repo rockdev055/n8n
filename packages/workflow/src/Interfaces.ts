@@ -495,7 +495,7 @@ export interface IWebhookData {
 	node: string;
 	path: string;
 	webhookDescription: IWebhookDescription;
-	workflowId: string;
+	workflow: Workflow;
 	workflowExecuteAdditionalData: IWorkflowExecuteAdditionalData;
 }
 

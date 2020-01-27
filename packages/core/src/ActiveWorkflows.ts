@@ -69,7 +69,9 @@ export class ActiveWorkflows {
 	async add(id: string, workflow: Workflow, additionalData: IWorkflowExecuteAdditionalData, getTriggerFunctions: IGetExecuteTriggerFunctions, getPollFunctions: IGetExecutePollFunctions): Promise<void> {
 		console.log('ADD ID (active): ' + id);
 
-		this.workflowData[id] = {};
+		this.workflowData[id] = {
+			workflow
+		};
 		const triggerNodes = workflow.getTriggerNodes();
 
 		let triggerResponse: ITriggerResponse | undefined;
@@ -168,6 +170,7 @@ export class ActiveWorkflows {
 			const pollResponse = await workflow.runPoll(node, pollFunctions);
 
 			if (pollResponse !== null) {
+				// TODO: Run workflow
 				pollFunctions.__emit(pollResponse);
 			}
 		};

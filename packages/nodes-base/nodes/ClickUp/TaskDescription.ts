@@ -88,23 +88,6 @@ export const taskFields = [
 		required: true,
 	},
 	{
-		displayName: 'Folderless List',
-		name: 'folderless',
-		type: 'boolean',
-		default: false,
-		displayOptions: {
-			show: {
-				resource: [
-					'task',
-				],
-				operation: [
-					'create',
-				],
-			},
-		},
-		required: true,
-	},
-	{
 		displayName: 'Folder',
 		name: 'folder',
 		type: 'options',
@@ -117,16 +100,13 @@ export const taskFields = [
 				operation: [
 					'create',
 				],
-				folderless: [
-					false,
-				],
 			},
 		},
 		typeOptions: {
 			loadOptionsMethod: 'getFolders',
 			loadOptionsDependsOn: [
 				'space',
-			],
+			]
 		},
 		required: true,
 	},
@@ -142,35 +122,6 @@ export const taskFields = [
 				],
 				operation: [
 					'create',
-				],
-				folderless: [
-					true,
-				],
-			},
-		},
-		typeOptions: {
-			loadOptionsMethod: 'getFolderlessLists',
-			loadOptionsDependsOn: [
-				'space',
-			],
-		},
-		required: true,
-	},
-	{
-		displayName: 'List',
-		name: 'list',
-		type: 'options',
-		default: '',
-		displayOptions: {
-			show: {
-				resource: [
-					'task',
-				],
-				operation: [
-					'create',
-				],
-				folderless: [
-					false,
 				],
 			},
 		},
@@ -274,7 +225,6 @@ export const taskFields = [
 				name: 'priority',
 				type: 'number',
 				typeOptions: {
-					minValue: 1,
 					maxValue: 4,
 				},
 				description: 'Integer mapping as 1 : Urgent, 2 : High, 3 : Normal, 4 : Low',
@@ -408,7 +358,6 @@ export const taskFields = [
 				name: 'priority',
 				type: 'number',
 				typeOptions: {
-					minValue: 1,
 					maxValue: 4,
 				},
 				description: 'Integer mapping as 1 : Urgent, 2 : High, 3 : Normal, 4 : Low',

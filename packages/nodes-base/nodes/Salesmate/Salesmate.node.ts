@@ -12,7 +12,6 @@ import {
 import {
 	salesmateApiRequest,
 	salesmateApiRequestAllItems,
-	simplifySalesmateData,
 	validateJSON,
 } from './GenericFunctions';
 import {
@@ -290,9 +289,12 @@ export class Salesmate implements INodeType {
 					const rawData = this.getNodeParameter('rawData', i) as boolean;
 					responseData = await salesmateApiRequest.call(this, 'GET', `/v1/companies/${companyId}`);
 					responseData = responseData.Data;
-
 					if (!rawData) {
-						responseData = simplifySalesmateData(responseData);
+						responseData = responseData.map((company: IDataObject) => {
+							const aux: IDataObject = {};
+							aux[company.fieldName as string] = company.value;
+							return aux;
+						});
 					}
 				}
 				if (operation === 'getAll') {
@@ -312,26 +314,9 @@ export class Salesmate implements INodeType {
 						qs.sortOrder = options.sortOrder as string;
 					}
 					if (options.fields) {
-						if ((options.fields as string).trim() === '') {
-							throw new Error('You have to add at least one field');
-						}
 						body.fields = (options.fields as string).split(',') as string[];
 					} else {
-						body.fields = [
-							'name',
-							'description',
-							'billingAddressLine1',
-							'billingAddressLine2',
-							'billingCity',
-							'billingZipCode',
-							'billingState',
-							'billingCountry',
-							'website',
-							'owner',
-							'tags',
-							'photo',
-							'createdAt',
-						];
+						throw new Error('You have to add at least one field');
 					}
 					if (!jsonActive) {
 						const filters: IDataObject[] = [];
@@ -347,7 +332,7 @@ export class Salesmate implements INodeType {
 									};
 									filter.condition = condition.condition;
 									filter.data = condition.value;
-									filters.push(filter);
+									filters.push(filter)
 								}
 							}
 						}
@@ -455,9 +440,12 @@ export class Salesmate implements INodeType {
 					const rawData = this.getNodeParameter('rawData', i) as boolean;
 					responseData = await salesmateApiRequest.call(this, 'GET', `/v1/activities/${activityId}`);
 					responseData = responseData.Data;
-
 					if (!rawData) {
-						responseData = simplifySalesmateData(responseData);
+						responseData = responseData.map((activity: IDataObject) => {
+							const aux: IDataObject = {};
+							aux[activity.fieldName as string] = activity.value;
+							return aux;
+						});
 					}
 				}
 				if (operation === 'getAll') {
@@ -477,27 +465,9 @@ export class Salesmate implements INodeType {
 						qs.sortOrder = options.sortOrder as string;
 					}
 					if (options.fields) {
-						if ((options.fields as string).trim() === '') {
-							throw new Error('You have to add at least one field');
-						}
 						body.fields = (options.fields as string).split(',') as string[];
 					} else {
-						body.fields = [
-							'title',
-							'dueDate',
-							'description',
-							'duration',
-							'owner',
-							'Deal.title',
-							'PrimaryContact.name',
-							'PrimaryContact.email',
-							'PrimaryCompany.name',
-							'PrimaryCompany.email',
-							'tags',
-							'type',
-							'createdAt',
-							'isCompleted',
-						];
+						throw new Error('You have to add at least one field');
 					}
 					if (!jsonActive) {
 						const filters: IDataObject[] = [];
@@ -513,7 +483,7 @@ export class Salesmate implements INodeType {
 									};
 									filter.condition = condition.condition;
 									filter.data = condition.value;
-									filters.push(filter);
+									filters.push(filter)
 								}
 							}
 						}
@@ -647,9 +617,12 @@ export class Salesmate implements INodeType {
 					const rawData = this.getNodeParameter('rawData', i) as boolean;
 					responseData = await salesmateApiRequest.call(this, 'GET', `/v1/deals/${dealId}`);
 					responseData = responseData.Data;
-
 					if (!rawData) {
-						responseData = simplifySalesmateData(responseData);
+						responseData = responseData.map((deal: IDataObject) => {
+							const aux: IDataObject = {};
+							aux[deal.fieldName as string] = deal.value;
+							return aux;
+						});
 					}
 				}
 				if (operation === 'getAll') {
@@ -668,26 +641,10 @@ export class Salesmate implements INodeType {
 					if (options.sortOrder) {
 						qs.sortOrder = options.sortOrder as string;
 					}
-					if (options.fields !== undefined) {
-						if ((options.fields as string).trim() === '') {
-							throw new Error('You have to add at least one field');
-						}
+					if (options.fields) {
 						body.fields = (options.fields as string).split(',') as string[];
 					} else {
-						body.fields = [
-							'title',
-							'PrimaryContact.name',
-							'PrimaryContact.email',
-							'PrimaryCompany.name',
-							'PrimaryCompany.email',
-							'dealValue',
-							'priority',
-							'stage',
-							'status',
-							'owner',
-							'tags',
-							'createdAt',
-						];
+						throw new Error('You have to add at least one field');
 					}
 					if (!jsonActive) {
 						const filters: IDataObject[] = [];
@@ -703,7 +660,7 @@ export class Salesmate implements INodeType {
 									};
 									filter.condition = condition.condition;
 									filter.data = condition.value;
-									filters.push(filter);
+									filters.push(filter)
 								}
 							}
 						}
