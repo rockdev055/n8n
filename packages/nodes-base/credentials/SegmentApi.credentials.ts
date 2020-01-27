@@ -3,13 +3,13 @@ import {
 	NodePropertyTypes,
 } from 'n8n-workflow';
 
-export class ClearbitApi implements ICredentialType {
-	name = 'clearbitApi';
-	displayName = 'Clearbit API';
+export class SegmentApi implements ICredentialType {
+	name = 'segmentApi';
+	displayName = 'Segment API';
 	properties = [
 		{
-			displayName: 'API Key',
-			name: 'apiKey',
+			displayName: 'Write Key',
+			name: 'writekey',
 			type: 'string' as NodePropertyTypes,
 			default: '',
 		},
