@@ -827,7 +827,6 @@ export class GoogleDrive implements INodeType {
 
 		const drive = google.drive({
 			version: 'v3',
-			// @ts-ignore
 			auth: client,
 		});
 

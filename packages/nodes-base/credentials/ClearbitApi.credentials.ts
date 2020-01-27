@@ -3,9 +3,9 @@ import {
 	NodePropertyTypes,
 } from 'n8n-workflow';
 
-export class JotFormApi implements ICredentialType {
-	name = 'jotFormApi';
-	displayName = 'JotForm API';
+export class ClearbitApi implements ICredentialType {
+	name = 'clearbitApi';
+	displayName = 'Clearbit API';
 	properties = [
 		{
 			displayName: 'API Key',
