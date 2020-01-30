@@ -48,7 +48,6 @@
             "dist/credentials/GitlabApi.credentials.js",
             "dist/credentials/GoogleApi.credentials.js",
             "dist/credentials/GumroadApi.credentials.js",
-            "dist/credentials/HarvestApi.credentials.js",
             "dist/credentials/HttpBasicAuth.credentials.js",
             "dist/credentials/HttpDigestAuth.credentials.js",
             "dist/credentials/HttpHeaderAuth.credentials.js",
@@ -90,6 +89,7 @@
             "dist/credentials/VeroApi.credentials.js",
             "dist/credentials/WebflowApi.credentials.js",
             "dist/credentials/WordpressApi.credentials.js",
+            "dist/credentials/WooCommerceApi.credentials.js",
             "dist/credentials/ZendeskApi.credentials.js"
         ],
         "nodes": [
@@ -136,7 +136,6 @@
             "dist/nodes/Google/GoogleSheets.node.js",
             "dist/nodes/GraphQL/GraphQL.node.js",
             "dist/nodes/Gumroad/GumroadTrigger.node.js",
-            "dist/nodes/Harvest/Harvest.node.js",
             "dist/nodes/HtmlExtract/HtmlExtract.node.js",
             "dist/nodes/HttpRequest.node.js",
             "dist/nodes/Hubspot/Hubspot.node.js",
@@ -198,6 +197,7 @@
             "dist/nodes/Webflow/WebflowTrigger.node.js",
             "dist/nodes/Webhook.node.js",
             "dist/nodes/Wordpress/Wordpress.node.js",
+            "dist/nodes/WooCommerce/WooCommerceTrigger.node.js",
             "dist/nodes/WriteBinaryFile.node.js",
             "dist/nodes/Xml.node.js",
             "dist/nodes/Zendesk/Zendesk.node.js",
