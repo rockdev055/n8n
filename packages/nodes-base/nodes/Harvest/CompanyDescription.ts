@@ -1,7 +1,5 @@
 import { INodeProperties } from "n8n-workflow";
 
-const resource = [ 'companies' ];
-
 export const companyOperations = [
 	{
 		displayName: 'Operation',
@@ -9,7 +7,9 @@ export const companyOperations = [
 		type: 'options',
 		displayOptions: {
 			show: {
-				resource,
+				resource: [
+					'company',
+				],
 			},
 		},
 		options: [

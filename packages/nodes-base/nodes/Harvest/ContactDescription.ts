@@ -1,7 +1,5 @@
 import { INodeProperties } from "n8n-workflow";
 
-const resource = [ 'contacts' ];
-
 export const contactOperations = [
 	{
 		displayName: 'Operation',
@@ -9,7 +7,9 @@ export const contactOperations = [
 		type: 'options',
 		displayOptions: {
 			show: {
-				resource,
+				resource: [
+					'contact',
+				],
 			},
 		},
 		options: [
@@ -22,11 +22,6 @@ export const contactOperations = [
 				name: 'Get All',
 				value: 'getAll',
 				description: 'Get data of all contacts',
-			},
-			{
-				name: 'Delete',
-				value: 'delete',
-				description: `Delete a contact`,
 			},
 		],
 		default: 'getAll',
@@ -47,7 +42,9 @@ export const contactFields = [
 	type: 'boolean',
 	displayOptions: {
 		show: {
-			resource,
+			resource: [
+				'contact',
+			],
 			operation: [
 				'getAll',
 			],
@@ -62,7 +59,9 @@ export const contactFields = [
 	type: 'number',
 	displayOptions: {
 		show: {
-			resource,
+			resource: [
+				'contact',
+			],
 			operation: [
 				'getAll',
 			],
@@ -86,7 +85,9 @@ export const contactFields = [
 	default: {},
 	displayOptions: {
 		show: {
-			resource,
+			resource: [
+				'contact',
+			],
 			operation: [
 				'getAll',
 			],
@@ -124,30 +125,12 @@ export const contactFields = [
 			operation: [
 				'get',
 			],
-			resource,
+			resource: [
+				'contact',
+			],
 		},
 	},
 	description: 'The ID of the contact you are retrieving.',
-},
-
-/* -------------------------------------------------------------------------- */
-/*                                contact:delete                            */
-/* -------------------------------------------------------------------------- */
-{
-	displayName: 'Contact Id',
-	name: 'id',
-	type: 'string',
-	default: '',
-	required: true,
-	displayOptions: {
-		show: {
-			operation: [
-				'delete',
-			],
-			resource,
-		},
-	},
-	description: 'The ID of the contact you want to delete.',
 }
 
 ] as INodeProperties[];

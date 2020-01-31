@@ -1,7 +1,5 @@
 import { INodeProperties } from "n8n-workflow";
 
-const resource = [ 'clients' ];
-
 export const clientOperations = [
 	{
 		displayName: 'Operation',
@@ -9,7 +7,9 @@ export const clientOperations = [
 		type: 'options',
 		displayOptions: {
 			show: {
-				resource,
+				resource: [
+					'client',
+				],
 			},
 		},
 		options: [
@@ -22,11 +22,6 @@ export const clientOperations = [
 				name: 'Get All',
 				value: 'getAll',
 				description: 'Get data of all clients',
-			},
-			{
-				name: 'Delete',
-				value: 'delete',
-				description: `Delete a client`,
 			},
 		],
 		default: 'getAll',
@@ -47,7 +42,9 @@ export const clientFields = [
 	type: 'boolean',
 	displayOptions: {
 		show: {
-			resource,
+			resource: [
+				'client',
+			],
 			operation: [
 				'getAll',
 			],
@@ -62,7 +59,9 @@ export const clientFields = [
 	type: 'number',
 	displayOptions: {
 		show: {
-			resource,
+			resource: [
+				'client',
+			],
 			operation: [
 				'getAll',
 			],
@@ -86,7 +85,9 @@ export const clientFields = [
 	default: {},
 	displayOptions: {
 		show: {
-			resource,
+			resource: [
+				'client',
+			],
 			operation: [
 				'getAll',
 			],
@@ -124,30 +125,12 @@ export const clientFields = [
 			operation: [
 				'get',
 			],
-			resource
+			resource: [
+				'client',
+			],
 		},
 	},
 	description: 'The ID of the client you are retrieving.',
-},
-
-/* -------------------------------------------------------------------------- */
-/*                                client:delete                            */
-/* -------------------------------------------------------------------------- */
-{
-	displayName: 'Client Id',
-	name: 'id',
-	type: 'string',
-	default: '',
-	required: true,
-	displayOptions: {
-		show: {
-			operation: [
-				'delete',
-			],
-			resource
-		},
-	},
-	description: 'The ID of the client you want to delete.',
 }
 
 ] as INodeProperties[];

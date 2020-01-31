@@ -1,7 +1,5 @@
 import { INodeProperties } from "n8n-workflow";
 
-const resource = [ 'projects' ];
-
 export const projectOperations = [
 	{
 		displayName: 'Operation',
@@ -9,7 +7,9 @@ export const projectOperations = [
 		type: 'options',
 		displayOptions: {
 			show: {
-				resource,
+				resource: [
+					'project',
+				],
 			},
 		},
 		options: [
@@ -22,11 +22,6 @@ export const projectOperations = [
 				name: 'Get All',
 				value: 'getAll',
 				description: 'Get data of all projects',
-			},
-			{
-				name: 'Delete',
-				value: 'delete',
-				description: `Delete a project`,
 			},
 		],
 		default: 'getAll',
@@ -47,7 +42,9 @@ export const projectFields = [
 	type: 'boolean',
 	displayOptions: {
 		show: {
-			resource,
+			resource: [
+				'project',
+			],
 			operation: [
 				'getAll',
 			],
@@ -62,7 +59,9 @@ export const projectFields = [
 	type: 'number',
 	displayOptions: {
 		show: {
-			resource,
+			resource: [
+				'project',
+			],
 			operation: [
 				'getAll',
 			],
@@ -86,7 +85,9 @@ export const projectFields = [
 	default: {},
 	displayOptions: {
 		show: {
-			resource,
+			resource: [
+				'project',
+			],
 			operation: [
 				'getAll',
 			],
@@ -142,30 +143,12 @@ export const projectFields = [
 			operation: [
 				'get',
 			],
-			resource,
+			resource: [
+				'project',
+			],
 		},
 	},
 	description: 'The ID of the project you are retrieving.',
-},
-
-/* -------------------------------------------------------------------------- */
-/*                                project:delete                            */
-/* -------------------------------------------------------------------------- */
-{
-	displayName: 'Project Id',
-	name: 'id',
-	type: 'string',
-	default: '',
-	required: true,
-	displayOptions: {
-		show: {
-			operation: [
-				'delete',
-			],
-			resource,
-		},
-	},
-	description: 'The ID of the project want to delete.',
 }
 
 ] as INodeProperties[];

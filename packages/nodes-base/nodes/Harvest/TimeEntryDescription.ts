@@ -1,5 +1,5 @@
 import { INodeProperties } from "n8n-workflow";
-export const resource =  [ 'time_entries' ]
+
 export const timeEntryOperations = [
 	{
 		displayName: 'Operation',
@@ -7,7 +7,9 @@ export const timeEntryOperations = [
 		type: 'options',
 		displayOptions: {
 			show: {
-				resource,
+				resource: [
+					'timeEntry',
+				],
 			},
 		},
 		options: [
@@ -73,7 +75,9 @@ export const timeEntryFields = [
 	type: 'boolean',
 	displayOptions: {
 		show: {
-			resource,
+			resource: [
+				'timeEntry',
+			],
 			operation: [
 				'getAll',
 			],
@@ -88,7 +92,9 @@ export const timeEntryFields = [
 	type: 'number',
 	displayOptions: {
 		show: {
-			resource,
+			resource: [
+				'timeEntry',
+			],
 			operation: [
 				'getAll',
 			],
@@ -112,7 +118,9 @@ export const timeEntryFields = [
 	default: {},
 	displayOptions: {
 		show: {
-			resource,
+			resource: [
+				'timeEntry',
+			],
 			operation: [
 				'getAll',
 			],
@@ -195,7 +203,9 @@ export const timeEntryFields = [
 			operation: [
 				'get',
 			],
-			resource,
+			resource: [
+				'timeEntry',
+			],
 		},
 	},
 	description: 'The ID of the time entry you are retrieving.',
@@ -215,7 +225,9 @@ export const timeEntryFields = [
 			operation: [
 				'delete',
 			],
-			resource,
+			resource: [
+				'timeEntry',
+			],
 		},
 	},
 	description: 'The ID of the time entry you are deleting.',
@@ -235,7 +247,9 @@ export const timeEntryFields = [
 			operation: [
 				'deleteExternal',
 			],
-			resource,
+			resource: [
+				'timeEntry',
+			],
 		},
 	},
 	description: 'The ID of the time entry whose external reference you are deleting.',
@@ -255,7 +269,9 @@ export const timeEntryFields = [
 			operation: [
 				'stopTime',
 			],
-			resource,
+			resource: [
+				'timeEntry',
+			],
 		},
 	},
 	description: 'Stop a running time entry. Stopping a time entry is only possible if it’s currently running.',
@@ -275,7 +291,9 @@ export const timeEntryFields = [
 			operation: [
 				'restartTime',
 			],
-			resource,
+			resource: [
+				'timeEntry',
+			],
 		},
 	},
 	description: 'Restart a stopped time entry. Restarting a time entry is only possible if it isn’t currently running.',
@@ -295,7 +313,9 @@ export const timeEntryFields = [
 			operation: [
 				'update',
 			],
-			resource,
+			resource: [
+				'timeEntry',
+			],
 		},
 	},
 	description: 'The ID of the time entry to update.',
@@ -310,7 +330,9 @@ export const timeEntryFields = [
 			operation: [
 				'update',
 			],
-			resource,
+			resource: [
+				'timeEntry',
+			],
 		},
 	},
 	default: {},
@@ -363,7 +385,9 @@ export const timeEntryFields = [
 			operation: [
 				'createByDuration',
 			],
-			resource,
+			resource: [
+				'timeEntry',
+			],
 		},
 	},
 	default: '',
@@ -379,7 +403,9 @@ export const timeEntryFields = [
 			operation: [
 				'createByDuration',
 			],
-			resource,
+			resource: [
+				'timeEntry',
+			],
 		},
 	},
 	default: '',
@@ -395,7 +421,9 @@ export const timeEntryFields = [
 			operation: [
 				'createByDuration',
 			],
-			resource,
+			resource: [
+				'timeEntry',
+			],
 		},
 	},
 	default: '',
@@ -412,7 +440,9 @@ export const timeEntryFields = [
 			operation: [
 				'createByDuration',
 			],
-			resource,
+			resource: [
+				'timeEntry',
+			],
 		},
 	},
 	default: {},
@@ -456,7 +486,9 @@ export const timeEntryFields = [
 			operation: [
 				'createByStartEnd',
 			],
-			resource,
+			resource: [
+				'timeEntry',
+			],
 		},
 	},
 	default: '',
@@ -472,7 +504,9 @@ export const timeEntryFields = [
 			operation: [
 				'createByStartEnd',
 			],
-			resource,
+			resource: [
+				'timeEntry',
+			],
 		},
 	},
 	default: '',
@@ -488,7 +522,9 @@ export const timeEntryFields = [
 			operation: [
 				'createByStartEnd',
 			],
-			resource,
+			resource: [
+				'timeEntry',
+			],
 		},
 	},
 	default: '',
@@ -505,7 +541,9 @@ export const timeEntryFields = [
 			operation: [
 				'createByStartEnd',
 			],
-			resource,
+			resource: [
+				'timeEntry',
+			],
 		},
 	},
 	default: {},

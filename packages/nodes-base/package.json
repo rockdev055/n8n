@@ -1,6 +1,6 @@
 {
     "name": "n8n-nodes-base",
-    "version": "0.45.1",
+    "version": "0.46.0",
     "description": "Base nodes of n8n",
     "license": "SEE LICENSE IN LICENSE.md",
     "homepage": "https://n8n.io",
@@ -58,6 +58,7 @@
             "dist/credentials/Imap.credentials.js",
             "dist/credentials/IntercomApi.credentials.js",
             "dist/credentials/JiraSoftwareCloudApi.credentials.js",
+            "dist/credentials/JiraSoftwareServerApi.credentials.js",
             "dist/credentials/JotFormApi.credentials.js",
             "dist/credentials/LinkFishApi.credentials.js",
             "dist/credentials/MailchimpApi.credentials.js",
@@ -149,6 +150,7 @@
             "dist/nodes/Intercom/Intercom.node.js",
             "dist/nodes/Interval.node.js",
             "dist/nodes/Jira/JiraSoftwareCloud.node.js",
+            "dist/nodes/Jira/JiraSoftwareServer.node.js",
             "dist/nodes/JotForm/JotFormTrigger.node.js",
             "dist/nodes/LinkFish/LinkFish.node.js",
             "dist/nodes/Mailchimp/Mailchimp.node.js",

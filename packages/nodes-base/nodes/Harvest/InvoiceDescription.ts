@@ -1,7 +1,5 @@
 import { INodeProperties } from "n8n-workflow";
 
-const resource = [ 'invoices' ];
-
 export const invoiceOperations = [
 	{
 		displayName: 'Operation',
@@ -9,7 +7,9 @@ export const invoiceOperations = [
 		type: 'options',
 		displayOptions: {
 			show: {
-				resource,
+				resource: [
+					'invoice',
+				],
 			},
 		},
 		options: [
@@ -22,11 +22,6 @@ export const invoiceOperations = [
 				name: 'Get All',
 				value: 'getAll',
 				description: 'Get data of all invoices',
-			},
-			{
-				name: 'Delete',
-				value: 'delete',
-				description: `Delete a invoice`,
 			},
 		],
 		default: 'getAll',
@@ -47,7 +42,9 @@ export const invoiceFields = [
 	type: 'boolean',
 	displayOptions: {
 		show: {
-			resource,
+			resource: [
+				'invoice',
+			],
 			operation: [
 				'getAll',
 			],
@@ -62,7 +59,9 @@ export const invoiceFields = [
 	type: 'number',
 	displayOptions: {
 		show: {
-			resource,
+			resource: [
+				'invoice',
+			],
 			operation: [
 				'getAll',
 			],
@@ -86,7 +85,9 @@ export const invoiceFields = [
 	default: {},
 	displayOptions: {
 		show: {
-			resource,
+			resource: [
+				'invoice',
+			],
 			operation: [
 				'getAll',
 			],
@@ -180,30 +181,12 @@ export const invoiceFields = [
 			operation: [
 				'get',
 			],
-			resource,
+			resource: [
+				'invoice',
+			],
 		},
 	},
 	description: 'The ID of the invoice you are retrieving.',
-},
-
-/* -------------------------------------------------------------------------- */
-/*                                invoice:delete                            */
-/* -------------------------------------------------------------------------- */
-{
-	displayName: 'Invoice Id',
-	name: 'id',
-	type: 'string',
-	default: '',
-	required: true,
-	displayOptions: {
-		show: {
-			operation: [
-				'delete',
-			],
-			resource,
-		},
-	},
-	description: 'The ID of the invoice want to delete.',
 }
 
 ] as INodeProperties[];
