@@ -1,5 +1,3 @@
-import { IDataObject } from "n8n-workflow";
-
 export interface ITask {
 	name?: string;
 	content?: string;
@@ -15,5 +13,4 @@ export interface ITask {
 	markdown_content?: string;
 	notify_all?: boolean;
 	parent?: string;
-	custom_fields?: IDataObject[];
 }

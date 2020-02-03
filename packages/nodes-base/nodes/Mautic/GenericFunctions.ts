@@ -10,25 +10,6 @@ import {
 import {
 	IDataObject,
 } from 'n8n-workflow';
-import { errors } from 'imap-simple';
-
-interface OMauticErrorResponse {
-	errors: Array<{
-		conde: number;
-		message: string;
-	}>;
-}
-
-function getErrors(error: OMauticErrorResponse): string {
-	const returnErrors: string[] = [];
-
-	for (const errorItem of error.errors) {
-		returnErrors.push(errorItem.message);
-	}
-
-	return returnErrors.join(', ');
-}
-
 
 export async function mauticApiRequest(this: IHookFunctions | IExecuteFunctions | IExecuteSingleFunctions | ILoadOptionsFunctions, method: string, endpoint: string, body: any = {}, query?: IDataObject, uri?: string): Promise<any> { // tslint:disable-line:no-any
 	const credentials = this.getCredentials('mauticApi');
@@ -45,19 +26,14 @@ export async function mauticApiRequest(this: IHookFunctions | IExecuteFunctions 
 		json: true
 	};
 	try {
-		const returnData = await this.helpers.request!(options);
+		return await this.helpers.request!(options);
+	} catch (err) {
+		const errorMessage = err.error || err.error.message;
 
-		if (returnData.error) {
-			// They seem to to sometimes return 200 status but still error.
-			throw new Error(getErrors(returnData));
+		if (errorMessage !== undefined) {
+			throw new Error(errorMessage);
 		}
-
-		return returnData;
-	} catch (error) {
-		if (error.response && error.response.body && error.response.body.errors) {
-			throw new Error('Mautic Error: ' + getErrors(error.response.body));
-		}
-		throw new Error(`Mautic Error: ${error.message}`);
+		throw err;
 	}
 }
 

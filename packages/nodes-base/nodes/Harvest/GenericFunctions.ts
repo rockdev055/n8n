@@ -50,7 +50,6 @@ export async function harvestApiRequest(
 	if (Object.keys(options.body).length === 0) {
 		delete options.body;
 	}
-
 	try {
 		const result = await this.helpers.request!(options);
 

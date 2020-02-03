@@ -50,7 +50,7 @@ export class LoadNodeParameterOptions {
 			connections: {},
 		};
 
-		this.workflow = new Workflow({ nodes: workflowData.nodes, connections: workflowData.connections, active: false, nodeTypes });
+		this.workflow = new Workflow(undefined, workflowData.nodes, workflowData.connections, false, nodeTypes, undefined);
 	}
 
 

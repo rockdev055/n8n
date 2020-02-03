@@ -547,7 +547,19 @@ export default mixins(
 				if (this.editAllowedCheck() === false) {
 					return;
 				}
-				this.disableNodes(this.$store.getters.getSelectedNodes);
+
+				let updateInformation;
+				this.$store.getters.getSelectedNodes.forEach((node: INodeUi) => {
+					// Toggle disabled flag
+					updateInformation = {
+						name: node.name,
+						properties: {
+							disabled: !node.disabled,
+						},
+					};
+
+					this.$store.commit('updateNodeProperties', updateInformation);
+				});
 			},
 
 			deleteSelectedNodes () {
