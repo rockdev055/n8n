@@ -1,5 +1,7 @@
 import { INodeProperties } from "n8n-workflow";
 
+const resource = [ 'estimates' ];
+
 export const estimateOperations = [
 	{
 		displayName: 'Operation',
@@ -7,9 +9,7 @@ export const estimateOperations = [
 		type: 'options',
 		displayOptions: {
 			show: {
-				resource: [
-					'estimate',
-				],
+				resource,
 			},
 		},
 		options: [
@@ -22,6 +22,11 @@ export const estimateOperations = [
 				name: 'Get All',
 				value: 'getAll',
 				description: 'Get data of all estimates',
+			},
+			{
+				name: 'Delete',
+				value: 'delete',
+				description: `Delete an estimate`,
 			},
 		],
 		default: 'getAll',
@@ -42,9 +47,7 @@ export const estimateFields = [
 	type: 'boolean',
 	displayOptions: {
 		show: {
-			resource: [
-				'estimate',
-			],
+			resource,
 			operation: [
 				'getAll',
 			],
@@ -59,9 +62,7 @@ export const estimateFields = [
 	type: 'number',
 	displayOptions: {
 		show: {
-			resource: [
-				'estimate',
-			],
+			resource,
 			operation: [
 				'getAll',
 			],
@@ -85,9 +86,7 @@ export const estimateFields = [
 	default: {},
 	displayOptions: {
 		show: {
-			resource: [
-				'estimate',
-			],
+			resource,
 			operation: [
 				'getAll',
 			],
@@ -156,12 +155,30 @@ export const estimateFields = [
 			operation: [
 				'get',
 			],
-			resource: [
-				'estimate',
-			],
+			resource,
 		},
 	},
 	description: 'The ID of the estimate you are retrieving.',
+},
+
+/* -------------------------------------------------------------------------- */
+/*                                estimate:delete                            */
+/* -------------------------------------------------------------------------- */
+{
+	displayName: 'Estimate Id',
+	name: 'id',
+	type: 'string',
+	default: '',
+	required: true,
+	displayOptions: {
+		show: {
+			operation: [
+				'delete',
+			],
+			resource,
+		},
+	},
+	description: 'The ID of the estimate want to delete.',
 }
 
 ] as INodeProperties[];

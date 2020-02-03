@@ -1,5 +1,7 @@
 import { INodeProperties } from "n8n-workflow";
 
+const resource = [ 'invoices' ];
+
 export const expenseOperations = [
 	{
 		displayName: 'Operation',
@@ -7,9 +9,7 @@ export const expenseOperations = [
 		type: 'options',
 		displayOptions: {
 			show: {
-				resource: [
-					'expense',
-				],
+				resource,
 			},
 		},
 		options: [
@@ -22,6 +22,11 @@ export const expenseOperations = [
 				name: 'Get All',
 				value: 'getAll',
 				description: 'Get data of all expenses',
+			},
+			{
+				name: 'Delete',
+				value: 'delete',
+				description: `Delete an expense`,
 			},
 		],
 		default: 'getAll',
@@ -42,9 +47,7 @@ export const expenseFields = [
 	type: 'boolean',
 	displayOptions: {
 		show: {
-			resource: [
-				'expense',
-			],
+			resource,
 			operation: [
 				'getAll',
 			],
@@ -59,9 +62,7 @@ export const expenseFields = [
 	type: 'number',
 	displayOptions: {
 		show: {
-			resource: [
-				'expense',
-			],
+			resource,
 			operation: [
 				'getAll',
 			],
@@ -85,9 +86,7 @@ export const expenseFields = [
 	default: {},
 	displayOptions: {
 		show: {
-			resource: [
-				'expense',
-			],
+			resource,
 			operation: [
 				'getAll',
 			],
@@ -170,12 +169,30 @@ export const expenseFields = [
 			operation: [
 				'get',
 			],
-			resource: [
-				'expense',
-			],
+			resource,
 		},
 	},
 	description: 'The ID of the expense you are retrieving.',
+},
+
+/* -------------------------------------------------------------------------- */
+/*                                expense:delete                            */
+/* -------------------------------------------------------------------------- */
+{
+	displayName: 'Expense Id',
+	name: 'id',
+	type: 'string',
+	default: '',
+	required: true,
+	displayOptions: {
+		show: {
+			operation: [
+				'delete',
+			],
+			resource,
+		},
+	},
+	description: 'The ID of the expense you want to delete.',
 }
 
 ] as INodeProperties[];
