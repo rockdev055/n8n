@@ -34,11 +34,6 @@ export const taskOperations = [
 				description: 'Get all tasks',
 			},
 			{
-				name: 'Set custom field',
-				value: 'setCustomField',
-				description: 'Set a custom field',
-			},
-			{
 				name: 'Update',
 				value: 'update',
 				description: 'Update a task',
@@ -211,22 +206,6 @@ export const taskFields = [
 		description: 'The first name on the task',
 	},
 	{
-		displayName: 'JSON Parameters',
-		name: 'jsonParameters',
-		type: 'boolean',
-		displayOptions: {
-			show: {
-				resource: [
-					'task',
-				],
-				operation: [
-					'create',
-				]
-			},
-		},
-		default: false,
-	},
-	{
 		displayName: 'Additional Fields',
 		name: 'additionalFields',
 		type: 'collection',
@@ -345,28 +324,6 @@ export const taskFields = [
 				default: 1,
 			},
 		],
-	},
-	{
-		displayName: 'Custom Fields',
-		name: 'customFieldsJson',
-		type: 'json',
-		typeOptions: {
-			alwaysOpenEditWindow: true,
-		},
-		displayOptions: {
-			show: {
-				resource: [
-					'task',
-				],
-				operation: [
-					'create',
-				],
-				jsonParameters: [
-					true,
-				],
-			},
-		},
-		default: '',
 	},
 /* -------------------------------------------------------------------------- */
 /*                                task:update                                 */
@@ -844,62 +801,5 @@ export const taskFields = [
 			},
 		},
 		description: 'task ID',
-	},
-/* -------------------------------------------------------------------------- */
-/*                                task:setCustomField                         */
-/* -------------------------------------------------------------------------- */
-	{
-		displayName: 'Task ID',
-		name: 'task',
-		type: 'string',
-		default: '',
-		required: true,
-		displayOptions: {
-			show: {
-				resource: [
-					'task',
-				],
-				operation: [
-					'setCustomField',
-				],
-			},
-		},
-		description: 'Task ID',
-	},
-	{
-		displayName: 'Field ID',
-		name: 'field',
-		type: 'string',
-		default: '',
-		required: true,
-		displayOptions: {
-			show: {
-				resource: [
-					'task',
-				],
-				operation: [
-					'setCustomField',
-				],
-			},
-		},
-		description: 'Task ID',
-	},
-	{
-		displayName: 'Value',
-		name: 'value',
-		type: 'string',
-		default: '',
-		required: true,
-		displayOptions: {
-			show: {
-				resource: [
-					'task',
-				],
-				operation: [
-					'setCustomField',
-				],
-			},
-		},
-		description: 'Value',
 	},
 ] as INodeProperties[];
