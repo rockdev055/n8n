@@ -33,21 +33,6 @@ export const tableOperations = [
 				value: 'deleteRow',
 				description: 'Delete one or multiple rows',
 			},
-			{
-				name: 'Push Button',
-				value: 'pushButton',
-				description: 'Pushes a button',
-			},
-			{
-				name: 'Get Column',
-				value: 'getColumn',
-				description: 'Get a column',
-			},
-			{
-				name: 'Get All Columns',
-				value: 'getAllColumns',
-				description: 'Get all columns',
-			},
 		],
 		default: 'createRow',
 		description: 'The operation to perform.',
@@ -57,7 +42,7 @@ export const tableOperations = [
 export const tableFields = [
 
 /* -------------------------------------------------------------------------- */
-/*                                table:createRow                             */
+/*                                table:createRow                                */
 /* -------------------------------------------------------------------------- */
 	{
 		displayName: 'Doc',
@@ -138,8 +123,9 @@ export const tableFields = [
 			},
 		]
 	},
+
 /* -------------------------------------------------------------------------- */
-/*                                   table:get                                */
+/*                                   table:get                                  */
 /* -------------------------------------------------------------------------- */
 	{
 		displayName: 'Doc',
@@ -263,7 +249,7 @@ export const tableFields = [
 		]
 	},
 /* -------------------------------------------------------------------------- */
-/*                                   table:getAll                             */
+/*                                   table:getAll                                  */
 /* -------------------------------------------------------------------------- */
 	{
 		displayName: 'Doc',
@@ -368,18 +354,6 @@ export const tableFields = [
 			},
 		},
 		options: [
-			{
-				displayName: 'Query',
-				name: 'query',
-				type: 'string',
-				typeOptions: {
-					alwaysOpenEditWindow: true,
-				},
-				default: '',
-				description: `Query used to filter returned rows, specified as <column_id_or_name>:<value>. <br/>
-				If you'd like to use a column name instead of an ID, you must quote it (e.g., "My Column":123).<br/>
-				Also note that value is a JSON value; if you'd like to use a string, you must surround it in quotes (e.g., "groceries").`,
-			},
 			{
 				displayName: 'Use Column Names',
 				name: 'useColumnNames',
@@ -510,251 +484,5 @@ export const tableFields = [
 		},
 		description: 'Row IDs to delete.',
 	},
-/* -------------------------------------------------------------------------- */
-/*                                   table:pushButton                         */
-/* -------------------------------------------------------------------------- */
-	{
-		displayName: 'Doc',
-		name: 'docId',
-		type: 'options',
-		required: true,
-		typeOptions: {
-			loadOptionsMethod: 'getDocs',
-		},
-		default: '',
-		displayOptions: {
-			show: {
-				resource: [
-					'table',
-				],
-				operation: [
-					'pushButton',
-				]
-			},
-		},
-		description: 'ID of the doc.',
-	},
-	{
-		displayName: 'Table',
-		name: 'tableId',
-		type: 'options',
-		typeOptions: {
-			loadOptionsDependsOn: [
-				'docId',
-			],
-			loadOptionsMethod: 'getTables',
-		},
-		required: true,
-		default: '',
-		displayOptions: {
-			show: {
-				resource: [
-					'table',
-				],
-				operation: [
-					'pushButton',
-				]
-			},
-		},
-		description: 'The table to get the row from.',
-	},
-	{
-		displayName: 'Row ID',
-		name: 'rowId',
-		type: 'string',
-		required: true,
-		default: '',
-		displayOptions: {
-			show: {
-				resource: [
-					'table',
-				],
-				operation: [
-					'pushButton',
-				]
-			},
-		},
-		description: `ID or name of the row. Names are discouraged because they're easily prone to being changed by users.
-		If you're using a name, be sure to URI-encode it.
-		If there are multiple rows with the same value in the identifying column, an arbitrary one will be selected`,
-	},
-	{
-		displayName: 'Column',
-		name: 'columnId',
-		type: 'options',
-		required: true,
-		typeOptions: {
-			loadOptionsMethod: 'getColumns',
-			loadOptionsDependsOn: [
-				'docId',
-				'tableId',
-			],
-		},
-		default: '',
-		displayOptions: {
-			show: {
-				resource: [
-					'table',
-				],
-				operation: [
-					'pushButton',
-				]
-			},
-		},
-	},
-/* -------------------------------------------------------------------------- */
-/*                                   table:getColumn                          */
-/* -------------------------------------------------------------------------- */
-	{
-		displayName: 'Doc',
-		name: 'docId',
-		type: 'options',
-		required: true,
-		typeOptions: {
-			loadOptionsMethod: 'getDocs',
-		},
-		default: '',
-		displayOptions: {
-			show: {
-				resource: [
-					'table',
-				],
-				operation: [
-					'getColumn',
-				]
-			},
-		},
-		description: 'ID of the doc.',
-	},
-	{
-		displayName: 'Table',
-		name: 'tableId',
-		type: 'options',
-		typeOptions: {
-			loadOptionsDependsOn: [
-				'docId',
-			],
-			loadOptionsMethod: 'getTables',
-		},
-		required: true,
-		default: '',
-		displayOptions: {
-			show: {
-				resource: [
-					'table',
-				],
-				operation: [
-					'getColumn',
-				]
-			},
-		},
-		description: 'The table to get the row from.',
-	},
-	{
-		displayName: 'Column ID',
-		name: 'columnId',
-		type: 'string',
-		required: true,
-		default: '',
-		displayOptions: {
-			show: {
-				resource: [
-					'table',
-				],
-				operation: [
-					'getColumn',
-				]
-			},
-		},
-		description: 'The table to get the row from.',
-	},
-/* -------------------------------------------------------------------------- */
-/*                                   table:getAllColumns                      */
-/* -------------------------------------------------------------------------- */
-	{
-		displayName: 'Doc',
-		name: 'docId',
-		type: 'options',
-		required: true,
-		typeOptions: {
-			loadOptionsMethod: 'getDocs',
-		},
-		default: '',
-		displayOptions: {
-			show: {
-				resource: [
-					'table',
-				],
-				operation: [
-					'getAllColumns',
-				]
-			},
-		},
-		description: 'ID of the doc.',
-	},
-	{
-		displayName: 'Table',
-		name: 'tableId',
-		type: 'options',
-		typeOptions: {
-			loadOptionsDependsOn: [
-				'docId',
-			],
-			loadOptionsMethod: 'getTables',
-		},
-		required: true,
-		default: '',
-		displayOptions: {
-			show: {
-				resource: [
-					'table',
-				],
-				operation: [
-					'getAllColumns',
-				]
-			},
-		},
-		description: 'The table to get the row from.',
-	},
-	{
-		displayName: 'Return All',
-		name: 'returnAll',
-		type: 'boolean',
-		displayOptions: {
-			show: {
-				resource: [
-					'table',
-				],
-				operation: [
-					'getAllColumns',
-				]
-			},
-		},
-		default: false,
-		description: 'If all results should be returned or only up to a given limit.',
-	},
-	{
-		displayName: 'Limit',
-		name: 'limit',
-		type: 'number',
-		displayOptions: {
-			show: {
-				resource: [
-					'table',
-				],
-				operation: [
-					'getAllColumns',
-				],
-				returnAll: [
-					false,
-				],
-			},
-		},
-		typeOptions: {
-			minValue: 1,
-			maxValue: 100,
-		},
-		default: 50,
-		description: 'How many results to return.',
-	},
+
 ] as INodeProperties[];
