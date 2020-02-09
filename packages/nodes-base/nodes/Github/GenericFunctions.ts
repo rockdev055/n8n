@@ -17,24 +17,17 @@ import {
  * @returns {Promise<any>}
  */
 export async function githubApiRequest(this: IHookFunctions | IExecuteFunctions, method: string, endpoint: string, body: object, query?: object): Promise<any> { // tslint:disable-line:no-any
-	const githubApiCredentials = this.getCredentials('githubApi');
-	const oAuth2ApiCrendetials = this.getCredentials('oAuth2Api');
-	let headers = {}
-	if (githubApiCredentials !== undefined) {
-		headers = {
-			Authorization: `token ${githubApiCredentials.accessToken}`,
-			'User-Agent': githubApiCredentials.user,
-		};
-	} else {
-		const { access_token } = oAuth2ApiCrendetials!.oauthTokenData as IDataObject;
-		headers = {
-			Authorization: `token ${access_token}`,
-			'User-Agent': 'Node js',
-		};
+	const credentials = this.getCredentials('githubApi');
+	if (credentials === undefined) {
+		throw new Error('No credentials got returned!');
 	}
+
 	const options = {
 		method,
-		headers,
+		headers: {
+			'Authorization': `token ${credentials.accessToken}`,
+			'User-Agent': credentials.user,
+		},
 		body,
 		qs: query,
 		uri: `https://api.github.com${endpoint}`,
