@@ -1,5 +1,4 @@
 import {
-	ICredentialDataDecryptedObject,
 	ICredentialsDecrypted,
 	ICredentialsEncrypted,
 	IDataObject,
@@ -18,6 +17,7 @@ import {
 } from 'n8n-core';
 
 
+import * as PCancelable from 'p-cancelable';
 import { ObjectID, Repository } from 'typeorm';
 
 import { ChildProcess } from 'child_process';
@@ -35,9 +35,6 @@ export interface ICustomRequest extends Request {
 	parsedUrl: Url | undefined;
 }
 
-export interface ICredentialsOverwrite {
-	[key: string]: ICredentialDataDecryptedObject;
-}
 
 export interface IDatabaseCollections {
 	Credentials: Repository<ICredentialsDb> | null;
@@ -74,7 +71,7 @@ export interface ICredentialsBase {
 	updatedAt: Date;
 }
 
-export interface ICredentialsDb extends ICredentialsBase, ICredentialsEncrypted {
+export interface ICredentialsDb extends ICredentialsBase, ICredentialsEncrypted{
 	id: number | string | ObjectID;
 }
 
@@ -185,9 +182,10 @@ export interface IExecutionDeleteFilter {
 
 export interface IExecutingWorkflowData {
 	executionData: IWorkflowExecutionDataProcess;
-	process: ChildProcess;
+	process?: ChildProcess;
 	startedAt: Date;
 	postExecutePromises: Array<IDeferredPromise<IRun | undefined>>;
+	workflowExecution?: PCancelable<IRun>;
 }
 
 export interface IN8nConfig {

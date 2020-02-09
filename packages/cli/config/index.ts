@@ -54,20 +54,18 @@ const config = convict({
 		},
 	},
 
-	credentials: {
-		overwrite: {
-			// Allows to set default values for credentials which
-			// get automatically prefilled and the user does not get
-			// displayed and can not change.
-			// Format: { CREDENTIAL_NAME: { PARAMTER: VALUE }}
-			doc: 'Overwrites for credentials',
-			format: '*',
-			default: '{}',
-			env: 'CREDENTIALS_OVERWRITE'
-		}
-	},
-
 	executions: {
+
+		// By default workflows get always executed in their own process.
+		// If this option gets set to "main" it will run them in the
+		// main-process instead.
+		process: {
+			doc: 'In what process workflows should be executed',
+			format: ['main', 'own'],
+			default: 'own',
+			env: 'EXECUTIONS_PROCESS'
+		},
+
 		// If a workflow executes all the data gets saved by default. This
 		// could be a problem when a workflow gets executed a lot and processes
 		// a lot of data. To not write the database full it is possible to
