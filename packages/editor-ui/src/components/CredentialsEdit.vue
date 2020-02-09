@@ -8,7 +8,7 @@
 						Credential type:
 					</el-col>
 					<el-col :span="18">
-						<el-select v-model="credentialType" placeholder="Select Type" size="small">
+						<el-select v-model="credentialType" filterable placeholder="Select Type" size="small">
 							<el-option
 								v-for="item in credentialTypes"
 								:key="item.name"
@@ -31,7 +31,10 @@ import Vue from 'vue';
 import { restApi } from '@/components/mixins/restApi';
 import { showMessage } from '@/components/mixins/showMessage';
 import CredentialsInput from '@/components/CredentialsInput.vue';
-import { ICredentialsDecryptedResponse } from '@/Interface';
+import {
+	ICredentialsCreatedEvent,
+	ICredentialsDecryptedResponse,
+} from '@/Interface';
 
 import {
 	ICredentialType,
@@ -169,35 +172,47 @@ export default mixins(
 	},
 	methods: {
 		getCredentialTypeData (name: string): ICredentialType | null {
-			for (const credentialData of this.credentialTypes) {
-				if (credentialData.name === name) {
-					return credentialData;
-				}
+			let credentialData = this.$store.getters.credentialType(name);
+
+			if (credentialData === null || credentialData.extends === undefined) {
+				return credentialData;
 			}
 
-			return null;
+			// Credentials extends another one. So get the properties of the one it
+			// extends and add them.
+			credentialData = JSON.parse(JSON.stringify(credentialData));
+			for (const credentialTypeName of credentialData.extends) {
+				const data = this.$store.getters.credentialType(credentialTypeName);
+				credentialData.properties.push.apply(credentialData.properties, data.properties);
+			}
+
+			return credentialData;
 		},
-		credentialsCreated (data: ICredentialsDecryptedResponse): void {
-			this.$emit('credentialsCreated', data);
+		credentialsCreated (eventData: ICredentialsCreatedEvent): void {
+			this.$emit('credentialsCreated', eventData);
 
 			this.$showMessage({
 				title: 'Credentials created',
-				message: `The credential "${data.name}" got created!`,
+				message: `The credential "${eventData.data.name}" got created!`,
 				type: 'success',
 			});
 
-			this.closeDialog();
+			if (eventData.options.closeDialog === true) {
+				this.closeDialog();
+			}
 		},
-		credentialsUpdated (data: ICredentialsDecryptedResponse): void {
-			this.$emit('credentialsUpdated', data);
+		credentialsUpdated (eventData: ICredentialsCreatedEvent): void {
+			this.$emit('credentialsUpdated', eventData);
 
 			this.$showMessage({
 				title: 'Credentials updated',
-				message: `The credential "${data.name}" got updated!`,
+				message: `The credential "${eventData.data.name}" got updated!`,
 				type: 'success',
 			});
 
-			this.closeDialog();
+			if (eventData.options.closeDialog === true) {
+				this.closeDialog();
+			}
 		},
 		closeDialog (): void {
 			// Handle the close externally as the visible parameter is an external prop
