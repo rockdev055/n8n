@@ -1,4 +1,5 @@
 import {
+	CredentialsHelper,
 	Db,
 	IExecutionDb,
 	IExecutionFlattedDb,
@@ -9,7 +10,6 @@ import {
 	Push,
 	ResponseHelper,
 	WebhookHelpers,
-	WorkflowCredentials,
 	WorkflowHelpers,
 } from './';
 
@@ -307,10 +307,6 @@ export async function executeWorkflow(workflowInfo: IExecuteWorkflowInfo, additi
 	const additionalDataIntegrated = await getBase(additionalData.credentials);
 	additionalDataIntegrated.hooks = getWorkflowHooksIntegrated(mode, executionId, workflowData!, { parentProcessMode: additionalData.hooks!.mode });
 
-	// Get the needed credentials for the current workflow as they will differ to the ones of the
-	// calling workflow.
-	additionalDataIntegrated.credentials = await WorkflowCredentials(workflowData!.nodes);
-
 	// Find Start-Node
 	const requiredNodeTypes = ['n8n-nodes-base.start'];
 	let startNode: INode | undefined;
@@ -396,6 +392,7 @@ export async function getBase(credentials: IWorkflowCredentials, currentNodePara
 
 	return {
 		credentials,
+		credentialsHelper: new CredentialsHelper(credentials, encryptionKey),
 		encryptionKey,
 		executeWorkflow,
 		restApiUrl: urlBaseWebhook + config.get('endpoints.rest') as string,

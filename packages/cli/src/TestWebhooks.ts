@@ -1,18 +1,11 @@
 import * as express from 'express';
-import {
-	In as findIn,
-	FindManyOptions,
-} from 'typeorm';
 
 import {
-	Db,
 	IResponseCallbackData,
-	IWorkflowDb,
-	NodeTypes,
 	Push,
 	ResponseHelper,
 	WebhookHelpers,
-	WorkflowHelpers,
+	IWorkflowDb,
 } from './';
 
 import {
@@ -67,17 +60,9 @@ export class TestWebhooks {
 			throw new ResponseHelper.ResponseError('The requested webhook is not registred.', 404, 404);
 		}
 
-		const workflowData = await Db.collections.Workflow!.findOne(webhookData.workflowId);
-		if (workflowData === undefined) {
-			throw new ResponseHelper.ResponseError(`Could not find workflow with id "${webhookData.workflowId}"`, 404, 404);
-		}
-
-		const nodeTypes = NodeTypes();
-		const workflow = new Workflow(webhookData.workflowId, workflowData.nodes, workflowData.connections, workflowData.active, nodeTypes, workflowData.staticData, workflowData.settings);
-
 		// Get the node which has the webhook defined to know where to start from and to
 		// get additional data
-		const workflowStartNode = workflow.getNode(webhookData.node);
+		const workflowStartNode = webhookData.workflow.getNode(webhookData.node);
 		if (workflowStartNode === null) {
 			throw new ResponseHelper.ResponseError('Could not find node to process webhook.', 404, 404);
 		}
@@ -87,7 +72,8 @@ export class TestWebhooks {
 		return new Promise(async (resolve, reject) => {
 			try {
 				const executionMode = 'manual';
-				const executionId = await WebhookHelpers.executeWebhook(workflow, webhookData, this.testWebhookData[webhookKey].workflowData, workflowStartNode, executionMode, this.testWebhookData[webhookKey].sessionId, request, response, (error: Error | null, data: IResponseCallbackData) => {
+
+				const executionId = await WebhookHelpers.executeWebhook(webhookData, this.testWebhookData[webhookKey].workflowData, workflowStartNode, executionMode, this.testWebhookData[webhookKey].sessionId, request, response, (error: Error | null, data: IResponseCallbackData) => {
 					if (error !== null) {
 						return reject(error);
 					}
@@ -104,7 +90,7 @@ export class TestWebhooks {
 				// Inform editor-ui that webhook got received
 				if (this.testWebhookData[webhookKey].sessionId !== undefined) {
 					const pushInstance = Push.getInstance();
-					pushInstance.send('testWebhookReceived', { workflowId: webhookData.workflowId, executionId }, this.testWebhookData[webhookKey].sessionId!);
+					pushInstance.send('testWebhookReceived', { workflowId: webhookData.workflow.id, executionId }, this.testWebhookData[webhookKey].sessionId!);
 				}
 
 			} catch (error) {
@@ -114,7 +100,7 @@ export class TestWebhooks {
 			// Remove the webhook
 			clearTimeout(this.testWebhookData[webhookKey].timeout);
 			delete this.testWebhookData[webhookKey];
-			this.activeWebhooks!.removeWorkflow(workflow);
+			this.activeWebhooks!.removeByWorkflowId(webhookData.workflow.id!.toString());
 		});
 	}
 
@@ -139,7 +125,7 @@ export class TestWebhooks {
 
 		// Remove test-webhooks automatically if they do not get called (after 120 seconds)
 		const timeout = setTimeout(() => {
-			this.cancelTestWebhook(workflowData.id.toString(), workflow);
+			this.cancelTestWebhook(workflowData.id.toString());
 		}, 120000);
 
 		let key: string;
@@ -150,11 +136,8 @@ export class TestWebhooks {
 				timeout,
 				workflowData,
 			};
-			await this.activeWebhooks!.add(workflow, webhookData, mode);
+			await this.activeWebhooks!.add(webhookData, mode);
 		}
-
-		// Save static data!
-		await WorkflowHelpers.saveStaticData(workflow);
 
 		return true;
  	}
@@ -167,7 +150,7 @@ export class TestWebhooks {
 	 * @returns {boolean}
 	 * @memberof TestWebhooks
 	 */
-	cancelTestWebhook(workflowId: string, workflow: Workflow): boolean {
+	cancelTestWebhook(workflowId: string): boolean {
 		let foundWebhook = false;
 		for (const webhookKey of Object.keys(this.testWebhookData)) {
 			const webhookData = this.testWebhookData[webhookKey];
@@ -192,7 +175,7 @@ export class TestWebhooks {
 
 			// Remove the webhook
 			delete this.testWebhookData[webhookKey];
-			this.activeWebhooks!.removeWorkflow(workflow);
+			this.activeWebhooks!.removeByWorkflowId(workflowId);
 		}
 
 		return foundWebhook;
@@ -206,33 +189,13 @@ export class TestWebhooks {
 		if (this.activeWebhooks === null) {
 			return;
 		}
-		const nodeTypes = NodeTypes();
 
-		/*
-		 * Here I check first if WorkflowIds is empty. This is done because when entering an empty array for TypeORM's In option, a syntax error is generated in MySQL.
-		 * Because the SQL is: ... FROM `workflow_entity`` WorkflowEntity` WHERE `WorkflowEntity`.`id` IN ()
-		 *
-		 * The empty IN function is not accepted in MySQL.
-		 */
-		const WorkflowIds = this.activeWebhooks.getWorkflowIds();
-		if (WorkflowIds.length > 0) {
-			const findQuery = {
-				where: {
-					id: findIn(WorkflowIds)
-				},
-			} as FindManyOptions;
-
-			const workflowsDb = await Db.collections.Workflow!.find(findQuery);
-			const workflows: Workflow[] = [];
-			for (const workflowData of workflowsDb) {
-				const workflow = new Workflow(workflowData.id.toString(), workflowData.nodes, workflowData.connections, workflowData.active, nodeTypes, workflowData.staticData, workflowData.settings);
-				workflows.push(workflow);
-			}
-
-			return this.activeWebhooks.removeAll(workflows);
-		}
+		return this.activeWebhooks.removeAll();
 	}
+
 }
+
+
 
 let testWebhooksInstance: TestWebhooks | undefined;
 
