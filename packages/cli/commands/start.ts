@@ -11,7 +11,6 @@ import * as config from '../config';
 import {
 	ActiveWorkflowRunner,
 	CredentialTypes,
-	CredentialsOverwrites,
 	Db,
 	GenericHelpers,
 	LoadNodesAndCredentials,
@@ -113,10 +112,6 @@ export class Start extends Command {
 				const loadNodesAndCredentials = LoadNodesAndCredentials();
 				await loadNodesAndCredentials.init();
 
-				// Load the credentials overwrites if any exist
-				const credentialsOverwrites = CredentialsOverwrites();
-				await credentialsOverwrites.init();
-
 				// Add the found types to an instance other parts of the application can use
 				const nodeTypes = NodeTypes();
 				await nodeTypes.init(loadNodesAndCredentials.nodeTypes);
@@ -181,7 +176,7 @@ export class Start extends Command {
 						Start.openBrowser();
 					}
 					this.log(`\nPress "o" to open in Browser.`);
-					process.stdin.on("data", (key: string) => {
+					process.stdin.on("data", (key) => {
 						if (key === 'o') {
 							Start.openBrowser();
 							inputText = '';
