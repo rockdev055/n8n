@@ -41,6 +41,7 @@ tmpl.tmpl.errorHandler = () => { };
 
 export class Workflow {
 	id: string | undefined;
+	name: string | undefined;
 	nodes: INodes = {};
 	connectionsBySourceNode: IConnections;
 	connectionsByDestinationNode: IConnections;
@@ -52,15 +53,17 @@ export class Workflow {
 	// ids of registred webhooks of nodes
 	staticData: IDataObject;
 
-	constructor(id: string | undefined, nodes: INode[], connections: IConnections, active: boolean, nodeTypes: INodeTypes, staticData?: IDataObject, settings?: IWorkflowSettings) {
-		this.id = id;
-		this.nodeTypes = nodeTypes;
+	// constructor(id: string | undefined, nodes: INode[], connections: IConnections, active: boolean, nodeTypes: INodeTypes, staticData?: IDataObject, settings?: IWorkflowSettings) {
+	constructor(parameters: {id?: string, name?: string, nodes: INode[], connections: IConnections, active: boolean, nodeTypes: INodeTypes, staticData?: IDataObject, settings?: IWorkflowSettings}) {
+		this.id = parameters.id;
+		this.name = parameters.name;
+		this.nodeTypes = parameters.nodeTypes;
 
 		// Save nodes in workflow as object to be able to get the
 		// nodes easily by its name.
 		// Also directly add the default values of the node type.
 		let nodeType: INodeType | undefined;
-		for (const node of nodes) {
+		for (const node of parameters.nodes) {
 			this.nodes[node.name] = node;
 			nodeType = this.nodeTypes.getByName(node.type);
 
@@ -77,16 +80,16 @@ export class Workflow {
 			const nodeParameters = NodeHelpers.getNodeParameters(nodeType.description.properties, node.parameters, true, false);
 			node.parameters = nodeParameters !== null ? nodeParameters : {};
 		}
-		this.connectionsBySourceNode = connections;
+		this.connectionsBySourceNode = parameters.connections;
 
 		// Save also the connections by the destionation nodes
-		this.connectionsByDestinationNode = this.__getConnectionsByDestination(connections);
+		this.connectionsByDestinationNode = this.__getConnectionsByDestination(parameters.connections);
 
-		this.active = active || false;
+		this.active = parameters.active || false;
 
-		this.staticData = ObservableObject.create(staticData || {}, undefined, { ignoreEmptyOnFirstChild: true });
+		this.staticData = ObservableObject.create(parameters.staticData || {}, undefined, { ignoreEmptyOnFirstChild: true });
 
-		this.settings = settings || {};
+		this.settings = parameters.settings || {};
 	}
 
 
@@ -890,57 +893,22 @@ export class Workflow {
 		// Execute the expression
 		try {
 			const returnValue = tmpl.tmpl(parameterValue, dataProxy.getDataProxy());
-			if (typeof returnValue === 'object' && Object.keys(returnValue).length === 0) {
-				// When expression is incomplete it returns a Proxy which causes problems.
-				// Catch it with this code and return a proper error.
-				throw new Error('Expression is not valid.');
+			if (returnValue !== null && typeof returnValue === 'object') {
+				if (Object.keys(returnValue).length === 0) {
+					// When expression is incomplete it returns a Proxy which causes problems.
+					// Catch it with this code and return a proper error.
+					throw new Error('Expression is not valid.');
+				}
+				if (returnObjectAsString === true)  {
+					return this.convertObjectValueToString(returnValue);
+				}
 			}
-
-			if (returnObjectAsString === true && typeof returnValue === 'object') {
-				return this.convertObjectValueToString(returnValue);
-			}
-
 			return returnValue;
 		} catch (e) {
 			throw new Error('Expression is not valid.');
 		}
 	}
 
-
-	/**
-	 * Executes the hooks of the node
-	 *
-	 * @param {string} hookName The name of the hook to execute
-	 * @param {IWebhookData} webhookData
-	 * @param {INodeExecuteFunctions} nodeExecuteFunctions
-	 * @param {WorkflowExecuteMode} mode
-	 * @returns {Promise<void>}
-	 * @memberof Workflow
-	 */
-	async runNodeHooks(hookName: string, webhookData: IWebhookData, nodeExecuteFunctions: INodeExecuteFunctions, mode: WorkflowExecuteMode): Promise<void> {
-		const node = this.getNode(webhookData.node) as INode;
-		const nodeType = this.nodeTypes.getByName(node.type) as INodeType;
-
-		if (nodeType.description.hooks === undefined) {
-			return;
-		}
-
-
-		if (nodeType.description.hooks[hookName] === undefined) {
-			return;
-		}
-
-
-		if (nodeType.hooks === undefined && nodeType.description.hooks[hookName]!.length !== 0) {
-			// There should be hook functions but they do not exist
-			throw new Error('There are hooks defined to run but are not implemented.');
-		}
-
-		for (const hookDescription of nodeType.description.hooks[hookName]!) {
-			const thisArgs = nodeExecuteFunctions.getExecuteHookFunctions(this, node, webhookData.workflowExecuteAdditionalData, mode);
-			await nodeType.hooks![hookDescription.method].call(thisArgs);
-		}
-	}
 
 
 	/**
