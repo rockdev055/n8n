@@ -41,7 +41,6 @@ tmpl.tmpl.errorHandler = () => { };
 
 export class Workflow {
 	id: string | undefined;
-	name: string | undefined;
 	nodes: INodes = {};
 	connectionsBySourceNode: IConnections;
 	connectionsByDestinationNode: IConnections;
@@ -53,17 +52,15 @@ export class Workflow {
 	// ids of registred webhooks of nodes
 	staticData: IDataObject;
 
-	// constructor(id: string | undefined, nodes: INode[], connections: IConnections, active: boolean, nodeTypes: INodeTypes, staticData?: IDataObject, settings?: IWorkflowSettings) {
-	constructor(parameters: {id?: string, name?: string, nodes: INode[], connections: IConnections, active: boolean, nodeTypes: INodeTypes, staticData?: IDataObject, settings?: IWorkflowSettings}) {
-		this.id = parameters.id;
-		this.name = parameters.name;
-		this.nodeTypes = parameters.nodeTypes;
+	constructor(id: string | undefined, nodes: INode[], connections: IConnections, active: boolean, nodeTypes: INodeTypes, staticData?: IDataObject, settings?: IWorkflowSettings) {
+		this.id = id;
+		this.nodeTypes = nodeTypes;
 
 		// Save nodes in workflow as object to be able to get the
 		// nodes easily by its name.
 		// Also directly add the default values of the node type.
 		let nodeType: INodeType | undefined;
-		for (const node of parameters.nodes) {
+		for (const node of nodes) {
 			this.nodes[node.name] = node;
 			nodeType = this.nodeTypes.getByName(node.type);
 
@@ -80,16 +77,16 @@ export class Workflow {
 			const nodeParameters = NodeHelpers.getNodeParameters(nodeType.description.properties, node.parameters, true, false);
 			node.parameters = nodeParameters !== null ? nodeParameters : {};
 		}
-		this.connectionsBySourceNode = parameters.connections;
+		this.connectionsBySourceNode = connections;
 
 		// Save also the connections by the destionation nodes
-		this.connectionsByDestinationNode = this.__getConnectionsByDestination(parameters.connections);
+		this.connectionsByDestinationNode = this.__getConnectionsByDestination(connections);
 
-		this.active = parameters.active || false;
+		this.active = active || false;
 
-		this.staticData = ObservableObject.create(parameters.staticData || {}, undefined, { ignoreEmptyOnFirstChild: true });
+		this.staticData = ObservableObject.create(staticData || {}, undefined, { ignoreEmptyOnFirstChild: true });
 
-		this.settings = parameters.settings || {};
+		this.settings = settings || {};
 	}
 
 
