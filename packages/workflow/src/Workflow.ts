@@ -890,22 +890,57 @@ export class Workflow {
 		// Execute the expression
 		try {
 			const returnValue = tmpl.tmpl(parameterValue, dataProxy.getDataProxy());
-			if (returnValue !== null && typeof returnValue === 'object') {
-				if (Object.keys(returnValue).length === 0) {
-					// When expression is incomplete it returns a Proxy which causes problems.
-					// Catch it with this code and return a proper error.
-					throw new Error('Expression is not valid.');
-				}
-				if (returnObjectAsString === true)  {
-					return this.convertObjectValueToString(returnValue);
-				}
+			if (typeof returnValue === 'object' && Object.keys(returnValue).length === 0) {
+				// When expression is incomplete it returns a Proxy which causes problems.
+				// Catch it with this code and return a proper error.
+				throw new Error('Expression is not valid.');
 			}
+
+			if (returnObjectAsString === true && typeof returnValue === 'object') {
+				return this.convertObjectValueToString(returnValue);
+			}
+
 			return returnValue;
 		} catch (e) {
 			throw new Error('Expression is not valid.');
 		}
 	}
 
+
+	/**
+	 * Executes the hooks of the node
+	 *
+	 * @param {string} hookName The name of the hook to execute
+	 * @param {IWebhookData} webhookData
+	 * @param {INodeExecuteFunctions} nodeExecuteFunctions
+	 * @param {WorkflowExecuteMode} mode
+	 * @returns {Promise<void>}
+	 * @memberof Workflow
+	 */
+	async runNodeHooks(hookName: string, webhookData: IWebhookData, nodeExecuteFunctions: INodeExecuteFunctions, mode: WorkflowExecuteMode): Promise<void> {
+		const node = this.getNode(webhookData.node) as INode;
+		const nodeType = this.nodeTypes.getByName(node.type) as INodeType;
+
+		if (nodeType.description.hooks === undefined) {
+			return;
+		}
+
+
+		if (nodeType.description.hooks[hookName] === undefined) {
+			return;
+		}
+
+
+		if (nodeType.hooks === undefined && nodeType.description.hooks[hookName]!.length !== 0) {
+			// There should be hook functions but they do not exist
+			throw new Error('There are hooks defined to run but are not implemented.');
+		}
+
+		for (const hookDescription of nodeType.description.hooks[hookName]!) {
+			const thisArgs = nodeExecuteFunctions.getExecuteHookFunctions(this, node, webhookData.workflowExecuteAdditionalData, mode);
+			await nodeType.hooks![hookDescription.method].call(thisArgs);
+		}
+	}
 
 
 	/**
