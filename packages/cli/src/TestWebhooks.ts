@@ -1,11 +1,6 @@
 import * as express from 'express';
-import {
-	In as findIn,
-	FindManyOptions,
-} from 'typeorm';
 
 import {
-	Db,
 	IResponseCallbackData,
 	IWorkflowDb,
 	NodeTypes,
@@ -67,13 +62,12 @@ export class TestWebhooks {
 			throw new ResponseHelper.ResponseError('The requested webhook is not registred.', 404, 404);
 		}
 
-		const workflowData = await Db.collections.Workflow!.findOne(webhookData.workflowId);
-		if (workflowData === undefined) {
-			throw new ResponseHelper.ResponseError(`Could not find workflow with id "${webhookData.workflowId}"`, 404, 404);
-		}
+		const webhookKey = this.activeWebhooks!.getWebhookKey(webhookData.httpMethod, webhookData.path);
+
+		const workflowData = this.testWebhookData[webhookKey].workflowData;
 
 		const nodeTypes = NodeTypes();
-		const workflow = new Workflow(webhookData.workflowId, workflowData.nodes, workflowData.connections, workflowData.active, nodeTypes, workflowData.staticData, workflowData.settings);
+		const workflow = new Workflow({ id: webhookData.workflowId, name: workflowData.name, nodes: workflowData.nodes, connections: workflowData.connections, active: workflowData.active, nodeTypes, staticData: workflowData.staticData, settings: workflowData.settings});
 
 		// Get the node which has the webhook defined to know where to start from and to
 		// get additional data
@@ -81,8 +75,6 @@ export class TestWebhooks {
 		if (workflowStartNode === null) {
 			throw new ResponseHelper.ResponseError('Could not find node to process webhook.', 404, 404);
 		}
-
-		const webhookKey = this.activeWebhooks!.getWebhookKey(webhookData.httpMethod, webhookData.path);
 
 		return new Promise(async (resolve, reject) => {
 			try {
@@ -206,27 +198,21 @@ export class TestWebhooks {
 		if (this.activeWebhooks === null) {
 			return;
 		}
+
 		const nodeTypes = NodeTypes();
 
-		const findQuery = {
-			where: {
-				id: findIn(this.activeWebhooks.getWorkflowIds())
-			},
-		} as FindManyOptions;
-
-		const workflowsDb = await Db.collections.Workflow!.find(findQuery);
+		let workflowData: IWorkflowDb;
+		let workflow: Workflow;
 		const workflows: Workflow[] = [];
-		for (const workflowData of workflowsDb) {
-			const workflow = new Workflow(workflowData.id.toString(), workflowData.nodes, workflowData.connections, workflowData.active, nodeTypes, workflowData.staticData, workflowData.settings);
-			workflows.push(workflow);
+		for (const webhookKey of Object.keys(this.testWebhookData)) {
+			workflowData = this.testWebhookData[webhookKey].workflowData;
+			workflow = new Workflow({ id: workflowData.id.toString(), name: workflowData.name, nodes: workflowData.nodes, connections: workflowData.connections, active: workflowData.active, nodeTypes, staticData: workflowData.staticData, settings: workflowData.settings });
+			workflows.push();
 		}
 
 		return this.activeWebhooks.removeAll(workflows);
 	}
-
 }
-
-
 
 let testWebhooksInstance: TestWebhooks | undefined;
 
