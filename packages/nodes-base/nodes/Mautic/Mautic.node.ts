@@ -68,7 +68,12 @@ export class Mautic implements INodeType {
 			// select them easily
 			async getCompanies(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
 				const returnData: INodePropertyOptions[] = [];
-				const companies = await mauticApiRequestAllItems.call(this, 'companies', 'GET', '/companies');
+				let companies;
+				try {
+					companies = await mauticApiRequestAllItems.call(this, 'companies', 'GET', '/companies');
+				} catch (err) {
+					throw new Error(`Mautic Error: ${JSON.stringify(err)}`);
+				}
 				for (const company of companies) {
 					returnData.push({
 						name: company.fields.all.companyname,
@@ -124,8 +129,12 @@ export class Mautic implements INodeType {
 					if (additionalFields.ownerId) {
 						body.ownerId = additionalFields.ownerId as string;
 					}
-					responseData = await mauticApiRequest.call(this, 'POST', '/contacts/new', body);
-					responseData = responseData.contact;
+					try {
+						responseData = await mauticApiRequest.call(this, 'POST', '/contacts/new', body);
+						responseData = responseData.contact;
+					} catch (err) {
+						throw new Error(`Mautic Error: ${JSON.stringify(err)}`);
+					}
 				}
 				//https://developer.mautic.org/?php#edit-contact
 				if (operation === 'update') {
@@ -167,14 +176,22 @@ export class Mautic implements INodeType {
 					if (updateFields.ownerId) {
 						body.ownerId = updateFields.ownerId as string;
 					}
-					responseData = await mauticApiRequest.call(this, 'PATCH', `/contacts/${contactId}/edit`, body);
-					responseData = responseData.contact;
+					try {
+						responseData = await mauticApiRequest.call(this, 'PATCH', `/contacts/${contactId}/edit`, body);
+						responseData = responseData.contact;
+					} catch (err) {
+						throw new Error(`Mautic Error: ${JSON.stringify(err)}`);
+					}
 				}
 				//https://developer.mautic.org/?php#get-contact
 				if (operation === 'get') {
 					const contactId = this.getNodeParameter('contactId', i) as string;
-					responseData = await mauticApiRequest.call(this, 'GET', `/contacts/${contactId}`);
-					responseData = responseData.contact;
+					try {
+						responseData = await mauticApiRequest.call(this, 'GET', `/contacts/${contactId}`);
+						responseData = responseData.contact;
+					} catch (err) {
+						throw new Error(`Mautic Error: ${JSON.stringify(err)}`);
+					}
 				}
 				//https://developer.mautic.org/?php#list-contacts
 				if (operation === 'getAll') {
@@ -187,22 +204,30 @@ export class Mautic implements INodeType {
 						qs.orderBy = snakeCase(qs.orderBy as string);
 					}
 
-					if (returnAll === true) {
-						responseData = await mauticApiRequestAllItems.call(this, 'contacts', 'GET', '/contacts', {}, qs);
-					} else {
-						qs.limit = this.getNodeParameter('limit', i) as number;
-						qs.start = 0;
-						responseData = await mauticApiRequest.call(this, 'GET', '/contacts', {}, qs);
-						responseData = responseData.contacts;
-						responseData = Object.values(responseData);
-					}
+					try {
+						if (returnAll === true) {
+							responseData = await mauticApiRequestAllItems.call(this, 'contacts', 'GET', '/contacts', {}, qs);
+						} else {
+							qs.limit = this.getNodeParameter('limit', i) as number;
+							qs.start = 0;
+							responseData = await mauticApiRequest.call(this, 'GET', '/contacts', {}, qs);
+							responseData = responseData.contacts;
+							responseData = Object.values(responseData);
+						}
 
+					} catch (err) {
+						throw new Error(`Mautic Error: ${JSON.stringify(err)}`);
+					}
 				}
 				//https://developer.mautic.org/?php#delete-contact
 				if (operation === 'delete') {
 					const contactId = this.getNodeParameter('contactId', i) as string;
-					responseData = await mauticApiRequest.call(this, 'DELETE', `/contacts/${contactId}/delete`);
-					responseData = responseData.contact;
+					try {
+						responseData = await mauticApiRequest.call(this, 'DELETE', `/contacts/${contactId}/delete`);
+						responseData = responseData.contact;
+					} catch (err) {
+						throw new Error(`Mautic Error: ${JSON.stringify(err)}`);
+					}
 				}
 			}
 

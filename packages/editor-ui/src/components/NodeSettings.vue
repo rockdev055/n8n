@@ -288,6 +288,20 @@ export default mixins(
 					}
 				}
 			},
+			updateNodeCredentialIssues (node: INodeUi): void {
+				const fullNodeIssues: INodeIssues | null = this.getNodeCredentialIssues(node);
+
+				let newIssues: INodeIssueObjectProperty | null = null;
+				if (fullNodeIssues !== null) {
+					newIssues = fullNodeIssues.credentials!;
+				}
+
+				this.$store.commit('setNodeIssue', {
+					node: node.name,
+					type: 'credentials',
+					value: newIssues,
+				} as INodeIssueData);
+			},
 			credentialSelected (updateInformation: INodeUpdatePropertiesInformation) {
 				// Update the values on the node
 				this.$store.commit('updateNodeProperties', updateInformation);
@@ -379,7 +393,20 @@ export default mixins(
 					};
 					this.$store.commit('setNodeParameters', updateInformation);
 
-					this.updateNodeParameterIssues(node, nodeType);
+					// All data got updated everywhere so update now the issues
+					const fullNodeIssues: INodeIssues | null = NodeHelpers.getNodeParametersIssues(nodeType.properties, node);
+
+					let newIssues: INodeIssueObjectProperty | null = null;
+					if (fullNodeIssues !== null) {
+						newIssues = fullNodeIssues.parameters!;
+					}
+
+					this.$store.commit('setNodeIssue', {
+						node: node.name,
+						type: 'parameters',
+						value: newIssues,
+					} as INodeIssueData);
+
 					this.updateNodeCredentialIssues(node);
 				} else {
 					// A property on the node itself changed
