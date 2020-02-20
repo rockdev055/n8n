@@ -231,18 +231,27 @@ class App {
 		});
 
 		// Support application/json type post data
-		this.app.use(bodyParser.json({ limit: "16mb", verify: (req, res, buf) => {
-			// @ts-ignore
-			req.rawBody = buf;
-		}}));
+		this.app.use(bodyParser.json({
+			limit: '16mb', verify: (req, res, buf) => {
+				// @ts-ignore
+				req.rawBody = buf;
+			}
+		}));
 
 		// Support application/xml type post data
 		// @ts-ignore
-		this.app.use(bodyParser.xml({ limit: "16mb", xmlParseOptions: {
+		this.app.use(bodyParser.xml({ limit: '16mb', xmlParseOptions: {
 			normalize: true,     // Trim whitespace inside text nodes
 			normalizeTags: true, // Transform tags to lowercase
-			explicitArray: false // Only put properties in array if length > 1
+			explicitArray: false, // Only put properties in array if length > 1
 		  } }));
+
+		this.app.use(bodyParser.text({
+			limit: '16mb', verify: (req, res, buf) => {
+				// @ts-ignore
+				req.rawBody = buf;
+			}
+		}));
 
 		// Make sure that Vue history mode works properly
 		this.app.use(history({
@@ -499,7 +508,7 @@ class App {
 				const credentials = await WorkflowCredentials(workflowData.nodes);
 				const additionalData = await WorkflowExecuteAdditionalData.getBase(credentials);
 				const nodeTypes = NodeTypes();
-				const workflowInstance = new Workflow(workflowData.id, workflowData.nodes, workflowData.connections, false, nodeTypes, undefined, workflowData.settings);
+				const workflowInstance = new Workflow({ id: workflowData.id, name: workflowData.name, nodes: workflowData.nodes, connections: workflowData.connections, active: false, nodeTypes, staticData: undefined, settings: workflowData.settings });
 				const needsWebhook = await this.testWebhooks.needsWebhookData(workflowData, workflowInstance, additionalData, executionMode, sessionId, destinationNode);
 				if (needsWebhook === true) {
 					return {
@@ -1079,7 +1088,7 @@ class App {
 			}
 
 			const nodeTypes = NodeTypes();
-			const workflow = new Workflow(workflowId.toString(), workflowData.nodes, workflowData.connections, workflowData.active, nodeTypes, workflowData.staticData, workflowData.settings);
+			const workflow = new Workflow({ id: workflowId.toString(), name: workflowData.name, nodes: workflowData.nodes, connections: workflowData.connections, active: workflowData.active, nodeTypes, staticData: workflowData.staticData, settings: workflowData.settings });
 
 			return this.testWebhooks.cancelTestWebhook(workflowId, workflow);
 		}));
