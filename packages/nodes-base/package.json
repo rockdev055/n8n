@@ -32,7 +32,6 @@
             "dist/credentials/Amqp.credentials.js",
             "dist/credentials/AsanaApi.credentials.js",
             "dist/credentials/Aws.credentials.js",
-            "dist/credentials/AffinityApi.credentials.js",
             "dist/credentials/BitbucketApi.credentials.js",
             "dist/credentials/BitlyApi.credentials.js",
             "dist/credentials/ChargebeeApi.credentials.js",
@@ -98,7 +97,8 @@
             "dist/credentials/WebflowApi.credentials.js",
             "dist/credentials/WordpressApi.credentials.js",
             "dist/credentials/WooCommerceApi.credentials.js",
-            "dist/credentials/ZendeskApi.credentials.js"
+            "dist/credentials/ZendeskApi.credentials.js",
+            "dist/credentials/ZulipApi.credentials.js"
         ],
         "nodes": [
             "dist/nodes/ActiveCampaign/ActiveCampaign.node.js",
@@ -109,8 +109,6 @@
             "dist/nodes/Amqp/AmqpTrigger.node.js",
             "dist/nodes/Asana/Asana.node.js",
             "dist/nodes/Asana/AsanaTrigger.node.js",
-            "dist/nodes/Affinity/Affinity.node.js",
-            "dist/nodes/Affinity/AffinityTrigger.node.js",
             "dist/nodes/Aws/AwsLambda.node.js",
             "dist/nodes/Aws/AwsSes.node.js",
             "dist/nodes/Aws/AwsSns.node.js",
@@ -222,7 +220,8 @@
             "dist/nodes/WriteBinaryFile.node.js",
             "dist/nodes/Xml.node.js",
             "dist/nodes/Zendesk/Zendesk.node.js",
-            "dist/nodes/Zendesk/ZendeskTrigger.node.js"
+            "dist/nodes/Zendesk/ZendeskTrigger.node.js",
+            "dist/nodes/Zulip/Zulip.node.js"
         ]
     },
     "devDependencies": {
@@ -240,7 +239,7 @@
         "@types/moment-timezone": "^0.5.12",
         "@types/mongodb": "^3.3.6",
         "@types/node": "^10.10.1",
-		"@types/nodemailer": "^4.6.5",
+        "@types/nodemailer": "^4.6.5",
         "@types/redis": "^2.8.11",
         "@types/request-promise-native": "~1.0.15",
         "@types/uuid": "^3.4.6",
