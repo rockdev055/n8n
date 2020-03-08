@@ -18,6 +18,7 @@ self-hosted, easily extended, and so also used with internal tools.
 - [Hosted n8n](#hosted-n8n)
 - [What does n8n mean and how do you pronounce it](#what-does-n8n-mean-and-how-do-you-pronounce-it)
 - [Support](#support)
+- [Jobs](#jobs)
 - [Upgrading](#upgrading)
 - [License](#license)
 - [Development](#development)
@@ -32,7 +33,7 @@ Slack notification every time a Github repository received or lost a star.
 
 ## Available integrations
 
-n8n has 80+ different nodes to automate workflows. The list can be found on: [https://n8n.io/nodes](https://n8n.io/nodes)
+n8n has 100+ different nodes to automate workflows. The list can be found on: [https://n8n.io/nodes](https://n8n.io/nodes)
 
 
 ## Documentation
@@ -81,6 +82,15 @@ did not hear anybody complain there. So I guess it should be ok.
 If you have problems or questions go to our forum, we will then try to help you asap:
 
 [https://community.n8n.io](https://community.n8n.io)
+
+
+
+## Jobs
+
+If you are interested in working for n8n and so shape the future of the project
+check out our job posts:
+
+[https://jobs.n8n.io](https://jobs.n8n.io)
 
 
 

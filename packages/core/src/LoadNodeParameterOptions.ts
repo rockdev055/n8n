@@ -1,7 +1,6 @@
 import {
 	INode,
 	INodeCredentials,
-	INodeParameters,
 	INodePropertyOptions,
 	INodeTypes,
 	IWorkflowExecuteAdditionalData,
@@ -21,7 +20,7 @@ export class LoadNodeParameterOptions {
 	workflow: Workflow;
 
 
-	constructor(nodeTypeName: string, nodeTypes: INodeTypes, currentNodeParameters: INodeParameters, credentials?: INodeCredentials) {
+	constructor(nodeTypeName: string, nodeTypes: INodeTypes, credentials?: INodeCredentials) {
 		const nodeType = nodeTypes.getByName(nodeTypeName);
 
 		if (nodeType === undefined) {
@@ -29,7 +28,8 @@ export class LoadNodeParameterOptions {
 		}
 
 		const nodeData: INode = {
-			parameters: currentNodeParameters,
+			parameters: {
+			},
 			name: TEMP_NODE_NAME,
 			type: nodeTypeName,
 			typeVersion: 1,
@@ -50,7 +50,7 @@ export class LoadNodeParameterOptions {
 			connections: {},
 		};
 
-		this.workflow = new Workflow(undefined, workflowData.nodes, workflowData.connections, false, nodeTypes, undefined);
+		this.workflow = new Workflow({ nodes: workflowData.nodes, connections: workflowData.connections, active: false, nodeTypes });
 	}
 
 
