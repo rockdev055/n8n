@@ -33,19 +33,9 @@ export class ErrorTrigger implements INodeType {
 		if (mode === 'manual' && items.length === 1 && Object.keys(items[0].json).length === 0 && items[0].binary === undefined) {
 			// If we are in manual mode and no input data got provided we return
 			// example data to allow to develope and test errorWorkflows easily
-
-			const restApiUrl = this.getRestApiUrl();
-
-			const urlParts = restApiUrl.split('/');
-			urlParts.pop();
-			urlParts.push('execution');
-
-			const id = 231;
-
 			items[0].json = {
 				execution: {
-					id,
-					url: `${urlParts.join('/')}/${id}`,
+					id: '231',
 					retryOf: '34',
 					error: {
 						message: 'Example Error Message',

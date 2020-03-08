@@ -84,7 +84,7 @@ export class Function implements INodeType {
 
 		try {
 			// Execute the function code
-			items = (await vm.run(`module.exports = async function() {${functionCode}}()`, __dirname));
+			items = (await vm.run(`module.exports = async function() {${functionCode}}()`, './'));
 		} catch (e) {
 			return Promise.reject(e);
 		}
