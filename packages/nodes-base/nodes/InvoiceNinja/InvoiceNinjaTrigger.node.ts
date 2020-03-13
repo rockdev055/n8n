@@ -10,27 +10,45 @@ import {
 } from 'n8n-workflow';
 
 import {
-	calendlyApiRequest,
+	invoiceninjaApiRequest,
 } from './GenericFunctions';
 
-export class CalendlyTrigger implements INodeType {
+export class InvoiceNinjaTrigger implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'Calendly Trigger',
-		name: 'calendlyTrigger',
-		icon: 'file:calendly.png',
+		displayName: 'Invoice Ninja Trigger',
+		name: 'invoiceNinjaTrigger',
+		icon: 'file:invoiceNinja.png',
 		group: ['trigger'],
 		version: 1,
-		description: 'Starts the workflow when Calendly events occure.',
+		description: 'Starts the workflow when Invoice Ninja events occure.',
 		defaults: {
-			name: 'Calendly Trigger',
-			color: '#374252',
+			name: 'Invoice Ninja Trigger',
+			color: '#000000',
 		},
 		inputs: [],
 		outputs: ['main'],
 		credentials: [
 			{
-				name: 'calendlyApi',
+				name: 'invoiceNinjaCloudApi',
 				required: true,
+				displayOptions: {
+					show: {
+						invoiceNinjaVersion: [
+							'cloud',
+						],
+					},
+				},
+			},
+			{
+				name: 'invoiceNinjaServerApi',
+				required: true,
+				displayOptions: {
+					show: {
+						invoiceNinjaVersion: [
+							'server',
+						],
+					},
+				},
 			},
 		],
 		webhooks: [
@@ -43,22 +61,48 @@ export class CalendlyTrigger implements INodeType {
 		],
 		properties: [
 			{
-				displayName: 'Events',
-				name: 'events',
-				type: 'multiOptions',
+				displayName: 'Version',
+				name: 'invoiceNinjaVersion',
+				type: 'options',
 				options: [
 					{
-						name: 'invitee.created',
-						value: 'invitee.created',
-						description: 'Receive notifications when a new Calendly event is created',
+						name: 'Cloud',
+						value: 'cloud',
 					},
 					{
-						name: 'invitee.canceled',
-						value: 'invitee.canceled',
-						description: 'Receive notifications when a Calendly event is canceled',
+						name: 'Server (Self Hosted)',
+						value: 'server',
 					},
 				],
-				default: [],
+				default: 'cloud',
+			},
+			{
+				displayName: 'Event',
+				name: 'event',
+				type: 'options',
+				options: [
+					{
+						name: 'client.created',
+						value: 'create_client',
+					},
+					{
+						name: 'invoce.created',
+						value: 'create_invoice',
+					},
+					{
+						name: 'payment.created',
+						value: 'create_payment',
+					},
+					{
+						name: 'quote.created',
+						value: 'create_quote',
+					},
+					{
+						name: 'vendor.created',
+						value: 'create_vendor',
+					},
+				],
+				default: '',
 				required: true,
 			},
 		],
@@ -69,49 +113,29 @@ export class CalendlyTrigger implements INodeType {
 	webhookMethods = {
 		default: {
 			async checkExists(this: IHookFunctions): Promise<boolean> {
-				const webhookUrl = this.getNodeWebhookUrl('default');
-				const webhookData = this.getWorkflowStaticData('node');
-				const events = this.getNodeParameter('events') as string;
-
-				// Check all the webhooks which exist already if it is identical to the
-				// one that is supposed to get created.
-				const endpoint = '/hooks';
-				const { data } = await calendlyApiRequest.call(this, 'GET', endpoint, {});
-
-				for (const webhook of data) {
-					if (webhook.attributes.url === webhookUrl) {
-						for (const event of events) {
-							if (!webhook.attributes.events.includes(event)) {
-								return false;
-							}
-						}
-					}
-					// Set webhook-id to be sure that it can be deleted
-					webhookData.webhookId = webhook.id as string;
-					return true;
-				}
 				return false;
 			},
 			async create(this: IHookFunctions): Promise<boolean> {
-				const webhookData = this.getWorkflowStaticData('node');
 				const webhookUrl = this.getNodeWebhookUrl('default');
-				const events = this.getNodeParameter('events') as string;
+				const event = this.getNodeParameter('event') as string;
 
 				const endpoint = '/hooks';
 
 				const body = {
-					url: webhookUrl,
-					events,
+					target_url: webhookUrl,
+					event,
 				};
 
-				const responseData = await calendlyApiRequest.call(this, 'POST', endpoint, body);
+				const responseData = await invoiceninjaApiRequest.call(this, 'POST', endpoint, body);
 
 				if (responseData.id === undefined) {
 					// Required data is missing so was not successful
 					return false;
 				}
 
+				const webhookData = this.getWorkflowStaticData('node');
 				webhookData.webhookId = responseData.id as string;
+
 				return true;
 			},
 			async delete(this: IHookFunctions): Promise<boolean> {
@@ -121,7 +145,7 @@ export class CalendlyTrigger implements INodeType {
 					const endpoint = `/hooks/${webhookData.webhookId}`;
 
 					try {
-						await calendlyApiRequest.call(this, 'DELETE', endpoint);
+						await invoiceninjaApiRequest.call(this, 'DELETE', endpoint);
 					} catch (e) {
 						return false;
 					}
@@ -130,6 +154,7 @@ export class CalendlyTrigger implements INodeType {
 					// that no webhooks are registred anymore
 					delete webhookData.webhookId;
 				}
+
 				return true;
 			},
 		},
