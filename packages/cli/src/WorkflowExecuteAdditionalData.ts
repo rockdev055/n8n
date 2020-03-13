@@ -1,5 +1,4 @@
 import {
-	CredentialsHelper,
 	Db,
 	IExecutionDb,
 	IExecutionFlattedDb,
@@ -10,6 +9,7 @@ import {
 	Push,
 	ResponseHelper,
 	WebhookHelpers,
+	WorkflowCredentials,
 	WorkflowHelpers,
 } from './';
 
@@ -51,10 +51,17 @@ import * as config from '../config';
  */
 function executeErrorWorkflow(workflowData: IWorkflowBase, fullRunData: IRun, mode: WorkflowExecuteMode, executionId?: string, retryOf?: string): void {
 	// Check if there was an error and if so if an errorWorkflow is set
+
+	let pastExecutionUrl: string | undefined = undefined;
+	if (executionId !== undefined) {
+		pastExecutionUrl = `${WebhookHelpers.getWebhookBaseUrl()}execution/${executionId}`;
+	}
+
 	if (fullRunData.data.resultData.error !== undefined && workflowData.settings !== undefined && workflowData.settings.errorWorkflow) {
 		const workflowErrorData = {
 			execution: {
 				id: executionId,
+				url: pastExecutionUrl,
 				error: fullRunData.data.resultData.error,
 				lastNodeExecuted: fullRunData.data.resultData.lastNodeExecuted!,
 				mode,
@@ -297,7 +304,8 @@ export async function executeWorkflow(workflowInfo: IExecuteWorkflowInfo, additi
 
 	const nodeTypes = NodeTypes();
 
-	const workflow = new Workflow(workflowInfo.id, workflowData!.nodes, workflowData!.connections, workflowData!.active, nodeTypes, workflowData!.staticData);
+	const workflowName = workflowData ? workflowData.name : undefined;
+	const workflow = new Workflow({ id: workflowInfo.id, name: workflowName, nodes: workflowData!.nodes, connections: workflowData!.connections, active: workflowData!.active, nodeTypes, staticData: workflowData!.staticData });
 
 	// Does not get used so set it simply to empty string
 	const executionId = '';
@@ -306,6 +314,10 @@ export async function executeWorkflow(workflowInfo: IExecuteWorkflowInfo, additi
 	// different webooks
 	const additionalDataIntegrated = await getBase(additionalData.credentials);
 	additionalDataIntegrated.hooks = getWorkflowHooksIntegrated(mode, executionId, workflowData!, { parentProcessMode: additionalData.hooks!.mode });
+
+	// Get the needed credentials for the current workflow as they will differ to the ones of the
+	// calling workflow.
+	additionalDataIntegrated.credentials = await WorkflowCredentials(workflowData!.nodes);
 
 	// Find Start-Node
 	const requiredNodeTypes = ['n8n-nodes-base.start'];
@@ -392,7 +404,6 @@ export async function getBase(credentials: IWorkflowCredentials, currentNodePara
 
 	return {
 		credentials,
-		credentialsHelper: new CredentialsHelper(credentials, encryptionKey),
 		encryptionKey,
 		executeWorkflow,
 		restApiUrl: urlBaseWebhook + config.get('endpoints.rest') as string,

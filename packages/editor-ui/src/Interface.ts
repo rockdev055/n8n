@@ -145,8 +145,6 @@ export interface IRestApi {
 	deleteExecutions(sendData: IExecutionDeleteFilter): Promise<void>;
 	retryExecution(id: string, loadWorkflow?: boolean): Promise<boolean>;
 	getTimezones(): Promise<IDataObject>;
-	oAuth2CredentialAuthorize(sendData: ICredentialsResponse): Promise<string>;
-	oAuth2Callback(code: string, state: string): Promise<string>;
 }
 
 export interface IBinaryDisplayData {
@@ -155,13 +153,6 @@ export interface IBinaryDisplayData {
 	node: string;
 	outputIndex: number;
 	runIndex: number;
-}
-
-export interface ICredentialsCreatedEvent {
-	data: ICredentialsDecryptedResponse;
-	options: {
-		closeDialog: boolean,
-	};
 }
 
 export interface IStartRunData {
