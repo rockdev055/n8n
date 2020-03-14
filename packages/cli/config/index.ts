@@ -8,7 +8,7 @@ const config = convict({
 	database: {
 		type: {
 			doc: 'Type of database to use',
-			format: ['sqlite', 'mongodb', 'mysqldb', 'postgresdb'],
+			format: ['sqlite', 'mongodb', 'postgresdb'],
 			default: 'sqlite',
 			env: 'DB_TYPE'
 		},
@@ -52,52 +52,22 @@ const config = convict({
 				env: 'DB_POSTGRESDB_USER'
 			},
 		},
-		mysqldb: {
-			database: {
-				doc: 'MySQL Database',
-				format: String,
-				default: 'n8n',
-				env: 'DB_MYSQLDB_DATABASE'
-			},
-			host: {
-				doc: 'MySQL Host',
-				format: String,
-				default: 'localhost',
-				env: 'DB_MYSQLDB_HOST'
-			},
-			password: {
-				doc: 'MySQL Password',
-				format: String,
-				default: '',
-				env: 'DB_MYSQLDB_PASSWORD'
-			},
-			port: {
-				doc: 'MySQL Port',
-				format: Number,
-				default: 3306,
-				env: 'DB_MYSQLDB_PORT'
-			},
-			user: {
-				doc: 'MySQL User',
-				format: String,
-				default: 'root',
-				env: 'DB_MYSQLDB_USER'
-			},
-		},
+	},
+
+	credentials: {
+		overwrite: {
+			// Allows to set default values for credentials which
+			// get automatically prefilled and the user does not get
+			// displayed and can not change.
+			// Format: { CREDENTIAL_NAME: { PARAMTER: VALUE }}
+			doc: 'Overwrites for credentials',
+			format: '*',
+			default: '{}',
+			env: 'CREDENTIALS_OVERWRITE'
+		}
 	},
 
 	executions: {
-
-		// By default workflows get always executed in their own process.
-		// If this option gets set to "main" it will run them in the
-		// main-process instead.
-		process: {
-			doc: 'In what process workflows should be executed',
-			format: ['main', 'own'],
-			default: 'own',
-			env: 'EXECUTIONS_PROCESS'
-		},
-
 		// If a workflow executes all the data gets saved by default. This
 		// could be a problem when a workflow gets executed a lot and processes
 		// a lot of data. To not write the database full it is possible to
