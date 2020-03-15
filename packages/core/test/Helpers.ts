@@ -1,8 +1,6 @@
 import { set } from 'lodash';
 
 import {
-	ICredentialDataDecryptedObject,
-	ICredentialsHelper,
 	IExecuteWorkflowInfo,
 	INodeExecutionData,
 	INodeParameters,
@@ -17,23 +15,9 @@ import {
 } from 'n8n-workflow';
 
 import {
-	Credentials,
 	IDeferredPromise,
 	IExecuteFunctions,
 } from '../src';
-
-
-export class CredentialsHelper extends ICredentialsHelper {
-	getDecrypted(name: string, type: string): ICredentialDataDecryptedObject {
-		return {};
-	}
-
-	getCredentials(name: string, type: string): Credentials {
-		return new Credentials('', '', [], '');
-	}
-
-	async updateCredentials(name: string, type: string, data: ICredentialDataDecryptedObject): Promise<void> {}
-}
 
 
 class NodeTypesClass implements INodeTypes {
@@ -291,7 +275,6 @@ export function WorkflowExecuteAdditionalData(waitPromise: IDeferredPromise<IRun
 
 	return {
 		credentials: {},
-		credentialsHelper: new CredentialsHelper({}, ''),
 		hooks: new WorkflowHooks(hookFunctions, 'trigger', '1', workflowData),
 		executeWorkflow: async (workflowInfo: IExecuteWorkflowInfo): Promise<any> => {}, // tslint:disable-line:no-any
 		restApiUrl: '',
