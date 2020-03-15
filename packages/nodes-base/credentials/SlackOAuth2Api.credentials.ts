@@ -3,41 +3,49 @@ import {
 	NodePropertyTypes,
 } from 'n8n-workflow';
 
-const scopes = [
-	'https://www.googleapis.com/auth/calendar',
-	'https://www.googleapis.com/auth/calendar.events',
-];
+//https://api.slack.com/authentication/oauth-v2
+const userScopes = [
+	'chat:write',
+	'conversations:history',
+	'conversations:read',
+	'files:read',
+	'files:write',
+	'stars:read',
+	'stars:write',
+]
 
-export class GoogleOAuth2Api implements ICredentialType {
-	name = 'googleOAuth2Api';
+
+export class SlackOAuth2Api implements ICredentialType {
+	name = 'slackOAuth2Api';
 	extends = [
 		'oAuth2Api',
 	];
-	displayName = 'Google OAuth2 API';
+	displayName = 'Slack OAuth2 API';
 	properties = [
 		{
 			displayName: 'Authorization URL',
 			name: 'authUrl',
 			type: 'hidden' as NodePropertyTypes,
-			default: 'https://accounts.google.com/o/oauth2/v2/auth',
+			default: 'https://slack.com/oauth/v2/authorize',
 		},
 		{
 			displayName: 'Access Token URL',
 			name: 'accessTokenUrl',
 			type: 'hidden' as NodePropertyTypes,
-			default: 'https://oauth2.googleapis.com/token',
+			default: 'https://slack.com/api/oauth.v2.access',
 		},
+		//https://api.slack.com/scopes
 		{
 			displayName: 'Scope',
 			name: 'scope',
 			type: 'hidden' as NodePropertyTypes,
-			default: scopes.join(' '),
+			default: 'chat:write',
 		},
 		{
 			displayName: 'Auth URI Query Parameters',
 			name: 'authQueryParameters',
 			type: 'hidden' as NodePropertyTypes,
-			default: 'access_type=offline',
+			default: `user_scope=${userScopes.join(' ')}`,
 		},
 		{
 			displayName: 'Authentication',
