@@ -689,12 +689,10 @@ export class GoogleDrive implements INodeType {
 						displayOptions: {
 							show: {
 								'/operation': [
-									'copy',
-									'create',
+									'copy'
 								],
 								'/resource': [
 									'file',
-									'folder',
 								],
 							},
 						},
@@ -702,7 +700,7 @@ export class GoogleDrive implements INodeType {
 							multipleValues: true,
 						},
 						default: [],
-						description: 'The IDs of the parent folders the file/folder should be saved in.',
+						description: 'The IDs of the parent folders the file should be saved in.',
 					},
 					{
 						displayName: 'Spaces',
@@ -829,7 +827,6 @@ export class GoogleDrive implements INodeType {
 
 		const drive = google.drive({
 			version: 'v3',
-			// @ts-ignore
 			auth: client,
 		});
 
@@ -1079,8 +1076,7 @@ export class GoogleDrive implements INodeType {
 
 					const fileMetadata = {
 						name,
-						mimeType: 'application/vnd.google-apps.folder',
-						parents: options.parents || [],
+						mimeType: 'application/vnd.google-apps.folder'
 					};
 
 					const response = await drive.files.create({

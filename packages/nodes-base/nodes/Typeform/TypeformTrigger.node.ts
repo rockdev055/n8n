@@ -18,6 +18,7 @@ import {
 	ITypeformDefinition,
 } from './GenericFunctions';
 
+
 export class TypeformTrigger implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Typeform Trigger',
@@ -88,23 +89,24 @@ export class TypeformTrigger implements INodeType {
 		default: {
 			async checkExists(this: IHookFunctions): Promise<boolean> {
 				const webhookData = this.getWorkflowStaticData('node');
-				const webhookUrl = this.getNodeWebhookUrl('default');
+
+				if (webhookData.webhookId === undefined) {
+					// No webhook id is set so no webhook can exist
+					return false;
+				}
 
 				const formId = this.getNodeParameter('formId') as string;
 
-				const endpoint = `forms/${formId}/webhooks`;
+				const endpoint = `forms/${formId}/webhooks/${webhookData.webhookId}`;
 
-				const { items } = await apiRequest.call(this, 'GET', endpoint, {});
-
-				for (const item of items) {
-					if (item.form_id === formId
-					 && item.url === webhookUrl) {
-						webhookData.webhookId = item.tag;
-						return true;
-					 }
+				try {
+					const body = {};
+					await apiRequest.call(this, 'POST', endpoint, body);
+				} catch (e) {
+					return false;
 				}
 
-				return false;
+				return true;
 			},
 			async create(this: IHookFunctions): Promise<boolean> {
 				const webhookUrl = this.getNodeWebhookUrl('default');
@@ -136,12 +138,14 @@ export class TypeformTrigger implements INodeType {
 				if (webhookData.webhookId !== undefined) {
 					const endpoint = `forms/${formId}/webhooks/${webhookData.webhookId}`;
 
+
 					try {
 						const body = {};
 						await apiRequest.call(this, 'DELETE', endpoint, body);
 					} catch (e) {
 						return false;
 					}
+
 					// Remove from the static workflow data so that it is clear
 					// that no webhooks are registred anymore
 					delete webhookData.webhookId;
