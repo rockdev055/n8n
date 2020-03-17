@@ -51,30 +51,6 @@ export DB_POSTGRESDB_PASSWORD=n8n
 n8n start
 ```
 
-## MySQL
-
-The compatibility with MySQL was tested, even so, it is advisable to observe the operation of the application with this DB, as it is a new option, recently added. If you spot any problems, feel free to submit a PR.
-
-To use MySQL as database you can provide the following environment variables:
- - `DB_TYPE=mysqldb`
- - `DB_MYSQLDB_DATABASE` (default: 'n8n')
- - `DB_MYSQLDB_HOST` (default: 'localhost')
- - `DB_MYSQLDB_PORT` (default: 3306)
- - `DB_MYSQLDB_USER` (default: 'root')
- - `DB_MYSQLDB_PASSWORD` (default: empty)
-
-
-```bash
-export DB_TYPE=mysqldb
-export DB_MYSQLDB_DATABASE=n8n
-export DB_MYSQLDB_HOST=mysqldb
-export DB_MYSQLDB_PORT=3306
-export DB_MYSQLDB_USER=n8n
-export DB_MYSQLDB_PASSWORD=n8n
-
-n8n start
-```
-
 ## SQLite
 
 The default database which gets used if no other one is defined.
@@ -92,6 +68,7 @@ should not be too much work:
  - CockroachDB
  - MariaDB
  - Microsoft SQL
+ - MySQL
  - Oracle
 
 If you can not use any of the currently supported databases for some reason and
