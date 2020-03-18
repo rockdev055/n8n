@@ -156,7 +156,6 @@ Replace the following placeholders with the actual data:
  - <POSTGRES_PASSWORD>
  - <POSTGRES_PORT>
  - <POSTGRES_USER>
- - <POSTGRES_SCHEMA>
 
 ```
 docker run -it --rm \
@@ -167,7 +166,6 @@ docker run -it --rm \
 	-e DB_POSTGRESDB_HOST=<POSTGRES_HOST> \
 	-e DB_POSTGRESDB_PORT=<POSTGRES_PORT> \
 	-e DB_POSTGRESDB_USER=<POSTGRES_USER> \
-	-e DB_POSTGRESDB_SCHEMA=<POSTGRES_SCHEMA> \
 	-e DB_POSTGRESDB_PASSWORD=<POSTGRES_PASSWORD> \
   -v ~/.n8n:/root/.n8n \
   n8nio/n8n \
@@ -216,7 +214,6 @@ The following environment variables support file input:
  - DB_POSTGRESDB_PASSWORD_FILE
  - DB_POSTGRESDB_PORT_FILE
  - DB_POSTGRESDB_USER_FILE
- - DB_POSTGRESDB_SCHEMA_FILE
  - N8N_BASIC_AUTH_PASSWORD_FILE
  - N8N_BASIC_AUTH_USER_FILE
 
