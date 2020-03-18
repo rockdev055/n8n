@@ -108,21 +108,6 @@ export class Postgres implements INodeType {
 			//         insert
 			// ----------------------------------
 			{
-				displayName: 'Schema',
-				name: 'schema',
-				type: 'string',
-				displayOptions: {
-					show: {
-						operation: [
-							'insert'
-						],
-					},
-				},
-				default: 'public',
-				required: true,
-				description: 'Name of the schema the table belongs to',
-			},
-			{
 				displayName: 'Table',
 				name: 'table',
 				type: 'string',
@@ -151,20 +136,6 @@ export class Postgres implements INodeType {
 				default: '',
 				placeholder: 'id,name,description',
 				description: 'Comma separated list of the properties which should used as columns for the new rows.',
-			},
-			{
-				displayName: 'Return Fields',
-				name: 'returnFields',
-				type: 'string',
-				displayOptions: {
-					show: {
-						operation: [
-							'insert'
-						],
-					},
-				},
-				default: '*',
-				description: 'Comma separated list of the fields that the operation will return',
 			},
 
 
@@ -268,23 +239,20 @@ export class Postgres implements INodeType {
 			// ----------------------------------
 
 			const table = this.getNodeParameter('table', 0) as string;
-			const schema = this.getNodeParameter('schema', 0) as string;
-			const returnFields = (this.getNodeParameter('returnFields', 0) as string).split(',') as string[];
 			const columnString = this.getNodeParameter('columns', 0) as string;
+
 			const columns = columnString.split(',').map(column => column.trim());
 
-			const cs = new pgp.helpers.ColumnSet(columns);
-
-			const te = new pgp.helpers.TableName({ table, schema });
+			const cs = new pgp.helpers.ColumnSet(columns, { table });
 
 			// Prepare the data to insert and copy it to be returned
 			const insertItems = getItemCopy(items, columns);
 
 			// Generate the multi-row insert query and return the id of new row
-			const query = pgp.helpers.insert(insertItems, cs, te) + ((returnFields[0] !== '') ?  ` RETURNING ${returnFields.join(',')}` : '');
+			const query = pgp.helpers.insert(insertItems, cs) + ' RETURNING id';
 
 			// Executing the query to insert the data
-			const insertData = await db.manyOrNone(query);
+			const insertData = await db.many(query);
 
 			// Add the id to the data
 			for (let i = 0; i < insertData.length; i++) {
