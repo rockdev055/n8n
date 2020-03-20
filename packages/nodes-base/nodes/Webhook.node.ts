@@ -1,4 +1,5 @@
 import {
+	BINARY_ENCODING,
 	IWebhookFunctions,
 } from 'n8n-core';
 
@@ -328,8 +329,9 @@ export class Webhook implements INodeType {
 						const fileJson = files[file].toJSON() as IDataObject;
 						const [fileName, fileExtension] = (fileJson.name as string).split('.');
 						const fileContent = await fs.promises.readFile(files[file].path);
+						const buffer = Buffer.from(fileContent);
 						set(returnData[0], `binary[${fileName}]`, {
-							data: fileContent,
+							data: buffer.toString(BINARY_ENCODING),
 							mimeType: fileJson.type,
 							fileName: fileJson.name,
 							fileExtension,
@@ -356,7 +358,7 @@ export class Webhook implements INodeType {
 			response.binary = {
 				data: {
 					// @ts-ignore
-					data: req.rawBody.toString('base64'),
+					data: req.rawBody.toString(BINARY_ENCODING),
 					mimeType,
 				}
 			};
