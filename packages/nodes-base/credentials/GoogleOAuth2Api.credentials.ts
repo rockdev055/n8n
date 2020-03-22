@@ -3,37 +3,41 @@ import {
 	NodePropertyTypes,
 } from 'n8n-workflow';
 
-export class MicrosoftExcelOAuth2Api implements ICredentialType {
-	name = 'microsoftExcelOAuth2Api';
+const scopes = [
+	'https://www.googleapis.com/auth/calendar',
+	'https://www.googleapis.com/auth/calendar.events',
+];
+
+export class GoogleOAuth2Api implements ICredentialType {
+	name = 'googleOAuth2Api';
 	extends = [
 		'oAuth2Api',
 	];
-	displayName = 'Microsoft OAuth2 API';
+	displayName = 'Google OAuth2 API';
 	properties = [
 		{
 			displayName: 'Authorization URL',
 			name: 'authUrl',
-			type: 'string' as NodePropertyTypes,
-			default: 'https://login.microsoftonline.com/{yourtenantid}/oauth2/v2.0/authorize',
+			type: 'hidden' as NodePropertyTypes,
+			default: 'https://accounts.google.com/o/oauth2/v2/auth',
 		},
 		{
 			displayName: 'Access Token URL',
 			name: 'accessTokenUrl',
-			type: 'string' as NodePropertyTypes,
-			default: 'https://login.microsoftonline.com/{yourtenantid}/oauth2/v2.0/token',
+			type: 'hidden' as NodePropertyTypes,
+			default: 'https://oauth2.googleapis.com/token',
 		},
-		//https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-permissions-and-consent
 		{
 			displayName: 'Scope',
 			name: 'scope',
 			type: 'hidden' as NodePropertyTypes,
-			default: 'openid offline_access Files.ReadWrite',
+			default: scopes.join(' '),
 		},
 		{
 			displayName: 'Auth URI Query Parameters',
 			name: 'authQueryParameters',
 			type: 'hidden' as NodePropertyTypes,
-			default: 'response_mode=query',
+			default: 'access_type=offline',
 		},
 		{
 			displayName: 'Authentication',
