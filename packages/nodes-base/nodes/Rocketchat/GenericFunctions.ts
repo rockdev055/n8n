@@ -20,12 +20,14 @@ export async function rocketchatApiRequest(this: IHookFunctions | IExecuteFuncti
 		headers: headerWithAuthentication,
 		method,
 		body,
-		uri: `${credentials.domain}/api/v1${resource}.${operation}`,
+		uri: `${credentials.domain}${resource}.${operation}`,
 		json: true
 	};
+
 	if (Object.keys(options.body).length === 0) {
 		delete options.body;
 	}
+
 	try {
 		return await this.helpers.request!(options);
 	} catch (error) {

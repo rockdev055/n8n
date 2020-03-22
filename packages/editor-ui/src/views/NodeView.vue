@@ -376,7 +376,7 @@ export default mixins(
 					this.createNodeActive = false;
 					this.$store.commit('setActiveNode', null);
 				} else if (e.key === 'Tab') {
-					this.createNodeActive = !this.createNodeActive && !this.isReadOnly;
+					this.createNodeActive = !this.createNodeActive;
 				} else if (e.key === this.controlKeyCode) {
 					this.ctrlKeyPressed = true;
 				} else if (e.key === 'F2') {
@@ -547,7 +547,19 @@ export default mixins(
 				if (this.editAllowedCheck() === false) {
 					return;
 				}
-				this.disableNodes(this.$store.getters.getSelectedNodes);
+
+				let updateInformation;
+				this.$store.getters.getSelectedNodes.forEach((node: INodeUi) => {
+					// Toggle disabled flag
+					updateInformation = {
+						name: node.name,
+						properties: {
+							disabled: !node.disabled,
+						},
+					};
+
+					this.$store.commit('updateNodeProperties', updateInformation);
+				});
 			},
 
 			deleteSelectedNodes () {

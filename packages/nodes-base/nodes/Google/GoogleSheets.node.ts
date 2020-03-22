@@ -358,6 +358,7 @@ export class GoogleSheets implements INodeType {
 				type: 'string',
 				default: '',
 				placeholder: 'frank@example.com',
+				required: true,
 				displayOptions: {
 					show: {
 						operation: [
