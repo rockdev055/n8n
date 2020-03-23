@@ -1,7 +1,6 @@
 import {
 	IExecuteFunctions,
 } from 'n8n-core';
-
 import {
 	IDataObject,
 	INodeTypeDescription,
@@ -10,30 +9,15 @@ import {
 	ILoadOptionsFunctions,
 	INodePropertyOptions,
 } from 'n8n-workflow';
-
 import {
 	hubspotApiRequest,
 	hubspotApiRequestAllItems,
  } from './GenericFunctions';
-
 import {
 	dealOperations,
 	dealFields,
-} from './DealDescription';
-
-import {
-	IDeal,
-	IAssociation
-} from './DealInterface';
-
-import {
-	formOperations,
-	formFields,
- } from './FormDescription';
-
-import {
-	IForm
-} from './FormInterface';
+} from '../Hubspot/DealDescription';
+import { IDeal, IAssociation } from './DealInterface';
 
 export class Hubspot implements INodeType {
 	description: INodeTypeDescription = {
@@ -66,10 +50,6 @@ export class Hubspot implements INodeType {
 						name: 'Deal',
 						value: 'deal',
 					},
-					{
-						name: 'Form',
-						value: 'form',
-					},
 				],
 				default: 'deal',
 				description: 'Resource to consume.',
@@ -78,22 +58,23 @@ export class Hubspot implements INodeType {
 			// Deal
 			...dealOperations,
 			...dealFields,
-			// Form
-			...formOperations,
-			...formFields,
 		],
 	};
 
 	methods = {
 		loadOptions: {
-
 			// Get all the groups to display them to user so that he can
 			// select them easily
 			async getDealStages(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
 				const returnData: INodePropertyOptions[] = [];
-				const endpoint = '/crm-pipelines/v1/pipelines/deals';
-				let stages = await hubspotApiRequest.call(this, 'GET', endpoint, {});
-				stages = stages.results[0].stages;
+				let stages;
+				try {
+					const endpoint = '/crm-pipelines/v1/pipelines/deals';
+					stages = await hubspotApiRequest.call(this, 'GET', endpoint, {});
+					stages = stages.results[0].stages;
+				} catch (err) {
+					throw new Error(`Hubspot Error: ${err}`);
+				}
 				for (const stage of stages) {
 					const stageName = stage.label;
 					const stageId = stage.stageId;
@@ -109,8 +90,13 @@ export class Hubspot implements INodeType {
 			// select them easily
 			async getCompanies(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
 				const returnData: INodePropertyOptions[] = [];
-				const endpoint = '/companies/v2/companies/paged';
-				const companies = await hubspotApiRequestAllItems.call(this, 'results', 'GET', endpoint);
+				let companies;
+				try {
+					const endpoint = '/companies/v2/companies/paged';
+					companies = await hubspotApiRequestAllItems.call(this, 'results', 'GET', endpoint);
+				} catch (err) {
+					throw new Error(`Hubspot Error: ${err}`);
+				}
 				for (const company of companies) {
 					const companyName = company.properties.name.value;
 					const companyId = company.companyId;
@@ -126,8 +112,13 @@ export class Hubspot implements INodeType {
 			// select them easily
 			async getContacts(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
 				const returnData: INodePropertyOptions[] = [];
-				const endpoint = '/contacts/v1/lists/all/contacts/all';
-				const contacts = await hubspotApiRequestAllItems.call(this, 'contacts', 'GET', endpoint);
+				let contacts;
+				try {
+					const endpoint = '/contacts/v1/lists/all/contacts/all';
+					contacts = await hubspotApiRequestAllItems.call(this, 'contacts', 'GET', endpoint);
+				} catch (err) {
+					throw new Error(`Hubspot Error: ${err}`);
+				}
 				for (const contact of contacts) {
 					const contactName = `${contact.properties.firstname.value} ${contact.properties.lastname.value}` ;
 					const contactId = contact.vid;
@@ -143,48 +134,19 @@ export class Hubspot implements INodeType {
 			// select them easily
 			async getDealTypes(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
 				const returnData: INodePropertyOptions[] = [];
-				const endpoint = '/properties/v1/deals/properties/named/dealtype';
-				const dealTypes = await hubspotApiRequest.call(this, 'GET', endpoint);
+				let dealTypes;
+				try {
+					const endpoint = '/properties/v1/deals/properties/named/dealtype';
+					dealTypes = await hubspotApiRequest.call(this, 'GET', endpoint);
+				} catch (err) {
+					throw new Error(`Hubspot Error: ${err}`);
+				}
 				for (const dealType of dealTypes.options) {
 					const dealTypeName = dealType.label ;
 					const dealTypeId = dealType.value;
 					returnData.push({
 						name: dealTypeName,
 						value: dealTypeId,
-					});
-				}
-				return returnData;
-			},
-
-			// Get all the forms to display them to user so that he can
-			// select them easily
-			async getForms(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
-				const returnData: INodePropertyOptions[] = [];
-				const endpoint = '/forms/v2/forms';
-				const forms = await hubspotApiRequest.call(this, 'GET', endpoint, {}, { formTypes: 'ALL' });
-				for (const form of forms) {
-					const formName = form.name;
-					const formId = form.guid;
-					returnData.push({
-						name: formName,
-						value: formId,
-					});
-				}
-				return returnData;
-			},
-
-			// Get all the subscription types to display them to user so that he can
-			// select them easily
-			async getSubscriptionTypes(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
-				const returnData: INodePropertyOptions[] = [];
-				const endpoint = '/email/public/v1/subscriptions';
-				const subscriptions = await hubspotApiRequestAllItems.call(this, 'subscriptionDefinitions', 'GET', endpoint, {});
-				for (const subscription of subscriptions) {
-					const subscriptionName = subscription.name;
-					const subscriptionId = subscription.id;
-					returnData.push({
-						name: subscriptionName,
-						value: subscriptionId,
 					});
 				}
 				return returnData;
@@ -393,60 +355,6 @@ export class Hubspot implements INodeType {
 					} catch (err) {
 						throw new Error(`Hubspot Error: ${JSON.stringify(err)}`);
 					}
-				}
-			}
-			//https://developers.hubspot.com/docs/methods/forms/forms_overview
-			if (resource === 'form') {
-				//https://developers.hubspot.com/docs/methods/forms/v2/get_fields
-				if (operation === 'getFields') {
-					const formId = this.getNodeParameter('formId', i) as string;
-					responseData = await hubspotApiRequest.call(this, 'GET', `/forms/v2/fields/${formId}`);
-				}
-				//https://developers.hubspot.com/docs/methods/forms/submit_form_v3
-				if (operation === 'submit') {
-					const formId = this.getNodeParameter('formId', i) as string;
-					const additionalFields = this.getNodeParameter('additionalFields', i) as IDataObject;
-					const context = (this.getNodeParameter('contextUi', i) as IDataObject).contextValue as IDataObject;
-					const legalConsent = (this.getNodeParameter('lengalConsentUi', i) as IDataObject).lengalConsentValues as IDataObject;
-					const legitimateInteres = (this.getNodeParameter('lengalConsentUi', i) as IDataObject).legitimateInterestValues as IDataObject;
-					const { portalId } = await hubspotApiRequest.call(this, 'GET', `/forms/v2/forms/${formId}`);
-					const body: IForm = {
-						formId,
-						portalId,
-						legalConsentOptions: {},
-						fields: [],
-					};
-					if (additionalFields.submittedAt) {
-						body.submittedAt = new Date(additionalFields.submittedAt as string).getTime();
-					}
-					if (additionalFields.skipValidation) {
-						body.skipValidation = additionalFields.skipValidation as boolean;
-					}
-					const consent: IDataObject = {};
-					if (legalConsent) {
-						if (legalConsent.consentToProcess) {
-							consent!.consentToProcess = legalConsent.consentToProcess as boolean;
-						}
-						if (legalConsent.text) {
-							consent!.text = legalConsent.text as string;
-						}
-						if (legalConsent.communicationsUi) {
-							consent.communications = (legalConsent.communicationsUi as IDataObject).communicationValues as IDataObject;
-						}
-					}
-					body.legalConsentOptions!.consent = consent;
-					const fields: IDataObject = items[i].json;
-					for (const key of Object.keys(fields)) {
-						body.fields?.push({ name: key, value: fields[key] });
-					}
-					if (body.legalConsentOptions!.legitimateInterest) {
-						Object.assign(body, { legalConsentOptions: { legitimateInterest: legitimateInteres } });
-					}
-					if (context) {
-						Object.assign(body, { context });
-					}
-					const uri = `https://api.hsforms.com/submissions/v3/integration/submit/${portalId}/${formId}`;
-					responseData = await hubspotApiRequest.call(this, 'POST', '', body, {}, uri);
 				}
 			}
 			if (Array.isArray(responseData)) {
