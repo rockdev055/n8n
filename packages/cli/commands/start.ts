@@ -2,7 +2,7 @@ import * as localtunnel from 'localtunnel';
 import {
 	TUNNEL_SUBDOMAIN_ENV,
 	UserSettings,
-} from 'n8n-core';
+} from "n8n-core";
 import { Command, flags } from '@oclif/command';
 const open = require('open');
 // import { dirname } from 'path';
@@ -11,6 +11,7 @@ import * as config from '../config';
 import {
 	ActiveWorkflowRunner,
 	CredentialTypes,
+	CredentialsOverwrites,
 	Db,
 	GenericHelpers,
 	LoadNodesAndCredentials,
@@ -112,6 +113,10 @@ export class Start extends Command {
 				const loadNodesAndCredentials = LoadNodesAndCredentials();
 				await loadNodesAndCredentials.init();
 
+				// Load the credentials overwrites if any exist
+				const credentialsOverwrites = CredentialsOverwrites();
+				await credentialsOverwrites.init();
+
 				// Add the found types to an instance other parts of the application can use
 				const nodeTypes = NodeTypes();
 				await nodeTypes.init(loadNodesAndCredentials.nodeTypes);
@@ -176,7 +181,7 @@ export class Start extends Command {
 						Start.openBrowser();
 					}
 					this.log(`\nPress "o" to open in Browser.`);
-					process.stdin.on("data", (key) => {
+					process.stdin.on("data", (key: string) => {
 						if (key === 'o') {
 							Start.openBrowser();
 							inputText = '';
