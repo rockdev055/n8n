@@ -1,4 +1,7 @@
-import { IExecuteFunctions } from 'n8n-core';
+import {
+	BINARY_ENCODING,
+	IExecuteFunctions,
+} from 'n8n-core';
 import {
 	IDataObject,
 	INodeExecutionData,
@@ -67,17 +70,6 @@ export class HttpRequest implements INodeType {
 					},
 				},
 			},
-			{
-				name: 'oAuth2Api',
-				required: true,
-				displayOptions: {
-					show: {
-						authentication: [
-							'oAuth2',
-						],
-					},
-				},
-			},
 		],
 		properties: [
 			{
@@ -96,10 +88,6 @@ export class HttpRequest implements INodeType {
 					{
 						name: 'Header Auth',
 						value: 'headerAuth'
-					},
-					{
-						name: 'OAuth2',
-						value: 'oAuth2'
 					},
 					{
 						name: 'None',
@@ -321,67 +309,65 @@ export class HttpRequest implements INodeType {
 			},
 
 
-			// Header Parameters
+			// Body Parameter
 			{
-				displayName: 'Headers',
-				name: 'headerParametersJson',
-				type: 'json',
+				displayName: 'Send Binary Data',
+				name: 'sendBinaryData',
+				type: 'boolean',
 				displayOptions: {
+					show: {
+						// TODO: Make it possible to use dot-notation
+						// 'options.bodyContentType': [
+						// 	'raw',
+						// ],
+						jsonParameters: [
+							true,
+						],
+						requestMethod: [
+							'PATCH',
+							'POST',
+							'PUT',
+						],
+					},
+				},
+				default: false,
+				description: 'If binary data should be send as body.',
+			},
+			{
+				displayName: 'Binary Property',
+				name: 'binaryPropertyName',
+				type: 'string',
+				required: true,
+				default: 'data',
+				displayOptions: {
+					hide: {
+						sendBinaryData: [
+							false,
+						],
+					},
 					show: {
 						jsonParameters: [
 							true,
 						],
-					},
-				},
-				default: '',
-				description: 'Header parameters as JSON (flat object).',
-			},
-			{
-				displayName: 'Headers',
-				name: 'headerParametersUi',
-				placeholder: 'Add Header',
-				type: 'fixedCollection',
-				typeOptions: {
-					multipleValues: true,
-				},
-				displayOptions: {
-					show: {
-						jsonParameters: [
-							false,
+						requestMethod: [
+							'PATCH',
+							'POST',
+							'PUT',
 						],
 					},
 				},
-				description: 'The headers to send.',
-				default: {},
-				options: [
-					{
-						name: 'parameter',
-						displayName: 'Header',
-						values: [
-							{
-								displayName: 'Name',
-								name: 'name',
-								type: 'string',
-								default: '',
-								description: 'Name of the header.',
-							},
-							{
-								displayName: 'Value',
-								name: 'value',
-								type: 'string',
-								default: '',
-								description: 'Value to set for the header.',
-							},
-						]
-					},
-				],
+				description: 'Name of the binary property which contains<br />the data for the file to be uploaded.',
 			},
-			// Body Parameter
 			{
 				displayName: 'Body Parameters',
 				name: 'bodyParametersJson',
 				type: 'json',
 				displayOptions: {
+					hide: {
+						sendBinaryData: [
+							true,
+						],
+					},
 					show: {
 						jsonParameters: [
 							true,
@@ -436,6 +422,62 @@ export class HttpRequest implements INodeType {
 								type: 'string',
 								default: '',
 								description: 'Value of the parameter.',
+							},
+						]
+					},
+				],
+			},
+
+			// Header Parameters
+			{
+				displayName: 'Headers',
+				name: 'headerParametersJson',
+				type: 'json',
+				displayOptions: {
+					show: {
+						jsonParameters: [
+							true,
+						],
+					},
+				},
+				default: '',
+				description: 'Header parameters as JSON or RAW.',
+			},
+			{
+				displayName: 'Headers',
+				name: 'headerParametersUi',
+				placeholder: 'Add Header',
+				type: 'fixedCollection',
+				typeOptions: {
+					multipleValues: true,
+				},
+				displayOptions: {
+					show: {
+						jsonParameters: [
+							false,
+						],
+					},
+				},
+				description: 'The headers to send.',
+				default: {},
+				options: [
+					{
+						name: 'parameter',
+						displayName: 'Header',
+						values: [
+							{
+								displayName: 'Name',
+								name: 'name',
+								type: 'string',
+								default: '',
+								description: 'Name of the header.',
+							},
+							{
+								displayName: 'Value',
+								name: 'value',
+								type: 'string',
+								default: '',
+								description: 'Value to set for the header.',
 							},
 						]
 					},
@@ -519,7 +561,6 @@ export class HttpRequest implements INodeType {
 		const httpBasicAuth = this.getCredentials('httpBasicAuth');
 		const httpDigestAuth = this.getCredentials('httpDigestAuth');
 		const httpHeaderAuth = this.getCredentials('httpHeaderAuth');
-		const oAuth2Api = this.getCredentials('oAuth2Api');
 
 		let requestOptions: OptionsWithUri;
 		let setUiParameter: IDataObject;
@@ -545,9 +586,10 @@ export class HttpRequest implements INodeType {
 			},
 		};
 
+		let response: any; // tslint:disable-line:no-any
 		const returnItems: INodeExecutionData[] = [];
 		for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {
-			const options = this.getNodeParameter('options', 0, {}) as IDataObject;
+			const options = this.getNodeParameter('options', itemIndex, {}) as IDataObject;
 			const url = this.getNodeParameter('url', itemIndex) as string;
 
 			const fullResponse = !!options.fullResponse as boolean;
@@ -589,6 +631,33 @@ export class HttpRequest implements INodeType {
 						// Paramter is empty so skip it
 						continue;
 					}
+
+					if (optionData.name === 'body' && parametersAreJson === true) {
+						const sendBinaryData = this.getNodeParameter('sendBinaryData', itemIndex, false) as boolean;
+						if (sendBinaryData === true) {
+
+							if (options.bodyContentType !== 'raw') {
+								// As n8n-workflow.NodeHelpers.getParamterResolveOrder can not be changed
+								// easily to handle parameters in dot.notation simply error for now.
+								throw new Error('Sending binary data is only supported when option "Body Content Type" is set to "RAW/CUSTOM"!');
+							}
+
+							const item = items[itemIndex];
+
+							if (item.binary === undefined) {
+								throw new Error('No binary data exists on item!');
+							}
+
+							const binaryPropertyName = this.getNodeParameter('binaryPropertyName', itemIndex) as string;
+							if (item.binary[binaryPropertyName] === undefined) {
+								throw new Error(`No binary data property "${binaryPropertyName}" does not exists on item!`);
+							}
+
+							requestOptions.body = Buffer.from(item.binary[binaryPropertyName].data, BINARY_ENCODING);
+							continue;
+						}
+					}
+
 					// @ts-ignore
 					requestOptions[optionData.name] = tempValue;
 
@@ -673,13 +742,16 @@ export class HttpRequest implements INodeType {
 				requestOptions.json = true;
 			}
 
-			// Now that the options are all set make the actual http request
-			let response;
-
-			if (oAuth2Api !== undefined) {
-				response = await this.helpers.requestOAuth.call(this, 'oAuth2Api', requestOptions);
-			} else {
+			try {
+				// Now that the options are all set make the actual http request
 				response = await this.helpers.request(requestOptions);
+			} catch (error) {
+				if (this.continueOnFail() === true) {
+					returnItems.push({ json: { error } });
+					continue;
+				}
+
+				throw error;
 			}
 
 			if (responseFormat === 'file') {
