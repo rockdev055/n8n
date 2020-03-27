@@ -97,10 +97,6 @@ class App {
 	push: Push.Push;
 	versions: IPackageVersions | undefined;
 
-	protocol: string;
-	ssl_key:  string;
-	ssl_cert: string;
-
 	constructor() {
 		this.app = express();
 
@@ -116,10 +112,6 @@ class App {
 		this.push = Push.getInstance();
 
 		this.activeExecutionsInstance = ActiveExecutions.getInstance();
-
-		this.protocol = config.get('protocol');
-		this.ssl_key  = config.get('ssl_key');
-		this.ssl_cert = config.get('ssl_cert');
 	}
 
 
@@ -1262,23 +1254,8 @@ export async function start(): Promise<void> {
 	const app = new App();
 
 	await app.config();
-	
-	// Differntiate HTTP and HTTPS server
-	const http  = require('http');
-	const https = require('https');
-	const fs    = require('fs');
-	var server;
 
-	if(app.protocol === 'https'){
-		const privateKey = fs.readFileSync(app.ssl_key,'utf8');
-		const cert = fs.readFileSync(app.ssl_cert,'utf8');
-		const credentials = {key: privateKey,cert: cert};
-		server = https.createServer(credentials,app.app);
-	}else{
-		server = http.createServer(app.app);
-	}
-
-	server.listen(PORT, async () => {
+	app.app.listen(PORT, async () => {
 		const versions = await GenericHelpers.getVersions();
 		console.log(`n8n ready on port ${PORT}`);
 		console.log(`Version: ${versions.cli}`);

@@ -3,13 +3,13 @@ import {
 	NodePropertyTypes,
 } from 'n8n-workflow';
 
-export class JotFormApi implements ICredentialType {
-	name = 'jotFormApi';
-	displayName = 'JotForm API';
+export class MondayApi implements ICredentialType {
+	name = 'mondayApi';
+	displayName = 'Monday.com API';
 	properties = [
 		{
-			displayName: 'API Key',
-			name: 'apiKey',
+			displayName: 'Token V2',
+			name: 'apiToken',
 			type: 'string' as NodePropertyTypes,
 			default: '',
 		},

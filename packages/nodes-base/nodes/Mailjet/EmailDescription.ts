@@ -299,7 +299,7 @@ export const emailFields = [
 		},
 	},
 	{
-		displayName: 'Template ID',
+		displayName: 'Template',
 		name: 'templateId',
 		type: 'string',
 		required: true,
