@@ -2,13 +2,11 @@ import { promises as fs } from 'fs';
 import { Command, flags } from '@oclif/command';
 import {
 	UserSettings,
-} from 'n8n-core';
-import {
-	INode,
-} from 'n8n-workflow';
+} from "n8n-core";
 
 import {
 	ActiveExecutions,
+	CredentialsOverwrites,
 	Db,
 	GenericHelpers,
 	IWorkflowBase,
@@ -103,6 +101,10 @@ export class Execute extends Command {
 		// Wait till the n8n-packages have been read
 		await loadNodesAndCredentialsPromise;
 
+		// Load the credentials overwrites if any exist
+		const credentialsOverwrites = CredentialsOverwrites();
+		await credentialsOverwrites.init();
+
 		// Add the found types to an instance other parts of the application can use
 		const nodeTypes = NodeTypes();
 		await nodeTypes.init(loadNodesAndCredentials.nodeTypes);
@@ -114,15 +116,14 @@ export class Execute extends Command {
 		// Check if the workflow contains the required "Start" node
 		// "requiredNodeTypes" are also defined in editor-ui/views/NodeView.vue
 		const requiredNodeTypes = ['n8n-nodes-base.start'];
-		let startNode: INode | undefined= undefined;
+		let startNodeFound = false;
 		for (const node of workflowData!.nodes) {
 			if (requiredNodeTypes.includes(node.type)) {
-				startNode = node;
-				break;
+				startNodeFound = true;
 			}
 		}
 
-		if (startNode === undefined) {
+		if (startNodeFound === false) {
 			// If the workflow does not contain a start-node we can not know what
 			// should be executed and with which data to start.
 			GenericHelpers.logOutput(`The workflow does not contain a "Start" node. So it can not be executed.`);
@@ -135,7 +136,6 @@ export class Execute extends Command {
 			const runData: IWorkflowExecutionDataProcess = {
 				credentials,
 				executionMode: 'cli',
-				startNodes: [startNode.name],
 				workflowData: workflowData!,
 			};
 
