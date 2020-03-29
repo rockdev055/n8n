@@ -3,38 +3,30 @@ import {
 	NodePropertyTypes,
 } from 'n8n-workflow';
 
-export class HelpScoutOAuth2Api implements ICredentialType {
-	name = 'helpScoutOAuth2Api';
+export class MicrosoftOAuth2Api implements ICredentialType {
+	name = 'microsoftOAuth2Api';
 	extends = [
 		'oAuth2Api',
 	];
-	displayName = 'HelpScout OAuth2 API';
+	displayName = 'Microsoft OAuth2 API';
 	properties = [
 		{
 			displayName: 'Authorization URL',
 			name: 'authUrl',
-			type: 'hidden' as NodePropertyTypes,
-			default: 'https://secure.helpscout.net/authentication/authorizeClientApplication',
-			required: true,
+			type: 'string' as NodePropertyTypes,
+			default: 'https://login.microsoftonline.com/{yourtenantid}/oauth2/v2.0/authorize',
 		},
 		{
 			displayName: 'Access Token URL',
 			name: 'accessTokenUrl',
-			type: 'hidden' as NodePropertyTypes,
-			default: 'https://api.helpscout.net/v2/oauth2/token',
-			required: true,
-		},
-		{
-			displayName: 'Scope',
-			name: 'scope',
-			type: 'hidden' as NodePropertyTypes,
-			default: '',
+			type: 'string' as NodePropertyTypes,
+			default: 'https://login.microsoftonline.com/{yourtenantid}/oauth2/v2.0/token',
 		},
 		{
 			displayName: 'Auth URI Query Parameters',
 			name: 'authQueryParameters',
 			type: 'hidden' as NodePropertyTypes,
-			default: '',
+			default: 'response_mode=query',
 		},
 		{
 			displayName: 'Authentication',
