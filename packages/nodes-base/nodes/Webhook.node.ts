@@ -1,4 +1,5 @@
 import {
+	BINARY_ENCODING,
 	IWebhookFunctions,
 } from 'n8n-core';
 
@@ -13,6 +14,12 @@ import {
 import * as basicAuth from 'basic-auth';
 
 import { Response } from 'express';
+
+import { set } from 'lodash';
+
+import * as fs from 'fs';
+
+import * as formidable from 'formidable';
 
 function authorizationError(resp: Response, realm: string, responseCode: number, message?: string) {
 	if (message === undefined) {
@@ -213,6 +220,35 @@ export class Webhook implements INodeType {
 				default: {},
 				options: [
 					{
+						displayName: 'Binary Data',
+						name: 'binaryData',
+						type: 'boolean',
+						displayOptions: {
+							show: {
+								'/httpMethod': [
+									'POST',
+								],
+							},
+						},
+						default: false,
+						description: 'Set to true if webhook will receive binary data.',
+					},
+					{
+						displayName: 'Binary Property',
+						name: 'binaryPropertyName',
+						type: 'string',
+						default: 'data',
+						required: true,
+						displayOptions: {
+							show: {
+								binaryData: [
+									true,
+								],
+							},
+						},
+						description: 'Name of the binary property to which to<br />write the data of the received file.',
+					},
+					{
 						displayName: 'Response Content-Type',
 						name: 'responseContentType',
 						type: 'string',
@@ -251,6 +287,13 @@ export class Webhook implements INodeType {
 						displayName: 'Raw Body',
 						name: 'rawBody',
 						type: 'boolean',
+						displayOptions: {
+							hide: {
+								binaryData: [
+									true,
+								],
+							},
+						},
 						default: false,
 						description: 'Raw body (binary)',
 					},
@@ -259,10 +302,9 @@ export class Webhook implements INodeType {
 		],
 	};
 
-
 	async webhook(this: IWebhookFunctions): Promise<IWebhookResponseData> {
-		const authentication = this.getNodeParameter('authentication', 0) as string;
-		const options = this.getNodeParameter('options', 0) as IDataObject;
+		const authentication = this.getNodeParameter('authentication') as string;
+		const options = this.getNodeParameter('options', {}) as IDataObject;
 		const req = this.getRequestObject();
 		const resp = this.getResponseObject();
 		const headers = this.getHeaderData();
@@ -307,6 +349,79 @@ export class Webhook implements INodeType {
 
 		// @ts-ignore
 		const mimeType = headers['content-type'] || 'application/json';
+		if (mimeType.includes('multipart/form-data')) {
+			const form = new formidable.IncomingForm();
+
+			return new Promise((resolve, reject) => {
+
+				form.parse(req, async (err, data, files) => {
+					const returnData: INodeExecutionData[] = this.helpers.returnJsonArray({
+						body: data,
+						headers,
+						query: this.getQueryData(),
+					});
+					for (const file of Object.keys(files)) {
+						const fileJson = files[file].toJSON() as IDataObject;
+						const [fileName, fileExtension] = (fileJson.name as string).split('.');
+						const fileContent = await fs.promises.readFile(files[file].path);
+						const buffer = Buffer.from(fileContent);
+						set(returnData[0], `binary[${fileName}]`, {
+							data: buffer.toString(BINARY_ENCODING),
+							mimeType: fileJson.type,
+							fileName: fileJson.name,
+							fileExtension,
+						});
+					}
+					resolve({
+						workflowData: [
+							returnData,
+						],
+					});
+				});
+
+			});
+		}
+
+		if (options.binaryData === true) {
+			return new Promise((resolve, reject) => {
+				const binaryPropertyName = options.binaryPropertyName || 'data';
+				const data: Buffer[] = [];
+
+				req.on('data', (chunk) => {
+					data.push(chunk);
+				});
+
+				req.on('end', async () => {
+					const returnItem: INodeExecutionData = {
+						binary: {},
+						json: {
+							body: this.getBodyData(),
+							headers,
+							query: this.getQueryData(),
+						},
+					};
+
+					const returnData: IDataObject[] = [{ json: {} }];
+					set(returnData[0], `binary[${binaryPropertyName}]`, {
+						data: Buffer.concat(data).toString(BINARY_ENCODING),
+						mimeType: req.headers['content-type'],
+					});
+					returnItem.binary![binaryPropertyName as string] = await this.helpers.prepareBinaryData(Buffer.concat(data));
+
+					return resolve({
+						workflowData: [
+							[
+								returnItem
+							]
+						],
+					});
+				});
+
+				req.on('error', (err) => {
+					throw new Error(err.message);
+				});
+			});
+		}
 
 		const response: INodeExecutionData = {
 			json: {
@@ -315,11 +430,12 @@ export class Webhook implements INodeType {
 				query: this.getQueryData(),
 			},
 		};
+
 		if (options.rawBody) {
 			response.binary = {
 				data: {
 					// @ts-ignore
-					data: req.rawBody.toString('base64'),
+					data: req.rawBody.toString(BINARY_ENCODING),
 					mimeType,
 				}
 			};
