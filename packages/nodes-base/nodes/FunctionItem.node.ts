@@ -48,9 +48,6 @@ export class FunctionItem implements INodeType {
 
 		// Define the global objects for the custom function
 		const sandbox = {
-			evaluateExpression: (expression: string, itemIndex: number | undefined) => {
-				return this.evaluateExpression(expression, itemIndex);
-			},
 			getBinaryData: (): IBinaryKeyData | undefined => {
 				return item.binary;
 			},
@@ -93,7 +90,7 @@ export class FunctionItem implements INodeType {
 		let jsonData: IDataObject;
 		try {
 			// Execute the function code
-			jsonData = await vm.run(`module.exports = async function() {${functionCode}}()`, __dirname);
+			jsonData = await vm.run(`module.exports = async function() {${functionCode}}()`, './');
 		} catch (e) {
 			return Promise.reject(e);
 		}
