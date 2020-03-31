@@ -20,6 +20,7 @@ import {
 	ValueRenderOption,
 } from './GoogleSheet';
 
+
 export class GoogleSheets implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Google Sheets ',
@@ -357,6 +358,7 @@ export class GoogleSheets implements INodeType {
 				type: 'string',
 				default: '',
 				placeholder: 'frank@example.com',
+				required: true,
 				displayOptions: {
 					show: {
 						operation: [
@@ -405,21 +407,6 @@ export class GoogleSheets implements INodeType {
 					},
 				},
 				options: [
-					{
-						displayName: 'Continue If Empty',
-						name: 'continue',
-						type: 'boolean',
-						default: false,
-						displayOptions: {
-							show: {
-								'/operation': [
-									'lookup',
-									'read',
-								],
-							},
-						},
-						description: 'By default, the workflow stops executing if the lookup/read does not return values.',
-					},
 					{
 						displayName: 'Return All Matches',
 						name: 'returnAllMatches',
@@ -692,13 +679,7 @@ export class GoogleSheets implements INodeType {
 				});
 			}
 
-			let returnData = await sheet.lookupValues(sheetData, keyRow, dataStartRow, lookupValues, options.returnAllMatches as boolean | undefined);
-
-			if (returnData.length === 0 && options.continue && options.returnAllMatches) {
-				returnData = [{}];
-			} else if (returnData.length === 1 && Object.keys(returnData[0]).length === 0 && !options.continue && !options.returnAllMatches) {
-				returnData = [];
-			}
+			const returnData = await sheet.lookupValues(sheetData, keyRow, dataStartRow, lookupValues, options.returnAllMatches as boolean | undefined);
 
 			return [this.helpers.returnJsonArray(returnData)];
 		} else if (operation === 'read') {
@@ -725,10 +706,6 @@ export class GoogleSheets implements INodeType {
 				const keyRow = this.getNodeParameter('keyRow', 0) as number;
 
 				returnData = sheet.structureArrayDataByColumn(sheetData, keyRow, dataStartRow);
-			}
-
-			if (returnData.length === 0 && options.continue) {
-				returnData = [{}];
 			}
 
 			return [this.helpers.returnJsonArray(returnData)];
