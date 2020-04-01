@@ -457,12 +457,12 @@ export class NextCloud implements INodeType {
 
 		let endpoint = '';
 		let requestMethod = '';
-		let responseData: any; // tslint:disable-line:no-any
 
 		let body: string | Buffer = '';
 		const headers: IDataObject = {};
 
 		for (let i = 0; i < items.length; i++) {
+
 			if (resource === 'file') {
 				if (operation === 'download') {
 					// ----------------------------------
@@ -580,16 +580,7 @@ export class NextCloud implements INodeType {
 				options.encoding = null;
 			}
 
-			try {
-				responseData = await this.helpers.request(options);
-			} catch (error) {
-				if (this.continueOnFail() === true) {
-					returnData.push({ error });
-					continue;
-				}
-
-				throw error;
-			}
+			const responseData = await this.helpers.request(options);
 
 			if (resource === 'file' && operation === 'download') {
 
@@ -665,7 +656,6 @@ export class NextCloud implements INodeType {
 			} else {
 				returnData.push(responseData as IDataObject);
 			}
-
 		}
 
 		if (resource === 'file' && operation === 'download') {
