@@ -246,9 +246,7 @@ export class Webhook implements INodeType {
 								],
 							},
 						},
-						description: `Name of the binary property to which to write the data of<br />
-									the received file. If the data gets received via "Form-Data Multipart"<br />
-									it will be the prefix and a number starting with 0 will be attached to it.`,
+						description: 'Name of the binary property to which to<br />write the data of the received file.',
 					},
 					{
 						displayName: 'Response Content-Type',
@@ -357,35 +355,26 @@ export class Webhook implements INodeType {
 			return new Promise((resolve, reject) => {
 
 				form.parse(req, async (err, data, files) => {
-					const returnItem: INodeExecutionData = {
-						binary: {},
-						json: {
-							body: this.getBodyData(),
-							headers,
-							query: this.getQueryData(),
-						},
-					};
-
-					let count = 0;
+					const returnData: INodeExecutionData[] = this.helpers.returnJsonArray({
+						body: data,
+						headers,
+						query: this.getQueryData(),
+					});
 					for (const file of Object.keys(files)) {
-
-						let binaryPropertyName = file;
-						if (options.binaryPropertyName) {
-							binaryPropertyName = `${options.binaryPropertyName}${count}`;
-						}
-
 						const fileJson = files[file].toJSON() as IDataObject;
+						const [fileName, fileExtension] = (fileJson.name as string).split('.');
 						const fileContent = await fs.promises.readFile(files[file].path);
-
-						returnItem.binary![binaryPropertyName] = await this.helpers.prepareBinaryData(Buffer.from(fileContent), fileJson.name as string, fileJson.type as string);
-
-						count += 1;
+						const buffer = Buffer.from(fileContent);
+						set(returnData[0], `binary[${fileName}]`, {
+							data: buffer.toString(BINARY_ENCODING),
+							mimeType: fileJson.type,
+							fileName: fileJson.name,
+							fileExtension,
+						});
 					}
 					resolve({
 						workflowData: [
-							[
-								returnItem,
-							]
+							returnData,
 						],
 					});
 				});
@@ -412,6 +401,11 @@ export class Webhook implements INodeType {
 						},
 					};
 
+					const returnData: IDataObject[] = [{ json: {} }];
+					set(returnData[0], `binary[${binaryPropertyName}]`, {
+						data: Buffer.concat(data).toString(BINARY_ENCODING),
+						mimeType: req.headers['content-type'],
+					});
 					returnItem.binary![binaryPropertyName as string] = await this.helpers.prepareBinaryData(Buffer.concat(data));
 
 					return resolve({

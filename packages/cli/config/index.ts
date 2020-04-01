@@ -177,13 +177,13 @@ const config = convict({
 	},
 	ssl_key: {
 		format: String,
-		default: '',
+		default: 'server.key',
 		env: 'N8N_SSL_KEY',
 		doc: 'SSL Key for HTTPS Protocol'
 	},
 	ssl_cert: {
 		format: String,
-		default: '',
+		default: 'server.pem',
 		env: 'N8N_SSL_CERT',
 		doc: 'SSL Cert for HTTPS Protocol'
 	},
