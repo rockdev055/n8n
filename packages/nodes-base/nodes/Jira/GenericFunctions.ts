@@ -2,9 +2,10 @@ import { OptionsWithUri } from 'request';
 
 import {
 	IExecuteFunctions,
-	IExecuteSingleFunctions,
 	IHookFunctions,
 	ILoadOptionsFunctions,
+	IExecuteSingleFunctions,
+	BINARY_ENCODING
 } from 'n8n-core';
 
 import {
@@ -12,28 +13,18 @@ import {
 } from 'n8n-workflow';
 
 export async function jiraSoftwareCloudApiRequest(this: IHookFunctions | IExecuteFunctions | IExecuteSingleFunctions | ILoadOptionsFunctions, endpoint: string, method: string, body: any = {}, query?: IDataObject, uri?: string): Promise<any> { // tslint:disable-line:no-any
-	let data; let domain;
-	const jiraCloudCredentials = this.getCredentials('jiraSoftwareCloudApi');
-	const jiraServerCredentials = this.getCredentials('jiraSoftwareServerApi');
-	if (jiraCloudCredentials === undefined && jiraServerCredentials === undefined) {
+	const credentials = this.getCredentials('jiraSoftwareCloudApi');
+	if (credentials === undefined) {
 		throw new Error('No credentials got returned!');
 	}
-	if (jiraCloudCredentials !== undefined) {
-		domain = jiraCloudCredentials!.domain;
-		data = Buffer.from(`${jiraCloudCredentials!.email}:${jiraCloudCredentials!.apiToken}`).toString('base64');
-	} else {
-		domain = jiraServerCredentials!.domain;
-		data = Buffer.from(`${jiraServerCredentials!.email}:${jiraServerCredentials!.password}`).toString('base64');
-	}
+	const data = Buffer.from(`${credentials!.email}:${credentials!.apiToken}`).toString(BINARY_ENCODING);
+	const headerWithAuthentication = Object.assign({},
+		{ Authorization: `Basic ${data}`, Accept: 'application/json', 'Content-Type': 'application/json' });
 	const options: OptionsWithUri = {
-		headers: {
-			Authorization: `Basic ${data}`,
-			Accept: 'application/json',
-			'Content-Type': 'application/json',
-		},
+		headers: headerWithAuthentication,
 		method,
 		qs: query,
-		uri: uri || `${domain}/rest/api/2${endpoint}`,
+		uri: uri || `${credentials.domain}/rest/api/2${endpoint}`,
 		body,
 		json: true
 	};
@@ -41,36 +32,45 @@ export async function jiraSoftwareCloudApiRequest(this: IHookFunctions | IExecut
 	try {
 		return await this.helpers.request!(options);
 	} catch (error) {
-		let errorMessage = error;
-		if (error.error && error.error.errorMessages) {
-			errorMessage = error.error.errorMessages;
+		const errorMessage =
+		 error.response.body.message || error.response.body.Message;
+
+		if (errorMessage !== undefined) {
+			throw errorMessage;
 		}
-		throw new Error(errorMessage);
+		throw error.response.body;
 	}
 }
 
+
+
+/**
+ * Make an API request to paginated intercom endpoint
+ * and return all results
+ */
 export async function jiraSoftwareCloudApiRequestAllItems(this: IHookFunctions | IExecuteFunctions, propertyName: string, endpoint: string, method: string, body: any = {}, query: IDataObject = {}): Promise<any> { // tslint:disable-line:no-any
 
 	const returnData: IDataObject[] = [];
 
 	let responseData;
 
-	query.startAt = 0;
-	body.startAt = 0;
 	query.maxResults = 100;
-	body.maxResults  = 100;
+
+	let uri: string | undefined;
 
 	do {
-		responseData = await jiraSoftwareCloudApiRequest.call(this, endpoint, method, body, query);
+		responseData = await jiraSoftwareCloudApiRequest.call(this, endpoint, method, body, query, uri);
+		uri = responseData.nextPage;
 		returnData.push.apply(returnData, responseData[propertyName]);
-		query.startAt = responseData.startAt + responseData.maxResults;
-		body.startAt = responseData.startAt + responseData.maxResults;
 	} while (
-		(responseData.startAt + responseData.maxResults < responseData.total)
+		responseData.isLast !== false &&
+		responseData.nextPage !== undefined &&
+		responseData.nextPage !== null
 	);
 
 	return returnData;
 }
+
 
 export function validateJSON(json: string | undefined): any { // tslint:disable-line:no-any
 	let result;
