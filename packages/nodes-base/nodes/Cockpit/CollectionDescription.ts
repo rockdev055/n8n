@@ -8,7 +8,7 @@ export const collectionOperations = [
 		displayOptions: {
 			show: {
 				resource: [
-					'collection',
+					'collections',
 				],
 			},
 		},
@@ -46,7 +46,7 @@ export const collectionFields = [
 		displayOptions: {
 			show: {
 				resource: [
-					'collection',
+					'collections',
 				],
 			},
 		},
@@ -54,7 +54,7 @@ export const collectionFields = [
 		description: 'Name of the collection to operate on.'
 	},
 
-	// Collection:entry:create
+	// Collections:entry:create
 	{
 		displayName: 'Data',
 		name: 'data',
@@ -67,7 +67,7 @@ export const collectionFields = [
 		displayOptions: {
 			show: {
 				resource: [
-					'collection',
+					'collections',
 				],
 				operation: [
 					'create',
@@ -77,48 +77,7 @@ export const collectionFields = [
 		description: 'The data to create.',
 	},
 
-	// Collection:entry:getAll
-	{
-		displayName: 'Return All',
-		name: 'returnAll',
-		type: 'boolean',
-		displayOptions: {
-			show: {
-				operation: [
-					'getAll',
-				],
-				resource: [
-					'collection',
-				],
-			},
-		},
-		default: false,
-		description: 'If all results should be returned or only up to a given limit.',
-	},
-	{
-		displayName: 'Limit',
-		name: 'limit',
-		type: 'number',
-		displayOptions: {
-			show: {
-				operation: [
-					'getAll',
-				],
-				resource: [
-					'collection',
-				],
-				returnAll: [
-					false,
-				],
-			},
-		},
-		typeOptions: {
-			minValue: 1,
-			maxValue: 500,
-		},
-		default: 100,
-		description: 'How many results to return.',
-	},
+	// Collections:entry:getAll
 	{
 		displayName: 'Options',
 		name: 'options',
@@ -128,7 +87,7 @@ export const collectionFields = [
 		displayOptions: {
 			show: {
 				resource: [
-					'collection',
+					'collections',
 				],
 				operation: [
 					'getAll',
@@ -164,6 +123,13 @@ export const collectionFields = [
 				description: 'Return normalized language fields.',
 			},
 			{
+				displayName: 'Limit',
+				name: 'limit',
+				type: 'number',
+				default: '',
+				description: 'Limit number of returned entries.',
+			},
+			{
 				displayName: 'Populate',
 				name: 'populate',
 				type: 'boolean',
@@ -177,6 +143,14 @@ export const collectionFields = [
 				type: 'boolean',
 				default: false,
 				description: `Returns the data exactly in the way it got received from the API.`,
+			},
+			{
+				displayName: 'Simple',
+				name: 'simple',
+				type: 'boolean',
+				required: true,
+				default: true,
+				description: 'Return only result entries.',
 			},
 			{
 				displayName: 'Skip',
@@ -195,7 +169,7 @@ export const collectionFields = [
 		],
 	},
 
-	// Collection:entry:update
+	// Collections:entry:update
 	{
 		displayName: 'Entry ID',
 		name: 'id',
@@ -205,7 +179,7 @@ export const collectionFields = [
 		displayOptions: {
 			show: {
 				resource: [
-					'collection',
+					'collections',
 				],
 				operation: [
 					'update',
@@ -226,7 +200,7 @@ export const collectionFields = [
 		displayOptions: {
 			show: {
 				resource: [
-					'collection',
+					'collections',
 				],
 				operation: [
 					'update',
