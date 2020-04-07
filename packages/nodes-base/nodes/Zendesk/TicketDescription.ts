@@ -1,6 +1,4 @@
-import {
-	INodeProperties,
- } from 'n8n-workflow';
+import { INodeProperties } from 'n8n-workflow';
 
 export const ticketOperations = [
 	{
@@ -71,23 +69,6 @@ export const ticketFields = [
 		},
 		required: true,
 		description: 'The first comment on the ticket',
-	},
-	{
-		displayName: 'JSON Parameters',
-		name: 'jsonParameters',
-		type: 'boolean',
-		default: false,
-		description: '',
-		displayOptions: {
-			show: {
-				resource: [
-					'ticket'
-				],
-				operation: [
-					'create',
-				],
-			},
-		},
 	},
 	{
 		displayName: 'Additional Fields',
@@ -203,30 +184,6 @@ export const ticketFields = [
 			}
 		],
 	},
-	{
-		displayName: ' Custom Fields',
-		name: 'customFieldsJson',
-		type: 'json',
-		typeOptions: {
-			alwaysOpenEditWindow: true,
-		},
-		default: '',
-		displayOptions: {
-			show: {
-				resource: [
-					'ticket',
-				],
-				operation: [
-					'create',
-				],
-				jsonParameters: [
-					true,
-				],
-			},
-		},
-		required: true,
-		description: `Array of customs fields <a href='https://developer.zendesk.com/rest_api/docs/support/tickets#setting-custom-field-values'>Details</a>`,
-	},
 /* -------------------------------------------------------------------------- */
 /*                                ticket:update                               */
 /* -------------------------------------------------------------------------- */
@@ -247,23 +204,6 @@ export const ticketFields = [
 			},
 		},
 		description: 'Ticket ID',
-	},
-	{
-		displayName: 'JSON Parameters',
-		name: 'jsonParameters',
-		type: 'boolean',
-		default: false,
-		description: '',
-		displayOptions: {
-			show: {
-				resource: [
-					'ticket'
-				],
-				operation: [
-					'update',
-				],
-			},
-		},
 	},
 	{
 		displayName: 'Update Fields',
@@ -378,30 +318,6 @@ export const ticketFields = [
 				description: 'The state of the ticket',
 			}
 		],
-	},
-	{
-		displayName: ' Custom Fields',
-		name: 'customFieldsJson',
-		type: 'json',
-		typeOptions: {
-			alwaysOpenEditWindow: true,
-		},
-		default: '',
-		displayOptions: {
-			show: {
-				resource: [
-					'ticket',
-				],
-				operation: [
-					'update',
-				],
-				jsonParameters: [
-					true,
-				],
-			},
-		},
-		required: true,
-		description: `Array of customs fields <a href='https://developer.zendesk.com/rest_api/docs/support/tickets#setting-custom-field-values'>Details</a>`,
 	},
 /* -------------------------------------------------------------------------- */
 /*                                 ticket:get                                 */
