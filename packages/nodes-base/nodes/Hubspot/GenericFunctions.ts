@@ -1,12 +1,10 @@
-import {
-	OptionsWithUri,
- } from 'request';
+import { OptionsWithUri } from 'request';
 
 import {
 	IExecuteFunctions,
 	IHookFunctions,
 	ILoadOptionsFunctions,
-	IExecuteSingleFunctions,
+	IExecuteSingleFunctions
 } from 'n8n-core';
 
 import {
@@ -52,7 +50,7 @@ export async function hubspotApiRequestAllItems(this: IHookFunctions | IExecuteF
 
 	let responseData;
 
-	query.limit = query.limit || 250;
+	query.limit = 250;
 	query.count = 100;
 
 	do {
@@ -60,9 +58,6 @@ export async function hubspotApiRequestAllItems(this: IHookFunctions | IExecuteF
 		query.offset = responseData.offset;
 		query['vid-offset'] = responseData['vid-offset'];
 		returnData.push.apply(returnData, responseData[propertyName]);
-		if (query.limit && query.limit <= returnData.length) {
-			return returnData;
-		}
 	} while (
 		responseData['has-more'] !== undefined &&
 		responseData['has-more'] !== null &&
