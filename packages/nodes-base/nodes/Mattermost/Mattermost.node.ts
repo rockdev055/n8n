@@ -571,128 +571,6 @@ export class Mattermost implements INodeType {
 						default: '',
 						description: 'Icon which should appear next to footer.',
 					},
-					
-					
-					{	displayName: 'Actions',
-						name: 'actions',
-						placeholder: 'Add Actions',
-						description: 'Actions to add to message.',
-						type: 'fixedCollection',
-						typeOptions: {
-							multipleValues: true,
-						},
-						default: {},
-						options: [
-							{
-								displayName: 'Item',
-								name: 'item',
-								values: [
-									{
-										displayName: 'Name',
-										name: 'name',
-										type: 'string',
-										default: '',
-										description: 'Name of the Action.',
-									},
-
-
-									{	
-									displayName: 'Integrations',
-									name: 'integrations',
-									placeholder: 'Add Integrations',
-									description: 'Integrations to add to message.',
-									type: 'fixedCollection',
-									typeOptions: {
-										multipleValues: true,
-									},
-									default: {},
-									options: [
-										{
-											displayName: 'Item',
-											name: 'item',
-											default: {},
-											values: [
-												{
-													displayName: 'URL',
-													name: 'url',
-													type: 'string',
-													default: '',
-													description: 'URL of the Integration.',
-												},
-// context
-
-												{
-													displayName: 'Context',
-													name: 'context',
-													placeholder: 'Add Context to Integration',
-													description: 'Adds a Context values set.',
-													type: 'fixedCollection',
-													typeOptions: {
-															multipleValues: true,
-													},
-													default: {},
-													options: [
-															{
-																	name: 'property',
-																	displayName: 'Property',
-																	default: {},
-																	values: [
-																			{
-																					displayName: 'Property Name',
-																					name: 'name',
-																					type: 'string',
-																					default: '',
-																					description: 'Name of the property to set.',
-																			},
-																			{
-																					displayName: 'Property Value',
-																					name: 'value',
-																					type: 'string',
-																					default: '',
-																					description: 'Value of the property to set.',
-																			},
-																	]
-															},
-													],
-												},
-
-
-
-
-
-
-
-
-											
-											]
-										},
-									],
-								},
-
-
-
-								
-								]
-							},
-						],
-					},
-					
-
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
 					{
 						displayName: 'Fields',
 						name: 'fields',
@@ -997,9 +875,7 @@ export class Mattermost implements INodeType {
 					body.message = this.getNodeParameter('message', i) as string;
 
 					const attachments = this.getNodeParameter('attachments', i, []) as unknown as IAttachment[];
-                                        console.log('----');
-					console.dir(attachments);
-					console.log('----');
+
 					// The node does save the fields data differently than the API
 					// expects so fix the data befre we send the request
 					for (const attachment of attachments) {
@@ -1014,25 +890,11 @@ export class Mattermost implements INodeType {
 							}
 						}
 					}
-                                        const util = require('util');
-					console.log('&&&&');
-					//console.dir(attachments);
-			                console.log(util.inspect(attachments, false, null, true /* enable colors */));
-					console.log('&&&&');
-					
+
 					body.props = {
 						attachments,
 					};
 
-					//console.log('####');
-					//console.dir(body);
-					//console.log('####');
-					console.log('****');
-					console.log(util.inspect(body, false, null, true /* enable colors */));
-					//console.dir(body);
-					//console.log('****111');
-					//console.log(JSON.stringify(body, null, 4));
-					console.log('****');
 					// Add all the other options to the request
 					const otherOptions = this.getNodeParameter('otherOptions', i) as IDataObject;
 					Object.assign(body, otherOptions);
