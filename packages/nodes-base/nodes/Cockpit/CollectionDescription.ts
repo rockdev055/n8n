@@ -14,17 +14,17 @@ export const collectionOperations = [
 		},
 		options: [
 			{
-				name: 'Create an Entry',
+				name: 'Create an entry',
 				value: 'create',
 				description: 'Create a collection entry',
 			},
 			{
-				name: 'Get all Entries',
+				name: 'Get all entries',
 				value: 'getAll',
 				description: 'Get all collection entries',
 			},
 			{
-				name: 'Update an Entry',
+				name: 'Update an entry',
 				value: 'update',
 				description: 'Update a collection entries',
 			},
@@ -52,6 +52,29 @@ export const collectionFields = [
 		},
 		required: true,
 		description: 'Name of the collection to operate on.'
+	},
+
+	// Collection:entry:create
+	{
+		displayName: 'Data',
+		name: 'data',
+		type: 'json',
+		required: true,
+		default: '',
+		typeOptions: {
+			alwaysOpenEditWindow: true,
+		},
+		displayOptions: {
+			show: {
+				resource: [
+					'collection',
+				],
+				operation: [
+					'create',
+				]
+			},
+		},
+		description: 'The data to create.',
 	},
 
 	// Collection:entry:getAll
@@ -116,24 +139,22 @@ export const collectionFields = [
 			{
 				displayName: 'Fields',
 				name: 'fields',
-				type: 'string',
+				type: 'json',
 				default: '',
 				typeOptions: {
 					alwaysOpenEditWindow: true,
 				},
-				placeholder: '_id,name',
-				description: 'Comma separated list of fields to get.',
+				description: 'Fields to get.',
 			},
 			{
-				displayName: 'Filter Query',
+				displayName: 'Filter',
 				name: 'filter',
 				type: 'json',
 				default: '',
 				typeOptions: {
 					alwaysOpenEditWindow: true,
 				},
-				placeholder: '{"name": "Jim"}',
-				description: 'Filter query in <a href="https://jeroen.github.io/mongolite/query-data.html" target="_blank">Mongolite format</a>.',
+				description: 'Filter result by fields.',
 			},
 			{
 				displayName: 'Language',
@@ -165,12 +186,11 @@ export const collectionFields = [
 				description: 'Skip number of entries.',
 			},
 			{
-				displayName: 'Sort Query',
+				displayName: 'Sort',
 				name: 'sort',
 				type: 'json',
 				default: '',
-				placeholder: '{"price": -1}',
-				description: 'Sort query in <a href="https://jeroen.github.io/mongolite/query-data.html" target="_blank">Mongolite format</a>.',
+				description: 'Sort result by fields.',
 			},
 		],
 	},
@@ -194,95 +214,25 @@ export const collectionFields = [
 		},
 		description: 'The entry ID.',
 	},
-
-	// Collection:entry:create
-	// Collection:entry:update
 	{
-		displayName: 'JSON Data fields',
-		name: 'jsonDataFields',
-		type: 'boolean',
-		default: false,
-		displayOptions: {
-			show: {
-				resource: [
-					'collection',
-				],
-				operation: [
-					'create',
-					'update',
-				]
-			},
-		},
-		description: 'If new entry fields should be set via the value-key pair UI or JSON.',
-	},
-	{
-		displayName: 'Entry Data',
-		name: 'dataFieldsJson',
+		displayName: 'Data',
+		name: 'data',
 		type: 'json',
+		required: true,
 		default: '',
 		typeOptions: {
 			alwaysOpenEditWindow: true,
 		},
 		displayOptions: {
 			show: {
-				jsonDataFields: [
-					true,
-				],
 				resource: [
 					'collection',
 				],
 				operation: [
-					'create',
 					'update',
 				]
 			},
 		},
-		description: 'Entry data to send as JSON.',
-	},
-	{
-		displayName: 'Entry Data',
-		name: 'dataFieldsUi',
-		type: 'fixedCollection',
-		typeOptions: {
-			multipleValues: true,
-		},
-		default: {},
-		displayOptions: {
-			show: {
-				jsonDataFields: [
-					false,
-				],
-				resource: [
-					'collection',
-				],
-				operation: [
-					'create',
-					'update',
-				]
-			},
-		},
-		options: [
-			{
-				displayName: 'Field',
-				name: 'field',
-				values: [
-					{
-						displayName: 'Name',
-						name: 'name',
-						type: 'string',
-						default: '',
-						description: 'Name of the field.',
-					},
-					{
-						displayName: 'Value',
-						name: 'value',
-						type: 'string',
-						default: '',
-						description: 'Value of the field.',
-					},
-				],
-			},
-		],
-		description: 'Entry data to send.',
+		description: 'The data to update.',
 	},
 ] as INodeProperties[];

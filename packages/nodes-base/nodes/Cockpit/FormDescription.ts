@@ -14,7 +14,7 @@ export const formOperations = [
 		},
 		options: [
 			{
-				name: 'Submit a Form',
+				name: 'Submit a form',
 				value: 'submit',
 				description: 'Store submission of a form',
 			},
@@ -44,88 +44,21 @@ export const formFields = [
 
 	// Form:submit
 	{
-		displayName: 'JSON Data fields',
-		name: 'jsonDataFields',
-		type: 'boolean',
-		default: false,
-		displayOptions: {
-			show: {
-				resource: [
-					'form',
-				],
-				operation: [
-					'submit',
-				]
-			},
-		},
-		description: 'If form fields should be set via the value-key pair UI or JSON.',
-	},
-	{
-		displayName: 'Form Data',
-		name: 'dataFieldsJson',
+		displayName: 'Form data',
+		name: 'form',
 		type: 'json',
+		required: true,
 		default: '',
 		typeOptions: {
 			alwaysOpenEditWindow: true,
 		},
 		displayOptions: {
 			show: {
-				jsonDataFields: [
-					true,
-				],
 				resource: [
 					'form',
 				],
-				operation: [
-					'submit',
-				]
 			},
 		},
-		description: 'Form data to send as JSON.',
-	},
-	{
-		displayName: 'Form Data',
-		name: 'dataFieldsUi',
-		type: 'fixedCollection',
-		typeOptions: {
-			multipleValues: true,
-		},
-		default: {},
-		displayOptions: {
-			show: {
-				jsonDataFields: [
-					false,
-				],
-				resource: [
-					'form',
-				],
-				operation: [
-					'submit',
-				]
-			},
-		},
-		options: [
-			{
-				displayName: 'Field',
-				name: 'field',
-				values: [
-					{
-						displayName: 'Name',
-						name: 'name',
-						type: 'string',
-						default: '',
-						description: 'Name of the field.',
-					},
-					{
-						displayName: 'Value',
-						name: 'value',
-						type: 'string',
-						default: '',
-						description: 'Value of the field.',
-					},
-				],
-			},
-		],
-		description: 'Form data to send.',
+		description: 'The data to save.',
 	},
 ] as INodeProperties[];

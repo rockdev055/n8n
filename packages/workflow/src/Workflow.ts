@@ -906,9 +906,7 @@ export class Workflow {
 		// Execute the expression
 		try {
 			const returnValue = tmpl.tmpl(parameterValue, data);
-			if (typeof returnValue === 'function') {
-				throw new Error('Expression resolved to a function. Please add "()"');
-			} else if (returnValue !== null && typeof returnValue === 'object') {
+			if (returnValue !== null && typeof returnValue === 'object') {
 				if (returnObjectAsString === true)  {
 					return this.convertObjectValueToString(returnValue);
 				}
