@@ -141,7 +141,6 @@ export default mixins(
 				nodeColor: null,
 				nodeValues: {
 					color: '#ff0000',
-					alwaysOutputData: false,
 					continueOnFail: false,
 					retryOnFail: false,
 					maxTries: 3,
@@ -169,14 +168,6 @@ export default mixins(
 						default: '#ff0000',
 						noDataExpression: true,
 						description: 'The color of the node in the flow.',
-					},
-					{
-						displayName: 'Always Output Data',
-						name: 'alwaysOutputData',
-						type: 'boolean',
-						default: false,
-						noDataExpression: true,
-						description: 'If activated and the node does not have any data for the first output,<br />it returns an empty item anyway. Be careful setting this on<br />IF-Nodes as it could easily cause an infinite loop.',
 					},
 					{
 						displayName: 'Retry On Fail',
@@ -426,11 +417,6 @@ export default mixins(
 					if (this.node.notes) {
 						foundNodeSettings.push('notes');
 						Vue.set(this.nodeValues, 'notes', this.node.notes);
-					}
-
-					if (this.node.alwaysOutputData) {
-						foundNodeSettings.push('alwaysOutputData');
-						Vue.set(this.nodeValues, 'alwaysOutputData', this.node.alwaysOutputData);
 					}
 
 					if (this.node.continueOnFail) {
