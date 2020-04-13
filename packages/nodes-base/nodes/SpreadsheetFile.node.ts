@@ -337,7 +337,7 @@ export class SpreadsheetFile implements INodeType {
 			} else if (fileFormat === 'ods') {
 				wopts.bookType = 'ods';
 			} else if (fileFormat === 'xls') {
-				wopts.bookType = 'xls';
+				wopts.bookType = 'xlml';
 			}
 
 			// Convert the data in the correct format
