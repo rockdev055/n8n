@@ -292,7 +292,6 @@ export interface INode {
 	retryOnFail?: boolean;
 	maxTries?: number;
 	waitBetweenTries?: number;
-	alwaysOutputData?: boolean;
 	continueOnFail?: boolean;
 	parameters: INodeParameters;
 	credentials?: INodeCredentials;
@@ -535,7 +534,6 @@ export interface IWorkflowDataProxyData {
 	$env: any; // tslint:disable-line:no-any
 	$evaluateExpression: any; // tslint:disable-line:no-any
 	$item: any; // tslint:disable-line:no-any
-	$items: any; // tslint:disable-line:no-any
 	$json: any; // tslint:disable-line:no-any
 	$node: any; // tslint:disable-line:no-any
 	$parameter: any; // tslint:disable-line:no-any
