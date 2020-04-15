@@ -63,12 +63,11 @@ export async function init(synchronize?: boolean): Promise<IDatabaseCollections>
 			};
 			break;
 
-		case 'mariadb':
 		case 'mysqldb':
 			dbNotExistError = 'does not exist';
 			entities = MySQLDb;
 			connectionOptions = {
-				type: dbType === 'mysqldb' ? 'mysql' : 'mariadb',
+				type: 'mysql',
 				database: await GenericHelpers.getConfigValue('database.mysqldb.database') as string,
 				entityPrefix: await GenericHelpers.getConfigValue('database.tablePrefix') as string,
 				host: await GenericHelpers.getConfigValue('database.mysqldb.host') as string,
