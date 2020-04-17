@@ -1,5 +1,4 @@
 import {
-	CredentialsHelper,
 	Db,
 	IExecutionDb,
 	IExecutionFlattedDb,
@@ -405,7 +404,6 @@ export async function getBase(credentials: IWorkflowCredentials, currentNodePara
 
 	return {
 		credentials,
-		credentialsHelper: new CredentialsHelper(credentials, encryptionKey),
 		encryptionKey,
 		executeWorkflow,
 		restApiUrl: urlBaseWebhook + config.get('endpoints.rest') as string,
