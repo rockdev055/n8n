@@ -28,7 +28,7 @@ import {
 function flattenObject (data: IDataObject) {
 	const returnData: IDataObject = {};
 	for (const key1 of Object.keys(data)) {
-		if (data[key1] !== null && (typeof data[key1]) === 'object') {
+		if ((typeof data[key1]) === 'object') {
 			const flatObject = flattenObject(data[key1] as IDataObject);
 			for (const key2 in flatObject) {
 				if (flatObject[key2] === undefined) {
@@ -131,11 +131,6 @@ export class SpreadsheetFile implements INodeType {
 					{
 						name: 'XLS',
 						value: 'xls',
-						description: 'Excel',
-					},
-					{
-						name: 'XLSX',
-						value: 'xlsx',
 						description: 'Excel',
 					},
 				],
@@ -241,7 +236,6 @@ export class SpreadsheetFile implements INodeType {
 								'/fileFormat': [
 									'ods',
 									'xls',
-									'xlsx',
 								],
 							},
 						},
@@ -343,9 +337,7 @@ export class SpreadsheetFile implements INodeType {
 			} else if (fileFormat === 'ods') {
 				wopts.bookType = 'ods';
 			} else if (fileFormat === 'xls') {
-				wopts.bookType = 'xls';
-			} else if (fileFormat === 'xlsx') {
-				wopts.bookType = 'xlsx';
+				wopts.bookType = 'xlml';
 			}
 
 			// Convert the data in the correct format

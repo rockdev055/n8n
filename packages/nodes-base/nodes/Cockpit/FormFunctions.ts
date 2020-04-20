@@ -9,7 +9,7 @@ import { cockpitApiRequest } from './GenericFunctions';
 
 export async function submitForm(this: IExecuteFunctions | IExecuteSingleFunctions | ILoadOptionsFunctions, resourceName: string, form: IDataObject) {
 	const body: IForm = {
-		form
+		form: JSON.parse(form.toString())
 	};
 
 	return cockpitApiRequest.call(this, 'post', `/forms/submit/${resourceName}`, body);

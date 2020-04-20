@@ -1,6 +1,4 @@
-import {
-	INodeProperties,
- } from 'n8n-workflow';
+import { INodeProperties } from 'n8n-workflow';
 
 export const taskOperations = [
 	{
@@ -57,8 +55,8 @@ export const taskFields = [
 /*                                task:create                                 */
 /* -------------------------------------------------------------------------- */
 	{
-		displayName: 'Team ID',
-		name: 'teamId',
+		displayName: 'Team',
+		name: 'team',
 		type: 'options',
 		default: '',
 		displayOptions: {
@@ -77,8 +75,8 @@ export const taskFields = [
 		required: true,
 	},
 	{
-		displayName: 'Space ID',
-		name: 'spaceId',
+		displayName: 'Space',
+		name: 'space',
 		type: 'options',
 		default: '',
 		displayOptions: {
@@ -94,7 +92,7 @@ export const taskFields = [
 		typeOptions: {
 			loadOptionsMethod: 'getSpaces',
 			loadOptionsDependsOn: [
-				'teamId',
+				'team',
 			]
 		},
 		required: true,
@@ -117,8 +115,8 @@ export const taskFields = [
 		required: true,
 	},
 	{
-		displayName: 'Folder ID',
-		name: 'folderId',
+		displayName: 'Folder',
+		name: 'folder',
 		type: 'options',
 		default: '',
 		displayOptions: {
@@ -137,14 +135,14 @@ export const taskFields = [
 		typeOptions: {
 			loadOptionsMethod: 'getFolders',
 			loadOptionsDependsOn: [
-				'spaceId',
+				'space',
 			],
 		},
 		required: true,
 	},
 	{
-		displayName: 'List ID',
-		name: 'listId',
+		displayName: 'List',
+		name: 'list',
 		type: 'options',
 		default: '',
 		displayOptions: {
@@ -163,14 +161,14 @@ export const taskFields = [
 		typeOptions: {
 			loadOptionsMethod: 'getFolderlessLists',
 			loadOptionsDependsOn: [
-				'spaceId',
+				'space',
 			],
 		},
 		required: true,
 	},
 	{
-		displayName: 'List ID',
-		name: 'listId',
+		displayName: 'List',
+		name: 'list',
 		type: 'options',
 		default: '',
 		displayOptions: {
@@ -189,7 +187,7 @@ export const taskFields = [
 		typeOptions: {
 			loadOptionsMethod: 'getLists',
 			loadOptionsDependsOn: [
-				'folderId',
+				'folder',
 			]
 		},
 		required: true,
@@ -234,7 +232,7 @@ export const taskFields = [
 				name: 'assignees',
 				type: 'multiOptions',
 				loadOptionsDependsOn: [
-					'listId',
+					'list',
 				],
 				typeOptions: {
 					loadOptionsMethod: 'getAssignees',
@@ -313,7 +311,7 @@ export const taskFields = [
 				name: 'status',
 				type: 'options',
 				loadOptionsDependsOn: [
-					'listId',
+					'list',
 				],
 				typeOptions: {
 					loadOptionsMethod: 'getStatuses',
@@ -325,7 +323,7 @@ export const taskFields = [
 				name: 'tags',
 				type: 'multiOptions',
 				loadOptionsDependsOn: [
-					'spaceId',
+					'space',
 				],
 				typeOptions: {
 					loadOptionsMethod: 'getTags',
@@ -347,7 +345,7 @@ export const taskFields = [
 /* -------------------------------------------------------------------------- */
 	{
 		displayName: 'Task ID',
-		name: 'taskId',
+		name: 'id',
 		type: 'string',
 		default: '',
 		required: true,
@@ -457,7 +455,7 @@ export const taskFields = [
 /* -------------------------------------------------------------------------- */
 	{
 		displayName: 'Task ID',
-		name: 'taskId',
+		name: 'id',
 		type: 'string',
 		default: '',
 		required: true,
@@ -477,8 +475,8 @@ export const taskFields = [
 /*                                 task:getAll                                */
 /* -------------------------------------------------------------------------- */
 	{
-		displayName: 'Team ID',
-		name: 'teamId',
+		displayName: 'Team',
+		name: 'team',
 		type: 'options',
 		default: '',
 		displayOptions: {
@@ -497,8 +495,8 @@ export const taskFields = [
 		required: true,
 	},
 	{
-		displayName: 'Space ID',
-		name: 'spaceId',
+		displayName: 'Space',
+		name: 'space',
 		type: 'options',
 		default: '',
 		displayOptions: {
@@ -514,7 +512,7 @@ export const taskFields = [
 		typeOptions: {
 			loadOptionsMethod: 'getSpaces',
 			loadOptionsDependsOn: [
-				'teamId',
+				'team',
 			]
 		},
 		required: true,
@@ -537,8 +535,8 @@ export const taskFields = [
 		required: true,
 	},
 	{
-		displayName: 'Folder ID',
-		name: 'folderId',
+		displayName: 'Folder',
+		name: 'folder',
 		type: 'options',
 		default: '',
 		displayOptions: {
@@ -557,14 +555,14 @@ export const taskFields = [
 		typeOptions: {
 			loadOptionsMethod: 'getFolders',
 			loadOptionsDependsOn: [
-				'spaceId',
+				'space',
 			],
 		},
 		required: true,
 	},
 	{
-		displayName: 'List ID',
-		name: 'listId',
+		displayName: 'List',
+		name: 'list',
 		type: 'options',
 		default: '',
 		displayOptions: {
@@ -583,14 +581,14 @@ export const taskFields = [
 		typeOptions: {
 			loadOptionsMethod: 'getFolderlessLists',
 			loadOptionsDependsOn: [
-				'spaceId',
+				'space',
 			],
 		},
 		required: true,
 	},
 	{
-		displayName: 'List ID',
-		name: 'listId',
+		displayName: 'List',
+		name: 'list',
 		type: 'options',
 		default: '',
 		displayOptions: {
@@ -609,52 +607,52 @@ export const taskFields = [
 		typeOptions: {
 			loadOptionsMethod: 'getLists',
 			loadOptionsDependsOn: [
-				'folderId',
+				'folder',
 			]
 		},
 		required: true,
 	},
-	{
-		displayName: 'Return All',
-		name: 'returnAll',
-		type: 'boolean',
-		displayOptions: {
-			show: {
-				resource: [
-					'task',
-				],
-				operation: [
-					'getAll',
-				],
-			},
-		},
-		default: true,
-		description: 'If all results should be returned or only up to a given limit.',
-	},
-	{
-		displayName: 'Limit',
-		name: 'limit',
-		type: 'number',
-		displayOptions: {
-			show: {
-				resource: [
-					'task',
-				],
-				operation: [
-					'getAll',
-				],
-				returnAll: [
-					false,
-				],
-			},
-		},
-		typeOptions: {
-			minValue: 1,
-			maxValue: 100,
-		},
-		default: 50,
-		description: 'How many results to return.',
-	},
+	// {
+	// 	displayName: 'Return All',
+	// 	name: 'returnAll',
+	// 	type: 'boolean',
+	// 	displayOptions: {
+	// 		show: {
+	// 			resource: [
+	// 				'task',
+	// 			],
+	// 			operation: [
+	// 				'getAll',
+	// 			],
+	// 		},
+	// 	},
+	// 	default: true,
+	// 	description: 'If all results should be returned or only up to a given limit.',
+	// },
+	// {
+	// 	displayName: 'Limit',
+	// 	name: 'limit',
+	// 	type: 'number',
+	// 	displayOptions: {
+	// 		show: {
+	// 			resource: [
+	// 				'task',
+	// 			],
+	// 			operation: [
+	// 				'getAll',
+	// 			],
+	// 			returnAll: [
+	// 				false,
+	// 			],
+	// 		},
+	// 	},
+	// 	typeOptions: {
+	// 		minValue: 1,
+	// 		maxValue: 100,
+	// 	},
+	// 	default: 50,
+	// 	description: 'How many results to return.',
+	// },
 	{
 		displayName: 'Filters',
 		name: 'filters',
@@ -683,7 +681,7 @@ export const taskFields = [
 				name: 'assignees',
 				type: 'multiOptions',
 				loadOptionsDependsOn: [
-					'listId',
+					'list',
 				],
 				typeOptions: {
 					loadOptionsMethod: 'getAssignees',
@@ -769,7 +767,7 @@ export const taskFields = [
 				name: 'statuses',
 				type: 'multiOptions',
 				loadOptionsDependsOn: [
-					'listId',
+					'list',
 				],
 				typeOptions: {
 					loadOptionsMethod: 'getStatuses',
@@ -788,7 +786,7 @@ export const taskFields = [
 				name: 'tags',
 				type: 'multiOptions',
 				loadOptionsDependsOn: [
-					'spaceId',
+					'space',
 				],
 				typeOptions: {
 					loadOptionsMethod: 'getTags',
@@ -802,8 +800,8 @@ export const taskFields = [
 /*                                task:delete                                 */
 /* -------------------------------------------------------------------------- */
 	{
-		displayName: 'Task ID',
-		name: 'taskId',
+		displayName: 'ID',
+		name: 'id',
 		type: 'string',
 		default: '',
 		required: true,
@@ -824,7 +822,7 @@ export const taskFields = [
 /* -------------------------------------------------------------------------- */
 	{
 		displayName: 'Task ID',
-		name: 'taskId',
+		name: 'task',
 		type: 'string',
 		default: '',
 		required: true,
@@ -842,7 +840,7 @@ export const taskFields = [
 	},
 	{
 		displayName: 'Field ID',
-		name: 'fieldId',
+		name: 'field',
 		type: 'string',
 		default: '',
 		required: true,
