@@ -107,6 +107,12 @@ export const dealFields = [
 				default: '',
 			},
 			{
+				displayName: 'Deal Stage',
+				name: 'dealStage',
+				type: 'string',
+				default: '',
+			},
+			{
 				displayName: 'Pipeline',
 				name: 'pipeline',
 				type: 'string',
@@ -207,6 +213,12 @@ export const dealFields = [
 				},
 				default: '',
 				description: 'The dealstage is required when creating a deal. See the CRM Pipelines API for details on managing pipelines and stages.',
+			},
+			{
+				displayName: 'Deal Stage',
+				name: 'dealStage',
+				type: 'string',
+				default: '',
 			},
 			{
 				displayName: 'Pipeline',
