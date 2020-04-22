@@ -1,6 +1,4 @@
-import {
-	INodeProperties,
- } from 'n8n-workflow';
+import { INodeProperties } from 'n8n-workflow';
 
 export const taskOperations = [
 	{
@@ -57,7 +55,7 @@ export const taskFields = [
 /*                                task:create                                 */
 /* -------------------------------------------------------------------------- */
 	{
-		displayName: 'Team ID',
+		displayName: 'Team',
 		name: 'team',
 		type: 'options',
 		default: '',
@@ -77,7 +75,7 @@ export const taskFields = [
 		required: true,
 	},
 	{
-		displayName: 'Space ID',
+		displayName: 'Space',
 		name: 'space',
 		type: 'options',
 		default: '',
@@ -117,7 +115,7 @@ export const taskFields = [
 		required: true,
 	},
 	{
-		displayName: 'Folder ID',
+		displayName: 'Folder',
 		name: 'folder',
 		type: 'options',
 		default: '',
@@ -143,7 +141,7 @@ export const taskFields = [
 		required: true,
 	},
 	{
-		displayName: 'List ID',
+		displayName: 'List',
 		name: 'list',
 		type: 'options',
 		default: '',
@@ -169,7 +167,7 @@ export const taskFields = [
 		required: true,
 	},
 	{
-		displayName: 'List ID',
+		displayName: 'List',
 		name: 'list',
 		type: 'options',
 		default: '',
@@ -381,13 +379,6 @@ export const taskFields = [
 		},
 		options: [
 			{
-				displayName: 'Add Assignees',
-				name: 'addAssignees',
-				type: 'string',
-				default: '',
-				description: 'Assignees IDs. Multiple ca be added separated by comma'
-			},
-			{
 				displayName: 'Content',
 				name: 'content',
 				type: 'string',
@@ -444,20 +435,6 @@ export const taskFields = [
 				default: 3,
 			},
 			{
-				displayName: 'Remove Assignees',
-				name: 'removeAssignees',
-				type: 'string',
-				default: '',
-				description: 'Assignees IDs. Multiple ca be added separated by comma'
-			},
-			{
-				displayName: 'Status',
-				name: 'status',
-				type: 'string',
-				default: '',
-				description: 'status'
-			},
-			{
 				displayName: 'Start Date Time',
 				name: 'startDateTime',
 				type: 'boolean',
@@ -498,7 +475,7 @@ export const taskFields = [
 /*                                 task:getAll                                */
 /* -------------------------------------------------------------------------- */
 	{
-		displayName: 'Team ID',
+		displayName: 'Team',
 		name: 'team',
 		type: 'options',
 		default: '',
@@ -518,7 +495,7 @@ export const taskFields = [
 		required: true,
 	},
 	{
-		displayName: 'Space ID',
+		displayName: 'Space',
 		name: 'space',
 		type: 'options',
 		default: '',
@@ -558,7 +535,7 @@ export const taskFields = [
 		required: true,
 	},
 	{
-		displayName: 'Folder ID',
+		displayName: 'Folder',
 		name: 'folder',
 		type: 'options',
 		default: '',
@@ -584,7 +561,7 @@ export const taskFields = [
 		required: true,
 	},
 	{
-		displayName: 'List ID',
+		displayName: 'List',
 		name: 'list',
 		type: 'options',
 		default: '',
@@ -610,7 +587,7 @@ export const taskFields = [
 		required: true,
 	},
 	{
-		displayName: 'List ID',
+		displayName: 'List',
 		name: 'list',
 		type: 'options',
 		default: '',
@@ -635,47 +612,47 @@ export const taskFields = [
 		},
 		required: true,
 	},
-	{
-		displayName: 'Return All',
-		name: 'returnAll',
-		type: 'boolean',
-		displayOptions: {
-			show: {
-				resource: [
-					'task',
-				],
-				operation: [
-					'getAll',
-				],
-			},
-		},
-		default: true,
-		description: 'If all results should be returned or only up to a given limit.',
-	},
-	{
-		displayName: 'Limit',
-		name: 'limit',
-		type: 'number',
-		displayOptions: {
-			show: {
-				resource: [
-					'task',
-				],
-				operation: [
-					'getAll',
-				],
-				returnAll: [
-					false,
-				],
-			},
-		},
-		typeOptions: {
-			minValue: 1,
-			maxValue: 100,
-		},
-		default: 50,
-		description: 'How many results to return.',
-	},
+	// {
+	// 	displayName: 'Return All',
+	// 	name: 'returnAll',
+	// 	type: 'boolean',
+	// 	displayOptions: {
+	// 		show: {
+	// 			resource: [
+	// 				'task',
+	// 			],
+	// 			operation: [
+	// 				'getAll',
+	// 			],
+	// 		},
+	// 	},
+	// 	default: true,
+	// 	description: 'If all results should be returned or only up to a given limit.',
+	// },
+	// {
+	// 	displayName: 'Limit',
+	// 	name: 'limit',
+	// 	type: 'number',
+	// 	displayOptions: {
+	// 		show: {
+	// 			resource: [
+	// 				'task',
+	// 			],
+	// 			operation: [
+	// 				'getAll',
+	// 			],
+	// 			returnAll: [
+	// 				false,
+	// 			],
+	// 		},
+	// 	},
+	// 	typeOptions: {
+	// 		minValue: 1,
+	// 		maxValue: 100,
+	// 	},
+	// 	default: 50,
+	// 	description: 'How many results to return.',
+	// },
 	{
 		displayName: 'Filters',
 		name: 'filters',
@@ -823,7 +800,7 @@ export const taskFields = [
 /*                                task:delete                                 */
 /* -------------------------------------------------------------------------- */
 	{
-		displayName: 'Task ID',
+		displayName: 'ID',
 		name: 'id',
 		type: 'string',
 		default: '',
