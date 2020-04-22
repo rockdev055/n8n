@@ -570,18 +570,6 @@ export class ClickUp implements INodeType {
 						name,
 						type,
 					};
-					if (type === 'number' || type === 'currency') {
-						if (!additionalFields.unit) {
-							throw new Error('Unit field must be set');
-						}
-					}
-					if (type === 'number' || type === 'percentaje'
-					|| type === 'automatic' || type === 'currency' ) {
-						if (additionalFields.stepsStart  === undefined
-						|| !additionalFields.stepsEnd === undefined) {
-							throw new Error('Steps start and steps end fields must be set');
-						}
-					}
 					if (additionalFields.unit) {
 						body.unit = additionalFields.unit as string;
 					}
@@ -885,20 +873,34 @@ export class ClickUp implements INodeType {
 			if (resource === 'taskDependency') {
 				if (operation === 'create') {
 					const taskId = this.getNodeParameter('task', i) as string;
-					const dependsOnTaskId = this.getNodeParameter('dependsOnTask', i) as string;
+					const dependsOn = this.getNodeParameter('dependsOn', i) as string;
+					const dependencyOf = this.getNodeParameter('dependencyOf', i) as string;
+					if (dependencyOf !== '' && dependsOn !== '' ) {
+						throw new Error('Both can not be passed in the same request.');
+					}
 					const body: IDataObject = {};
-
-					body.depends_on = dependsOnTaskId;
-
+					if (dependsOn) {
+						body.depends_on = dependsOn;
+					}
+					if (dependencyOf) {
+						body.dependency_of = dependencyOf;
+					}
 					responseData = await clickupApiRequest.call(this, 'POST', `/task/${taskId}/dependency`, body);
 					responseData = { success: true };
 				}
 				if (operation === 'delete') {
 					const taskId = this.getNodeParameter('task', i) as string;
-					const dependsOnTaskId = this.getNodeParameter('dependsOnTask', i) as string;
-
-					qs.depends_on = dependsOnTaskId;
-
+					const dependsOn = this.getNodeParameter('dependsOn', i) as string;
+					const dependencyOf = this.getNodeParameter('dependencyOf', i) as string;
+					if (dependencyOf !== '' && dependsOn !== '' ) {
+						throw new Error('Both can not be passed in the same request.');
+					}
+					if (dependsOn) {
+						qs.depends_on = dependsOn;
+					}
+					if (dependencyOf) {
+						qs.dependency_of = dependencyOf;
+					}
 					responseData = await clickupApiRequest.call(this, 'DELETE', `/task/${taskId}/dependency`, {}, qs);
 					responseData = { success: true };
 				}
