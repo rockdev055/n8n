@@ -54,10 +54,9 @@ export const taskDependencyFields = [
 		required: true,
 	},
 	{
-		displayName: 'Depends On',
-		name: 'dependsOn',
+		displayName: 'Depends On Task ID',
+		name: 'dependsOnTask',
 		type: 'string',
-		default: '',
 		displayOptions: {
 			show: {
 				resource: [
@@ -68,22 +67,7 @@ export const taskDependencyFields = [
 				],
 			},
 		},
-	},
-	{
-		displayName: 'Dependency Of',
-		name: 'dependencyOf',
-		type: 'string',
-		default: '',
-		displayOptions: {
-			show: {
-				resource: [
-					'taskDependency',
-				],
-				operation: [
-					'create',
-				],
-			},
-		},
+		required: true,
 	},
 /* -------------------------------------------------------------------------- */
 /*                                taskDependency:delete                        */
@@ -106,10 +90,9 @@ export const taskDependencyFields = [
 		required: true,
 	},
 	{
-		displayName: 'Depends On',
-		name: 'dependsOn',
+		displayName: 'Depends On Task ID',
+		name: 'dependsOnTask',
 		type: 'string',
-		default: '',
 		displayOptions: {
 			show: {
 				resource: [
@@ -120,21 +103,6 @@ export const taskDependencyFields = [
 				],
 			},
 		},
-	},
-	{
-		displayName: 'Dependency Of',
-		name: 'dependencyOf',
-		type: 'string',
-		default: '',
-		displayOptions: {
-			show: {
-				resource: [
-					'taskDependency',
-				],
-				operation: [
-					'delete',
-				],
-			},
-		},
+		required: true,
 	},
 ] as INodeProperties[];
