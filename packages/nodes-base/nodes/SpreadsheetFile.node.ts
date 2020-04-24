@@ -133,6 +133,11 @@ export class SpreadsheetFile implements INodeType {
 						value: 'xls',
 						description: 'Excel',
 					},
+					{
+						name: 'XLSX',
+						value: 'xlsx',
+						description: 'Excel',
+					},
 				],
 				default: 'xls',
 				displayOptions: {
@@ -236,6 +241,7 @@ export class SpreadsheetFile implements INodeType {
 								'/fileFormat': [
 									'ods',
 									'xls',
+									'xlsx',
 								],
 							},
 						},
@@ -337,7 +343,9 @@ export class SpreadsheetFile implements INodeType {
 			} else if (fileFormat === 'ods') {
 				wopts.bookType = 'ods';
 			} else if (fileFormat === 'xls') {
-				wopts.bookType = 'xlml';
+				wopts.bookType = 'xls';
+			} else if (fileFormat === 'xlsx') {
+				wopts.bookType = 'xlsx';
 			}
 
 			// Convert the data in the correct format
