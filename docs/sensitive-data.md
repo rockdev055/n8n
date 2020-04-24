@@ -1,9 +1,9 @@
 # Sensitive Data via File
 
-To avoid passing sensitive information via environment variables, "_FILE" may be
+To avoid passing sensitive information via environment variables "_FILE" may be
 appended to some environment variables. It will then load the data from a file
 with the given name. That makes it possible to load data easily from
-Docker and Kubernetes secrets.
+Docker- and Kubernetes-Secrets.
 
 The following environment variables support file input:
 

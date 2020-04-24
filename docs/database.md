@@ -1,7 +1,7 @@
 # Database
 
-By default, n8n uses SQLite to save credentials, past executions, and workflows. However,
-n8n also supports MongoDB and PostgresDB.
+By default, n8n uses SQLite to save credentials, past executions, and workflows.
+n8n however also supports MongoDB and PostgresDB.
 
 
 ## Shared Settings
@@ -13,12 +13,12 @@ The following environment variables get used by all databases:
 
 ## MongoDB
 
-!> **WARNING**: Use PostgresDB, if possible! MongoDB has problems saving large
-   amounts of data in a document, among other issues. So, support
+!> **WARNING**: Use Postgres if possible! Mongo has problems with saving large
+   amounts of data in a document and causes also other problems. So support will
    may be dropped in the future.
 
-To use MongoDB as the database, you can provide the following environment variables like
-in the example below:
+To use MongoDB as database you can provide the following environment variables like
+in the example bellow:
  - `DB_TYPE=mongodb`
  - `DB_MONGODB_CONNECTION_URL=<CONNECTION_URL>`
 
@@ -38,7 +38,7 @@ n8n start
 
 ## PostgresDB
 
-To use PostgresDB as the database, you can provide the following environment variables
+To use PostgresDB as database you can provide the following environment variables
  - `DB_TYPE=postgresdb`
  - `DB_POSTGRESDB_DATABASE` (default: 'n8n')
  - `DB_POSTGRESDB_HOST` (default: 'localhost')
@@ -60,12 +60,12 @@ export DB_POSTGRESDB_SCHEMA=n8n
 n8n start
 ```
 
-## MySQL / MariaDB
+## MySQL
 
-The compatibility with MySQL/MariaDB has been tested. Even then, it is advisable to observe the operation of the application with this database as this option has been recently added. If you spot any problems, feel free to submit a burg report or a pull request.
+The compatibility with MySQL was tested, even so, it is advisable to observe the operation of the application with this DB, as it is a new option, recently added. If you spot any problems, feel free to submit a PR.
 
 To use MySQL as database you can provide the following environment variables:
- - `DB_TYPE=mysqldb` or `DB_TYPE=mariadb`
+ - `DB_TYPE=mysqldb`
  - `DB_MYSQLDB_DATABASE` (default: 'n8n')
  - `DB_MYSQLDB_HOST` (default: 'localhost')
  - `DB_MYSQLDB_PORT` (default: 3306)
@@ -86,7 +86,7 @@ n8n start
 
 ## SQLite
 
-This is the default database that gets used if nothing is defined.
+The default database which gets used if no other one is defined.
 
 The database file is located at:
 `~/.n8n/database.sqlite`
@@ -94,16 +94,17 @@ The database file is located at:
 
 ## Other Databases
 
-Currently, only the databases mentioned above are supported. n8n internally uses
-[TypeORM](https://typeorm.io), so adding support for the following databases
+Currently, only the above databases are supported. n8n uses internally
+[TypeORM](https://typeorm.io) so adding support for the following databases
 should not be too much work:
 
  - CockroachDB
+ - MariaDB
  - Microsoft SQL
  - Oracle
 
-If you cannot use any of the currently supported databases for some reason and
-you can code, we'd appreciate your support in the form of a pull request. If not, you can request
-for support here:
+If you can not use any of the currently supported databases for some reason and
+you can program, you can simply add support by yourself. If not you can request
+that support should be added here:
 
 [https://community.n8n.io/c/feature-requests/cli](https://community.n8n.io/c/feature-requests/cli)

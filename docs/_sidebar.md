@@ -34,7 +34,6 @@
 
   - [FAQ](faq.md)
   - [License](license.md)
-  - [Troubleshooting](troubleshooting.md)
 
 
 - Links
