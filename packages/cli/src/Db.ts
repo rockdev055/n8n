@@ -12,7 +12,6 @@ import {
 	ConnectionOptions,
 	createConnection,
 	getRepository,
-	Connection,
 } from 'typeorm';
 
 import {
@@ -28,8 +27,6 @@ export let collections: IDatabaseCollections = {
 	Workflow: null,
 };
 
-import InitialMigration1587669153312 from './databases/postgresdb/migrations/1587669153312-InitialMigration'
-
 import * as path from 'path';
 
 export async function init(synchronize?: boolean): Promise<IDatabaseCollections> {
@@ -38,7 +35,6 @@ export async function init(synchronize?: boolean): Promise<IDatabaseCollections>
 
 	let entities;
 	let connectionOptions: ConnectionOptions;
-	let connection;
 
 	let dbNotExistError: string | undefined;
 	switch (dbType) {
@@ -49,7 +45,6 @@ export async function init(synchronize?: boolean): Promise<IDatabaseCollections>
 				entityPrefix: await GenericHelpers.getConfigValue('database.tablePrefix') as string,
 				url: await GenericHelpers.getConfigValue('database.mongodb.connectionUrl') as string,
 				useNewUrlParser: true,
-				migrations: ['./databases/mongodb/migrations/*.js'],
 			};
 			break;
 
@@ -65,7 +60,6 @@ export async function init(synchronize?: boolean): Promise<IDatabaseCollections>
 				port: await GenericHelpers.getConfigValue('database.postgresdb.port') as number,
 				username: await GenericHelpers.getConfigValue('database.postgresdb.user') as string,
 				schema: await GenericHelpers.getConfigValue('database.postgresdb.schema') as string,
-				migrations: [InitialMigration1587669153312]
 			};
 			break;
 
@@ -81,7 +75,6 @@ export async function init(synchronize?: boolean): Promise<IDatabaseCollections>
 				password: await GenericHelpers.getConfigValue('database.mysqldb.password') as string,
 				port: await GenericHelpers.getConfigValue('database.mysqldb.port') as number,
 				username: await GenericHelpers.getConfigValue('database.mysqldb.user') as string,
-				migrations: ['./databases/mysqldb/migrations/*.js']
 			};
 			break;
 
@@ -92,7 +85,6 @@ export async function init(synchronize?: boolean): Promise<IDatabaseCollections>
 				type: 'sqlite',
 				database: path.join(n8nFolder, 'database.sqlite'),
 				entityPrefix: await GenericHelpers.getConfigValue('database.tablePrefix') as string,
-				migrations: ['./databases/sqlite/migrations/*.js'], 
 			};
 			break;
 
@@ -102,24 +94,11 @@ export async function init(synchronize?: boolean): Promise<IDatabaseCollections>
 
 	Object.assign(connectionOptions, {
 		entities: Object.values(entities),
-		synchronize: false,//synchronize === true || process.env['NODE_ENV'] !== 'production',
-		logging: true,
-		migrationsRun: true
+		synchronize: synchronize === true || process.env['NODE_ENV'] !== 'production',
+		logging: false
 	});
 
-	try{
-		connection = await createConnection(connectionOptions);
-
-		let migrations = await connection.runMigrations({
-			transaction: 'none'
-		});
-
-		console.log(migrations);
-
-	}catch(e){
-		console.log(`Error: ${e}`);
-		return e;
-	}
+	const connection = await createConnection(connectionOptions);
 
 	// TODO: Fix that properly
 	// @ts-ignore
@@ -133,7 +112,7 @@ export async function init(synchronize?: boolean): Promise<IDatabaseCollections>
 	try {
 		// Try a simple query, if it fails it is normally a sign that
 		// database did not get initialized
-		await collections.Execution!.findOne({ id: 1 });
+		await collections.Workflow!.findOne({ id: 1 });
 	} catch (error) {
 		// If query errors and the problem is that the database does not exist
 		// run the init again with "synchronize: true"
@@ -145,7 +124,8 @@ export async function init(synchronize?: boolean): Promise<IDatabaseCollections>
 
 			return init(true);
 		}
+		throw error;
 	}
+
 	return collections;
-	
-};
+}
