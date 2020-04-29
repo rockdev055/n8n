@@ -1,6 +1,4 @@
-import {
-	OptionsWithUri,
- } from 'request';
+import { OptionsWithUri } from 'request';
 
 import {
 	IExecuteFunctions,
@@ -43,21 +41,11 @@ export async function jiraSoftwareCloudApiRequest(this: IHookFunctions | IExecut
 	try {
 		return await this.helpers.request!(options);
 	} catch (error) {
-		let errorMessage = error.message;
-
-		if (error.response.body) {
-			if (error.response.body.errorMessages && error.response.body.errorMessages.length) {
-				errorMessage = JSON.stringify(error.response.body.errorMessages);
-			} else {
-				errorMessage = error.response.body.message || error.response.body.error || error.response.body.errors || error.message;
-			}
+		let errorMessage = error;
+		if (error.error && error.error.errorMessages) {
+			errorMessage = error.error.errorMessages;
 		}
-
-		if (typeof errorMessage !== 'string') {
-			errorMessage = JSON.stringify(errorMessage);
-		}
-
-		throw new Error(`Jira error response [${error.statusCode}]: ${errorMessage}`);
+		throw new Error(errorMessage);
 	}
 }
 
