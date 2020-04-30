@@ -287,7 +287,7 @@ export class JiraSoftwareCloud implements INodeType {
 					}
 					if (additionalFields.assignee) {
 						fields.assignee = {
-							name: additionalFields.assignee as string,
+							id: additionalFields.assignee as string,
 						};
 					}
 					if (additionalFields.description) {
@@ -340,7 +340,7 @@ export class JiraSoftwareCloud implements INodeType {
 					}
 					if (updateFields.assignee) {
 						fields.assignee = {
-							name: updateFields.assignee as string,
+							id: updateFields.assignee as string,
 						};
 					}
 					if (updateFields.description) {
