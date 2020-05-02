@@ -1,6 +1,6 @@
 {
     "name": "n8n-nodes-base",
-    "version": "0.58.0",
+    "version": "0.60.0",
     "description": "Base nodes of n8n",
     "license": "SEE LICENSE IN LICENSE.md",
     "homepage": "https://n8n.io",
@@ -27,6 +27,7 @@
     "n8n": {
         "credentials": [
             "dist/credentials/ActiveCampaignApi.credentials.js",
+            "dist/credentials/AgileCrmApi.credentials.js",
             "dist/credentials/AcuitySchedulingApi.credentials.js",
             "dist/credentials/AirtableApi.credentials.js",
             "dist/credentials/Amqp.credentials.js",
@@ -96,7 +97,6 @@
             "dist/credentials/StripeApi.credentials.js",
             "dist/credentials/SalesmateApi.credentials.js",
             "dist/credentials/SegmentApi.credentials.js",
-            "dist/credentials/SurveyMonkeyApi.credentials.js",
             "dist/credentials/TelegramApi.credentials.js",
             "dist/credentials/TodoistApi.credentials.js",
             "dist/credentials/TrelloApi.credentials.js",
@@ -114,6 +114,7 @@
         "nodes": [
             "dist/nodes/ActiveCampaign/ActiveCampaign.node.js",
             "dist/nodes/ActiveCampaign/ActiveCampaignTrigger.node.js",
+            "dist/nodes/AgileCrm/AgileCrm.node.js",
             "dist/nodes/Airtable/Airtable.node.js",
             "dist/nodes/AcuityScheduling/AcuitySchedulingTrigger.node.js",
             "dist/nodes/Amqp/Amqp.node.js",
@@ -227,7 +228,6 @@
             "dist/nodes/Switch.node.js",
             "dist/nodes/Salesmate/Salesmate.node.js",
             "dist/nodes/Segment/Segment.node.js",
-            "dist/nodes/SurveyMonkey/SurveyMonkeyTrigger.node.js",
             "dist/nodes/Telegram/Telegram.node.js",
             "dist/nodes/Telegram/TelegramTrigger.node.js",
             "dist/nodes/Todoist/Todoist.node.js",
@@ -272,7 +272,7 @@
         "@types/xml2js": "^0.4.3",
         "gulp": "^4.0.0",
         "jest": "^24.9.0",
-        "n8n-workflow": "~0.28.0",
+        "n8n-workflow": "~0.29.0",
         "ts-jest": "^24.0.2",
         "tslint": "^5.17.0",
         "typescript": "~3.7.4"
@@ -294,11 +294,12 @@
         "lodash.unset": "^4.5.2",
         "mongodb": "^3.3.2",
         "mysql2": "^2.0.1",
-        "n8n-core": "~0.31.0",
+        "n8n-core": "~0.32.0",
         "nodemailer": "^5.1.1",
         "pdf-parse": "^1.1.1",
         "pg-promise": "^9.0.3",
         "redis": "^2.8.0",
+        "request": "^2.88.2",
         "rhea": "^1.0.11",
         "rss-parser": "^3.7.0",
         "uuid": "^3.4.0",
