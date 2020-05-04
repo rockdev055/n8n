@@ -188,6 +188,15 @@ export interface IExecutingWorkflowData {
 	workflowExecution?: PCancelable<IRun>;
 }
 
+export interface IExternalHookFunctions {
+	DbCollections: IDatabaseCollections;
+}
+
+export interface IExternalHooks {
+	init(): Promise<void>;
+	run(hookName: string, hookParameters?: any[]): Promise<void>; // tslint:disable-line:no-any
+}
+
 export interface IN8nConfig {
 	database: IN8nConfigDatabase;
 	endpoints: IN8nConfigEndpoints;

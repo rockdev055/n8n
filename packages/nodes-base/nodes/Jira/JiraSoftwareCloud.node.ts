@@ -111,10 +111,9 @@ export class JiraSoftwareCloud implements INodeType {
 			// select them easily
 			async getProjects(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
 				const returnData: INodePropertyOptions[] = [];
-				const jiraVersion = this.getCurrentNodeParameter('jiraVersion') as string;
-
+				const jiraCloudCredentials = this.getCredentials('jiraSoftwareCloudApi');
 				let endpoint = '/project/search';
-				if (jiraVersion === 'server') {
+				if (jiraCloudCredentials === undefined) {
 					endpoint = '/project';
 				}
 				let projects = await jiraSoftwareCloudApiRequest.call(this, endpoint, 'GET');
