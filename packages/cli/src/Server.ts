@@ -19,7 +19,6 @@ import {
 	ActiveWorkflowRunner,
 	CredentialTypes,
 	Db,
-	ExternalHooks,
 	IActivationError,
 	ICustomRequest,
 	ICredentialsDb,
@@ -34,7 +33,6 @@ import {
 	IExecutionsListResponse,
 	IExecutionsStopData,
 	IExecutionsSummary,
-	IExternalHooks,
 	IN8nUISettings,
 	IPackageVersions,
 	IWorkflowBase,
@@ -95,7 +93,6 @@ class App {
 	testWebhooks: TestWebhooks.TestWebhooks;
 	endpointWebhook: string;
 	endpointWebhookTest: string;
-	externalHooks: IExternalHooks;
 	saveDataErrorExecution: string;
 	saveDataSuccessExecution: string;
 	saveManualExecutions: boolean;
@@ -127,8 +124,6 @@ class App {
 		this.protocol = config.get('protocol');
 		this.sslKey  = config.get('ssl_key');
 		this.sslCert = config.get('ssl_cert');
-
-		this.externalHooks = ExternalHooks();
 	}
 
 
@@ -693,8 +688,6 @@ class App {
 			if (checkResult !== undefined) {
 				throw new ResponseHelper.ResponseError(`Credentials with the same type and name exist already.`, undefined, 400);
 			}
-
-			await this.externalHooks.run('credentials.new');
 
 			// Encrypt the data
 			const credentials = new Credentials(incomingData.name, incomingData.type, incomingData.nodesAccess);
