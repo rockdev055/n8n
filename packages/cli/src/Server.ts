@@ -512,11 +512,8 @@ class App {
 
 			const sessionId = GenericHelpers.getSessionId(req);
 
-			// Check if workflow is saved as webhooks can only be tested with saved workflows.
-			// If that is the case check if any webhooks calls are present we have to wait for and
-			// if that is the case wait till we receive it.
-			if (WorkflowHelpers.isWorkflowIdValid(workflowData.id) === true && (runData === undefined || startNodes === undefined || startNodes.length === 0 || destinationNode === undefined)) {
-				// Webhooks can only be tested with saved workflows
+			// If webhooks nodes exist and are active we have to wait for till we receive a call
+			if (runData === undefined || startNodes === undefined || startNodes.length === 0 || destinationNode === undefined) {
 				const credentials = await WorkflowCredentials(workflowData.nodes);
 				const additionalData = await WorkflowExecuteAdditionalData.getBase(credentials);
 				const nodeTypes = NodeTypes();
@@ -558,7 +555,7 @@ class App {
 		this.app.get('/rest/node-parameter-options', ResponseHelper.send(async (req: express.Request, res: express.Response): Promise<INodePropertyOptions[]> => {
 			const nodeType = req.query.nodeType as string;
 			let credentials: INodeCredentials | undefined = undefined;
-			const currentNodeParameters = req.query.currentNodeParameters as INodeParameters[];
+			const currentNodeParameters = JSON.parse('' + req.query.currentNodeParameters) as INodeParameters;
 			if (req.query.credentials !== undefined) {
 				credentials = JSON.parse(req.query.credentials as string);
 			}
