@@ -1,4 +1,4 @@
-import { 
+import {
 	OptionsWithUri,
  } from 'request';
 
@@ -9,19 +9,13 @@ import {
 	ILoadOptionsFunctions,
 } from 'n8n-core';
 
-import { 
+import {
 	IDataObject,
-	ICredentialDataDecryptedObject,
 } from 'n8n-workflow';
 
 export async function jiraSoftwareCloudApiRequest(this: IHookFunctions | IExecuteFunctions | IExecuteSingleFunctions | ILoadOptionsFunctions, endpoint: string, method: string, body: any = {}, query?: IDataObject, uri?: string): Promise<any> { // tslint:disable-line:no-any
 	let data; let domain;
-	let jiraCloudCredentials: ICredentialDataDecryptedObject | undefined;
-	try {
-		jiraCloudCredentials = this.getCredentials('jiraSoftwareCloudApi');
-	} catch (error) {
-		
-	}
+	const jiraCloudCredentials = this.getCredentials('jiraSoftwareCloudApi');
 	const jiraServerCredentials = this.getCredentials('jiraSoftwareServerApi');
 	if (jiraCloudCredentials === undefined && jiraServerCredentials === undefined) {
 		throw new Error('No credentials got returned!');
