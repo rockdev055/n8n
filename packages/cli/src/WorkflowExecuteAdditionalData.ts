@@ -1,5 +1,6 @@
 import {
 	Db,
+	ExternalHooks,
 	IExecutionDb,
 	IExecutionFlattedDb,
 	IPushDataExecutionFinished,
@@ -302,6 +303,10 @@ export async function executeWorkflow(workflowInfo: IExecuteWorkflowInfo, additi
 		workflowData = workflowInfo.code;
 	}
 
+	const externalHooks = ExternalHooks();
+	await externalHooks.init();
+	await externalHooks.run('workflow.execute', [workflowData, mode]);
+
 	const nodeTypes = NodeTypes();
 
 	const workflowName = workflowData ? workflowData.name : undefined;
@@ -387,10 +392,10 @@ export async function executeWorkflow(workflowInfo: IExecuteWorkflowInfo, additi
  *
  * @export
  * @param {IWorkflowCredentials} credentials
- * @param {INodeParameters} currentNodeParameters
+ * @param {INodeParameters[]} [currentNodeParameters=[]]
  * @returns {Promise<IWorkflowExecuteAdditionalData>}
  */
-export async function getBase(credentials: IWorkflowCredentials, currentNodeParameters?: INodeParameters): Promise<IWorkflowExecuteAdditionalData> {
+export async function getBase(credentials: IWorkflowCredentials, currentNodeParameters: INodeParameters[] = []): Promise<IWorkflowExecuteAdditionalData> {
 	const urlBaseWebhook = WebhookHelpers.getWebhookBaseUrl();
 
 	const timezone = config.get('generic.timezone') as string;
