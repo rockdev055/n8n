@@ -88,14 +88,6 @@ export const imageFields = [
 				default: '',
 				description: 'A url to POST the Image object to upon rendering completed',
 			},
-			{
-				displayName: 'Wait for Image',
-				name: 'waitForImage',
-				type: 'boolean',
-				default: false,
-				description: `Wait for the image to be proccesed before returning.</br>
-				If after two tries the images is not ready an error will be thrown`,
-			},
 		],
 	},
 	{
@@ -125,13 +117,7 @@ export const imageFields = [
 					{
 						displayName: 'Name',
 						name: 'name',
-						type: 'options',
-						typeOptions: {
-							loadOptionsMethod: 'getModificationNames',
-							loadOptionsDependsOn: [
-								'templateId',
-							],
-						},
+						type: 'string',
 						default: '',
 						description: 'The name of the item you want to change',
 					},
