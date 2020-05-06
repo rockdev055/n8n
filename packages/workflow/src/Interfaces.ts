@@ -289,7 +289,6 @@ export interface INode {
 	type: string;
 	position: [number, number];
 	disabled?: boolean;
-	notesInFlow?: boolean;
 	retryOnFail?: boolean;
 	maxTries?: number;
 	waitBetweenTries?: number;
@@ -549,7 +548,7 @@ export interface IWorkflowMetadata {
 	active: boolean;
 }
 
-export type WebhookHttpMethod = 'GET' | 'POST' | 'HEAD';
+export type WebhookHttpMethod = 'GET' | 'POST';
 
 export interface IWebhookResponseData {
 	workflowData?: INodeExecutionData[][];
@@ -681,7 +680,7 @@ export interface IWorkflowExecuteAdditionalData {
 	timezone: string;
 	webhookBaseUrl: string;
 	webhookTestBaseUrl: string;
-	currentNodeParameters? : INodeParameters;
+	currentNodeParameters? : INodeParameters[];
 }
 
 export type WorkflowExecuteMode = 'cli' | 'error' | 'integrated' | 'internal' | 'manual' | 'retry' | 'trigger' | 'webhook';
