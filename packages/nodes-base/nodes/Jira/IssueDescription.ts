@@ -81,9 +81,6 @@ export const issueFields = [
 		},
 		typeOptions: {
 			loadOptionsMethod: 'getProjects',
-			loadOptionsDependsOn: [
-				'jiraVersion',
-			],
 		},
 		description: 'Project',
 	},
@@ -174,31 +171,6 @@ export const issueFields = [
 				default: [],
 				required : false,
 				description: 'Labels',
-					displayOptions: {
-					show: {
-						'/jiraVersion': [
-							'cloud',
-						],
-					},
-				},
-			},
-			{
-				displayName: 'Labels',
-				name: 'serverLabels',
-				type: 'string',
-				default: [],
-				required : false,
-				description: 'Labels',
-					displayOptions: {
-					show: {
-						'/jiraVersion': [
-							'server',
-						],
-					},
-				},
-				typeOptions: {
-					multipleValues: true,
-				},
 			},
 			{
 				displayName: 'Parent Issue Key',
@@ -309,31 +281,6 @@ export const issueFields = [
 				default: [],
 				required : false,
 				description: 'Labels',
-					displayOptions: {
-					show: {
-						'/jiraVersion': [
-							'cloud',
-						],
-					},
-				},
-			},
-			{
-				displayName: 'Labels',
-				name: 'serverLabels',
-				type: 'string',
-				default: [],
-				required : false,
-				description: 'Labels',
-					displayOptions: {
-					show: {
-						'/jiraVersion': [
-							'server',
-						],
-					},
-				},
-				typeOptions: {
-					multipleValues: true,
-				},
 			},
 			{
 				displayName: 'Parent Issue Key',

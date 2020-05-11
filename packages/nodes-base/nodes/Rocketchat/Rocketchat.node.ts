@@ -397,12 +397,12 @@ export class Rocketchat implements INodeType {
 
 	async executeSingle(this: IExecuteSingleFunctions): Promise<INodeExecutionData> {
 		const resource = this.getNodeParameter('resource') as string;
-		const operation = this.getNodeParameter('operation') as string;
+		const opeation = this.getNodeParameter('operation') as string;
 		let response;
 
 		if (resource === 'chat') {
 			//https://rocket.chat/docs/developer-guides/rest-api/chat/postmessage
-			if (operation === 'postMessage') {
+			if (opeation === 'postMessage') {
 				const channel = this.getNodeParameter('channel') as string;
 				const text = this.getNodeParameter('text') as string;
 				const options = this.getNodeParameter('options') as IDataObject;
@@ -489,7 +489,11 @@ export class Rocketchat implements INodeType {
 					body.attachments = validateJSON(this.getNodeParameter('attachmentsJson') as string);
 				}
 
-				response = await rocketchatApiRequest.call(this, '/chat', 'POST', 'postMessage', body);
+				try {
+					response = await rocketchatApiRequest.call(this, '/chat', 'POST', 'postMessage', body);
+				} catch (err) {
+					throw new Error(`Rocketchat Error: ${err}`);
+				}
 			}
 		}
 
