@@ -1,5 +1,3 @@
-import { OptionsWithUri } from 'request';
-
 import {
 	IExecuteFunctions,
 	IHookFunctions,
@@ -19,40 +17,26 @@ import {
  * @returns {Promise<any>}
  */
 export async function githubApiRequest(this: IHookFunctions | IExecuteFunctions, method: string, endpoint: string, body: object, query?: object): Promise<any> { // tslint:disable-line:no-any
+	const credentials = this.getCredentials('githubApi');
+	if (credentials === undefined) {
+		throw new Error('No credentials got returned!');
+	}
+	const baseUrl = credentials!.server || 'https://api.github.com';
 
-	const options: OptionsWithUri = {
+	const options = {
 		method,
 		headers: {
-			'User-Agent': 'n8n',
+			'Authorization': `token ${credentials.accessToken}`,
+			'User-Agent': credentials.user,
 		},
 		body,
 		qs: query,
-		uri: '',
+		uri: `${baseUrl}${endpoint}`,
 		json: true
 	};
 
 	try {
-		const authenticationMethod = this.getNodeParameter('authentication', 0, 'accessToken') as string;
-
-		if (authenticationMethod === 'accessToken') {
-			const credentials = this.getCredentials('githubApi');
-			if (credentials === undefined) {
-				throw new Error('No credentials got returned!');
-			}
-
-			const baseUrl = credentials!.server || 'https://api.github.com';
-			options.uri = `${baseUrl}${endpoint}`;
-
-			options.headers!.Authorization = `token ${credentials.accessToken}`;
-			return await this.helpers.request(options);
-		} else {
-			const credentials = this.getCredentials('githubOAuth2Api');
-
-			const baseUrl = credentials!.server || 'https://api.github.com';
-			options.uri = `${baseUrl}${endpoint}`;
-
-			return await this.helpers.requestOAuth.call(this, 'githubOAuth2Api', options);
-		}
+		return await this.helpers.request(options);
 	} catch (error) {
 		if (error.statusCode === 401) {
 			// Return a clear error

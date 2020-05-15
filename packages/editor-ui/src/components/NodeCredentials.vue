@@ -45,7 +45,6 @@ import Vue from 'vue';
 
 import { restApi } from '@/components/mixins/restApi';
 import {
-	ICredentialsCreatedEvent,
 	ICredentialsResponse,
 	INodeUi,
 	INodeUpdatePropertiesInformation,
@@ -135,23 +134,21 @@ export default mixins(
 		closeCredentialNewDialog () {
 			this.credentialNewDialogVisible = false;
 		},
-		async credentialsCreated (eventData: ICredentialsCreatedEvent) {
-			await this.credentialsUpdated(eventData);
+		async credentialsCreated (data: ICredentialsResponse) {
+			await this.credentialsUpdated(data);
 		},
-		credentialsUpdated (eventData: ICredentialsCreatedEvent) {
-			if (!this.credentialTypesNode.includes(eventData.data.type)) {
+		credentialsUpdated (data: ICredentialsResponse) {
+			if (!this.credentialTypesNode.includes(data.type)) {
 				return;
 			}
 
 			this.init();
-			Vue.set(this.credentials, eventData.data.type, eventData.data.name);
+			Vue.set(this.credentials, data.type, data.name);
 
 			// Makes sure that it does also get set correctly on the node not just the UI
-			this.credentialSelected(eventData.data.type);
+			this.credentialSelected(data.type);
 
-			if (eventData.options.closeDialog === true) {
-				this.closeCredentialNewDialog();
-			}
+			this.closeCredentialNewDialog();
 		},
 		credentialInputWrapperStyle (credentialType: string) {
 			let deductWidth = 0;
