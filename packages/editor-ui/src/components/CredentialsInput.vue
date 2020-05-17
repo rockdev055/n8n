@@ -13,49 +13,16 @@
 			</el-col>
 		</el-row>
 
-		<el-row v-if="isOAuthType" class="oauth-information">
-			<el-col :span="6" class="headline">
-				OAuth
-			</el-col>
-			<el-col :span="18">
-				<span v-if="isOAuthConnected === true">
-					<el-button title="Reconnect OAuth Credentials" @click.stop="oAuth2CredentialAuthorize()" circle>
-						<font-awesome-icon icon="redo" />
-					</el-button>
-					Is connected
-				</span>
-				<span v-else>
-					<el-button title="Connect OAuth Credentials" @click.stop="oAuth2CredentialAuthorize()" circle>
-						<font-awesome-icon icon="sign-in-alt" />
-					</el-button>
-					Is NOT connected
-				</span>
-
-				<div v-if="credentialProperties.length">
-					<div class="clickable oauth-callback-headline" :class="{expanded: !isMinimized}" @click="isMinimized=!isMinimized" :title="isMinimized ? 'Click to display Webhook URLs' : 'Click to hide Webhook URLs'">
-						<font-awesome-icon icon="angle-up" class="minimize-button minimize-icon" />
-						OAuth Callback URL
-					</div>
-					<el-tooltip v-if="!isMinimized" class="item" effect="light" content="Click to copy Callback URL" placement="right">
-						<div class="callback-url left-ellipsis clickable" @click="copyCallbackUrl">
-							{{oAuthCallbackUrl}}
-						</div>
-					</el-tooltip>
-				</div>
-
-			</el-col>
-		</el-row>
-
 		<br />
-		<div class="headline" v-if="credentialProperties.length">
+		<div class="headline">
 			Credential Data:
 			<el-tooltip class="credentials-info" placement="top" effect="light">
 				<div slot="content" v-html="helpTexts.credentialsData"></div>
 				<font-awesome-icon icon="question-circle" />
 			</el-tooltip>
 		</div>
-		<div v-for="parameter in credentialProperties" :key="parameter.name">
-			<el-row class="parameter-wrapper">
+		<span v-for="parameter in credentialTypeData.properties" :key="parameter.name">
+			<el-row v-if="displayCredentialParameter(parameter)" class="parameter-wrapper">
 				<el-col :span="6" class="parameter-name">
 					{{parameter.displayName}}:
 					<el-tooltip placement="top" class="parameter-info" v-if="parameter.description" effect="light">
@@ -67,7 +34,7 @@
 					<parameter-input :parameter="parameter" :value="propertyValue[parameter.name]" :path="parameter.name" :isCredential="true" @valueChanged="valueChanged" />
 				</el-col>
 			</el-row>
-		</div>
+		</span>
 
 		<el-row class="nodes-access-wrapper">
 			<el-col :span="6" class="headline">
@@ -94,10 +61,10 @@
 		</el-row>
 
 		<div class="action-buttons">
-			<el-button type="success" @click="updateCredentials(true)" v-if="credentialDataDynamic">
+			<el-button type="success" @click="updateCredentials" v-if="credentialData">
 				Save
 			</el-button>
-			<el-button type="success" @click="createCredentials(true)" v-else>
+			<el-button type="success" @click="createCredentials" v-else>
 				Create
 			</el-button>
 		</div>
@@ -108,16 +75,11 @@
 <script lang="ts">
 import Vue from 'vue';
 
-import { copyPaste } from '@/components/mixins/copyPaste';
 import { restApi } from '@/components/mixins/restApi';
 import { nodeHelpers } from '@/components/mixins/nodeHelpers';
 import { showMessage } from '@/components/mixins/showMessage';
 
-import {
-	ICredentialsDecryptedResponse,
-	ICredentialsResponse,
-	IUpdateInformation,
-} from '@/Interface';
+import { ICredentialsDecryptedResponse, IUpdateInformation } from '@/Interface';
 import {
 	CredentialInformation,
 	ICredentialDataDecryptedObject,
@@ -125,10 +87,8 @@ import {
 	ICredentialType,
 	ICredentialNodeAccess,
 	INodeCredentialDescription,
-	INodeParameters,
 	INodeProperties,
 	INodeTypeDescription,
-	NodeHelpers,
 } from 'n8n-workflow';
 
 import ParameterInput from '@/components/ParameterInput.vue';
@@ -136,7 +96,6 @@ import ParameterInput from '@/components/ParameterInput.vue';
 import mixins from 'vue-typed-mixins';
 
 export default mixins(
-	copyPaste,
 	nodeHelpers,
 	restApi,
 	showMessage,
@@ -155,13 +114,11 @@ export default mixins(
 	},
 	data () {
 		return {
-			isMinimized: true,
 			helpTexts: {
 				credentialsData: 'The credentials to set.',
 				credentialsName: 'The name the credentials should be saved as. Use a name<br />which makes it clear to what exactly they give access to.<br />For credentials of an Email account that could be the Email address itself.',
 				nodesWithAccess: 'The nodes which allowed to use this credentials.',
 			},
-			credentialDataTemp: null as ICredentialsDecryptedResponse | null,
 			nodesAccess: [] as string[],
 			name: '',
 			propertyValue: {} as ICredentialDataDecryptedObject,
@@ -198,64 +155,8 @@ export default mixins(
 				};
 			});
 		},
-		credentialProperties (): INodeProperties[] {
-			return this.credentialTypeData.properties.filter((propertyData: INodeProperties) => {
-				if (!this.displayCredentialParameter(propertyData)) {
-					return false;
-				}
-				return !this.credentialTypeData.__overwrittenProperties || !this.credentialTypeData.__overwrittenProperties.includes(propertyData.name);
-			});
-		},
-		credentialDataDynamic (): ICredentialsDecryptedResponse | null {
-			if (this.credentialData) {
-				return this.credentialData;
-			}
-
-			return this.credentialDataTemp;
-		},
-		isOAuthType (): boolean {
-			if (this.credentialTypeData.name === 'oAuth2Api') {
-				return true;
-			}
-			const types = this.parentTypes(this.credentialTypeData.name);
-			return types.includes('oAuth2Api');
-		},
-		isOAuthConnected (): boolean {
-			if (this.isOAuthType === false) {
-				return false;
-			}
-
-			return this.credentialDataDynamic !== null && !!this.credentialDataDynamic.data!.oauthTokenData;
-		},
-		oAuthCallbackUrl (): string {
-			return this.$store.getters.getWebhookBaseUrl + 'rest/oauth2-credential/callback';
-		},
 	},
 	methods: {
-		copyCallbackUrl (): void {
-			this.copyToClipboard(this.oAuthCallbackUrl);
-
-			this.$showMessage({
-				title: 'Copied',
-				message: `The callback URL got copied!`,
-				type: 'success',
-			});
-		},
-		parentTypes (name: string): string[] {
-			const credentialType = this.$store.getters.credentialType(name);
-
-			if (credentialType === undefined || credentialType.extends === undefined) {
-				return [];
-			}
-
-			const types: string[] = [];
-			for (const typeName of credentialType.extends) {
-				types.push(typeName);
-				types.push.apply(types, this.parentTypes(typeName));
-			}
-
-			return types;
-		},
 		valueChanged (parameterData: IUpdateInformation) {
 			const name = parameterData.name.split('.').pop() as string;
 			// For a currently for me unknown reason can In not simply just
@@ -265,18 +166,14 @@ export default mixins(
 			Vue.set(this, 'propertyValue', tempValue);
 		},
 		displayCredentialParameter (parameter: INodeProperties): boolean {
-			if (parameter.type === 'hidden') {
-				return false;
-			}
-
 			if (parameter.displayOptions === undefined) {
 				// If it is not defined no need to do a proper check
 				return true;
 			}
 
-			return this.displayParameter(this.propertyValue as INodeParameters, parameter, '');
+			return this.displayParameter(this.propertyValue, parameter, '');
 		},
-		async createCredentials (closeDialog: boolean): Promise<ICredentialsResponse | null> {
+		async createCredentials (): Promise<void> {
 			const nodesAccess = this.nodesAccess.map((nodeType) => {
 				return {
 					nodeType,
@@ -287,8 +184,7 @@ export default mixins(
 				name: this.name,
 				type: (this.credentialTypeData as ICredentialType).name,
 				nodesAccess,
-				// Save only the none default data
-				data: NodeHelpers.getNodeParameters(this.credentialTypeData.properties as INodeProperties[], this.propertyValue as INodeParameters, false, false),
+				data: this.propertyValue,
 			} as ICredentialsDecrypted;
 
 			let result;
@@ -296,98 +192,21 @@ export default mixins(
 				result = await this.restApi().createNewCredentials(newCredentials);
 			} catch (error) {
 				this.$showError(error, 'Problem Creating Credentials', 'There was a problem creating the credentials:');
-				return null;
+				return;
 			}
 
 			// Add also to local store
 			this.$store.commit('addCredentials', result);
 
-			this.$emit('credentialsCreated', {data: result, options: { closeDialog }});
-
-			return result;
+			this.$emit('credentialsCreated', result);
 		},
-		async oAuth2CredentialAuthorize () {
-			let url;
-
-			let credentialData = this.credentialDataDynamic;
-			let newCredentials = false;
-			if (!credentialData) {
-				// Credentials did not get created yet. So create first before
-				// doing oauth authorize
-				credentialData = await this.createCredentials(false) as ICredentialsDecryptedResponse;
-				newCredentials = true;
-				if (credentialData === null) {
-					return;
-				}
-			} else {
-				// Exists already but got maybe changed. So save first
-				credentialData = await this.updateCredentials(false) as ICredentialsDecryptedResponse;
-				if (credentialData === null) {
-					return;
-				}
-			}
-
-			try {
-				url = await this.restApi().oAuth2CredentialAuthorize(credentialData as ICredentialsResponse) as string;
-			} catch (error) {
-				this.$showError(error, 'OAuth Authorization Error', 'Error generating authorization URL:');
-				return;
-			}
-
-			const params = `scrollbars=no,resizable=yes,status=no,titlebar=noe,location=no,toolbar=no,menubar=no,width=500,height=700`;
-			const oauthPopup = window.open(url, 'OAuth2 Authorization', params);
-
-			const receiveMessage = (event: MessageEvent) => {
-				// // TODO: Add check that it came from n8n
-				// if (event.origin !== 'http://example.org:8080') {
-				// 	return;
-				// }
-
-				if (event.data === 'success') {
-
-					// Set some kind of data that status changes.
-					// As data does not get displayed directly it does not matter what data.
-					if (this.credentialData === null) {
-						// Are new credentials so did not get send via "credentialData"
-						Vue.set(this, 'credentialDataTemp', credentialData);
-						Vue.set(this.credentialDataTemp!.data!, 'oauthTokenData', {});
-					} else {
-						// Credentials did already exist so can be set directly
-						Vue.set(this.credentialData.data, 'oauthTokenData', {});
-					}
-
-					// Save that OAuth got authorized locally
-					this.$store.commit('updateCredentials', this.credentialDataDynamic);
-
-					// Close the window
-					if (oauthPopup) {
-						oauthPopup.close();
-					}
-
-					if (newCredentials === true) {
-						this.$emit('credentialsCreated', {data: credentialData, options: { closeDialog: false }});
-					}
-
-					this.$showMessage({
-						title: 'Connected',
-						message: 'Got connected!',
-						type: 'success',
-					});
-				}
-
-				// Make sure that the event gets removed again
-				window.removeEventListener('message', receiveMessage, false);
-			};
-
-			window.addEventListener('message', receiveMessage, false);
-		},
-		async updateCredentials (closeDialog: boolean): Promise<ICredentialsResponse | null> {
+		async updateCredentials () {
 			const nodesAccess: ICredentialNodeAccess[] = [];
 			const addedNodeTypes: string[] = [];
 
 			// Add Node-type which already had access to keep the original added date
 			let nodeAccessData: ICredentialNodeAccess;
-			for (nodeAccessData of (this.credentialDataDynamic as ICredentialsDecryptedResponse).nodesAccess) {
+			for (nodeAccessData of (this.credentialData as ICredentialsDecryptedResponse).nodesAccess) {
 				if (this.nodesAccess.includes((nodeAccessData.nodeType))) {
 					nodesAccess.push(nodeAccessData);
 					addedNodeTypes.push(nodeAccessData.nodeType);
@@ -407,16 +226,15 @@ export default mixins(
 				name: this.name,
 				type: (this.credentialTypeData as ICredentialType).name,
 				nodesAccess,
-				// Save only the none default data
-				data: NodeHelpers.getNodeParameters(this.credentialTypeData.properties as INodeProperties[], this.propertyValue as INodeParameters, false, false),
+				data: this.propertyValue,
 			} as ICredentialsDecrypted;
 
 			let result;
 			try {
-				result = await this.restApi().updateCredentials((this.credentialDataDynamic as ICredentialsDecryptedResponse).id as string, newCredentials);
+				result = await this.restApi().updateCredentials((this.credentialData as ICredentialsDecryptedResponse).id as string, newCredentials);
 			} catch (error) {
 				this.$showError(error, 'Problem Updating Credentials', 'There was a problem updating the credentials:');
-				return null;
+				return;
 			}
 
 			// Update also in local store
@@ -426,9 +244,7 @@ export default mixins(
 			// which have now a different name
 			this.updateNodesCredentialsIssues();
 
-			this.$emit('credentialsUpdated', {data: result, options: { closeDialog }});
-
-			return result;
+			this.$emit('credentialsUpdated', result);
 		},
 		init () {
 			if (this.credentialData) {
@@ -496,11 +312,6 @@ export default mixins(
 		line-height: 1.75em;
 	}
 
-	.oauth-information {
-		line-height: 2.5em;
-		margin-top: 2em;
-	}
-
 	.parameter-wrapper {
 		line-height: 3em;
 
@@ -523,20 +334,6 @@ export default mixins(
 		display: none;
 	}
 
-	.callback-url {
-		position: relative;
-		top: 0;
-		width: 100%;
-		font-size: 0.9em;
-		white-space: normal;
-		overflow: visible;
-		text-overflow: initial;
-		color: #404040;
-		text-align: left;
-		direction: ltr;
-		word-break: break-all;
-	}
-
 	.headline:hover,
 	.headline-regular:hover {
 		.credentials-info {
@@ -544,17 +341,6 @@ export default mixins(
 		}
 	}
 
-	.expanded .minimize-button {
-		-webkit-transform: rotate(180deg);
-		-moz-transform: rotate(180deg);
-		-o-transform: rotate(180deg);
-		transform: rotate(180deg);
-	}
-
-	.oauth-callback-headline {
-		padding-top: 1em;
-		font-weight: 500;
-	}
 }
 
 </style>
