@@ -62,3 +62,4 @@ export function validateJSON(json: string | undefined): any { // tslint:disable-
 	}
 	return result;
 }
+
