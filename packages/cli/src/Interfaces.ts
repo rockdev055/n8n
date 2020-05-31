@@ -1,8 +1,6 @@
 import {
-	ICredentialDataDecryptedObject,
 	ICredentialsDecrypted,
 	ICredentialsEncrypted,
-	ICredentialType,
 	IDataObject,
 	IExecutionError,
 	IRun,
@@ -37,20 +35,20 @@ export interface ICustomRequest extends Request {
 	parsedUrl: Url | undefined;
 }
 
-export interface ICredentialsTypeData {
-	[key: string]: ICredentialType;
-}
-
-export interface ICredentialsOverwrite {
-	[key: string]: ICredentialDataDecryptedObject;
-}
 
 export interface IDatabaseCollections {
 	Credentials: Repository<ICredentialsDb> | null;
 	Execution: Repository<IExecutionFlattedDb> | null;
 	Workflow: Repository<IWorkflowDb> | null;
+	Webhook: Repository<IWebhookDb> | null;
 }
 
+export interface IWebhookDb {
+	workflowId: number | string | ObjectID;
+	webhookPath: string;
+	method: string;
+	node: string;
+}
 
 export interface IWorkflowBase extends IWorkflowBaseWorkflow {
 	id?: number | string | ObjectID;
@@ -80,7 +78,7 @@ export interface ICredentialsBase {
 	updatedAt: Date;
 }
 
-export interface ICredentialsDb extends ICredentialsBase, ICredentialsEncrypted {
+export interface ICredentialsDb extends ICredentialsBase, ICredentialsEncrypted{
 	id: number | string | ObjectID;
 }
 
@@ -355,10 +353,7 @@ export interface IWorkflowExecutionDataProcess {
 	workflowData: IWorkflowBase;
 }
 
-
 export interface IWorkflowExecutionDataProcessWithExecution extends IWorkflowExecutionDataProcess {
-	credentialsOverwrite: ICredentialsOverwrite;
-	credentialsTypeData: ICredentialsTypeData;
 	executionId: string;
 	nodeTypeData: ITransferNodeTypes;
 }
