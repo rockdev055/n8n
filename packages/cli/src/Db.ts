@@ -27,12 +27,10 @@ export let collections: IDatabaseCollections = {
 	Credentials: null,
 	Execution: null,
 	Workflow: null,
-	Webhook: null,
 };
 
 import {
-	InitialMigration1587669153312,
-	WebhookModel1589476000887,
+	InitialMigration1587669153312
 } from './databases/postgresdb/migrations';
 
 import {
@@ -83,7 +81,7 @@ export async function init(): Promise<IDatabaseCollections> {
 				port: await GenericHelpers.getConfigValue('database.postgresdb.port') as number,
 				username: await GenericHelpers.getConfigValue('database.postgresdb.user') as string,
 				schema: config.get('database.postgresdb.schema'),
-				migrations: [InitialMigration1587669153312, WebhookModel1589476000887],
+				migrations: [InitialMigration1587669153312],
 				migrationsRun: true,
 				migrationsTableName: `${entityPrefix}migrations`,
 			};
@@ -137,7 +135,6 @@ export async function init(): Promise<IDatabaseCollections> {
 	collections.Credentials = getRepository(entities.CredentialsEntity);
 	collections.Execution = getRepository(entities.ExecutionEntity);
 	collections.Workflow = getRepository(entities.WorkflowEntity);
-	collections.Webhook = getRepository(entities.WebhookEntity);
 
 	return collections;
 }
