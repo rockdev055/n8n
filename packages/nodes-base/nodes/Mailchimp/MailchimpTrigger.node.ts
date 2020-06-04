@@ -33,25 +33,7 @@ export class MailchimpTrigger implements INodeType {
 			{
 				name: 'mailchimpApi',
 				required: true,
-				displayOptions: {
-					show: {
-						authentication: [
-							'accessToken',
-						],
-					},
-				},
-			},
-			{
-				name: 'mailchimpOAuth2Api',
-				required: true,
-				displayOptions: {
-					show: {
-						authentication: [
-							'oAuth2',
-						],
-					},
-				},
-			},
+			}
 		],
 		webhooks: [
 			{
@@ -68,23 +50,6 @@ export class MailchimpTrigger implements INodeType {
 			}
 		],
 		properties: [
-			{
-				displayName: 'Authentication',
-				name: 'authentication',
-				type: 'options',
-				options: [
-					{
-						name: 'Access Token',
-						value: 'accessToken',
-					},
-					{
-						name: 'OAuth2',
-						value: 'oAuth2',
-					},
-				],
-				default: 'accessToken',
-				description: 'Method of authentication.',
-			},
 			{
 				displayName: 'List',
 				name: 'list',

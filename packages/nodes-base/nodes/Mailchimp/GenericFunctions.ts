@@ -1,5 +1,5 @@
 import {
-	OptionsWithUrl,
+	OptionsWithUri,
  } from 'request';
 
 import {
@@ -14,51 +14,35 @@ import {
  } from 'n8n-workflow';
 
 export async function mailchimpApiRequest(this: IHookFunctions | IExecuteFunctions | IExecuteSingleFunctions | ILoadOptionsFunctions, endpoint: string, method: string, body: any = {}, qs: IDataObject = {} ,headers?: object): Promise<any> { // tslint:disable-line:no-any
-	const authenticationMethod = this.getNodeParameter('authentication', 0) as string;
+	const credentials = this.getCredentials('mailchimpApi');
+
+	if (credentials === undefined) {
+		throw new Error('No credentials got returned!');
+	}
+
+	const headerWithAuthentication = Object.assign({}, headers, { Authorization: `apikey ${credentials.apiKey}` });
+
+	if (!(credentials.apiKey as string).includes('-')) {
+		throw new Error('The API key is not valid!');
+	}
+
+	const datacenter = (credentials.apiKey as string).split('-').pop();
 
 	const host = 'api.mailchimp.com/3.0';
 
-	const options: OptionsWithUrl = {
-		headers: {
-			'Accept': 'application/json'
-		},
+	const options: OptionsWithUri = {
+		headers: headerWithAuthentication,
 		method,
 		qs,
-		body,
-		url: ``,
+		uri: `https://${datacenter}.${host}${endpoint}`,
 		json: true,
 	};
 
-	if (Object.keys(body).length === 0) {
-		delete options.body;
+	if (Object.keys(body).length !== 0) {
+		options.body = body;
 	}
-
 	try {
-		if (authenticationMethod === 'accessToken') {
-			const credentials = this.getCredentials('mailchimpApi');
-	
-			if (credentials === undefined) {
-				throw new Error('No credentials got returned!');
-			}
-	
-			options.headers = Object.assign({}, headers, { Authorization: `apikey ${credentials.apiKey}` });
-	
-			if (!(credentials.apiKey as string).includes('-')) {
-				throw new Error('The API key is not valid!');
-			}
-	
-			const datacenter = (credentials.apiKey as string).split('-').pop();
-			options.url = `https://${datacenter}.${host}${endpoint}`;
-			
-			return await this.helpers.request!(options);
-		} else {
-			const credentials = this.getCredentials('mailchimpOAuth2Api');
-			const datacenter = credentials!.dataCenter;
-	
-			options.url = `https://${datacenter}.${host}${endpoint}`;
-			//@ts-ignore
-			return await this.helpers.requestOAuth2!.call(this, 'mailchimpOAuth2Api', options, 'bearer');
-		}
+		return await this.helpers.request!(options);
 	} catch (error) {
 		if (error.response.body && error.response.body.detail) {
 			throw new Error(`Mailchimp Error response [${error.statusCode}]: ${error.response.body.detail}`);

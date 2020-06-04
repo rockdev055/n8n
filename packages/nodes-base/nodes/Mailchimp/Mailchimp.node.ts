@@ -69,44 +69,9 @@ export class Mailchimp implements INodeType {
 			{
 				name: 'mailchimpApi',
 				required: true,
-				displayOptions: {
-					show: {
-						authentication: [
-							'accessToken',
-						],
-					},
-				},
-			},
-			{
-				name: 'mailchimpOAuth2Api',
-				required: true,
-				displayOptions: {
-					show: {
-						authentication: [
-							'oAuth2',
-						],
-					},
-				},
-			},
+			}
 		],
 		properties: [
-			{
-				displayName: 'Authentication',
-				name: 'authentication',
-				type: 'options',
-				options: [
-					{
-						name: 'Access Token',
-						value: 'accessToken',
-					},
-					{
-						name: 'OAuth2',
-						value: 'oAuth2',
-					},
-				],
-				default: 'accessToken',
-				description: 'Method of authentication.',
-			},
 			{
 				displayName: 'Resource',
 				name: 'resource',
@@ -1571,7 +1536,6 @@ export class Mailchimp implements INodeType {
 					responseData = { success: true };
 				}
 			}
-			
 			if (Array.isArray(responseData)) {
 				returnData.push.apply(returnData, responseData as IDataObject[]);
 			} else {
