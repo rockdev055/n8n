@@ -246,7 +246,7 @@ export class GraphQL implements INodeType {
 						}
 					}
 					if (requestOptions.body.operationName === '') {
-						requestOptions.body.operationName = null;
+						requestOptions.body.operation = null;
 					}
 					requestOptions.json = true;
 				} else {
