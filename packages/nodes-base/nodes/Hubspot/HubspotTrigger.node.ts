@@ -37,24 +37,6 @@ export class HubspotTrigger implements INodeType {
 			{
 				name: 'hubspotDeveloperApi',
 				required: true,
-				displayOptions: {
-					show: {
-						authentication: [
-							'developerApi',
-						],
-					},
-				},
-			},
-			{
-				name: 'hubspotOAuth2Api',
-				required: true,
-				displayOptions: {
-					show: {
-						authentication: [
-							'oAuth2',
-						],
-					},
-				},
 			},
 		],
 		webhooks: [
@@ -72,23 +54,6 @@ export class HubspotTrigger implements INodeType {
 			},
 		],
 		properties: [
-			{
-				displayName: 'Authentication',
-				name: 'authentication',
-				type: 'options',
-				options: [
-					{
-						name: 'Developer API',
-						value: 'developerApi',
-					},
-					{
-						name: 'OAuth2',
-						value: 'oAuth2',
-					},
-				],
-				default: 'developerApi',
-				description: 'The method of authentication.',
-			},
 			{
 				displayName: 'App ID',
 				name: 'appId',
