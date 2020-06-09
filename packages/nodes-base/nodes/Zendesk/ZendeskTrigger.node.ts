@@ -42,25 +42,7 @@ export class ZendeskTrigger implements INodeType {
 			{
 				name: 'zendeskApi',
 				required: true,
-				displayOptions: {
-					show: {
-						authentication: [
-							'accessToken',
-						],
-					},
-				},
-			},
-			{
-				name: 'zendeskOAuth2Api',
-				required: true,
-				displayOptions: {
-					show: {
-						authentication: [
-							'oAuth2',
-						],
-					},
-				},
-			},
+			}
 		],
 		webhooks: [
 			{
@@ -71,23 +53,6 @@ export class ZendeskTrigger implements INodeType {
 			},
 		],
 		properties: [
-			{
-				displayName: 'Authentication',
-				name: 'authentication',
-				type: 'options',
-				options: [
-					{
-						name: 'Access Token',
-						value: 'accessToken',
-					},
-					{
-						name: 'OAuth2',
-						value: 'oAuth2',
-					},
-				],
-				default: 'accessToken',
-				description: 'The resource to operate on.',
-			},
 			{
 				displayName: 'Service',
 				name: 'service',
