@@ -58,7 +58,6 @@
             "dist/credentials/GitlabApi.credentials.js",
             "dist/credentials/GoogleApi.credentials.js",
             "dist/credentials/GoogleCalendarOAuth2Api.credentials.js",
-            "dist/credentials/GoogleDriveOAuth2Api.credentials.js",
             "dist/credentials/GoogleOAuth2Api.credentials.js",
             "dist/credentials/GoogleSheetsOAuth2Api.credentials.js",
             "dist/credentials/GumroadApi.credentials.js",
@@ -127,6 +126,7 @@
             "dist/credentials/WooCommerceApi.credentials.js",
             "dist/credentials/WordpressApi.credentials.js",
             "dist/credentials/ZendeskApi.credentials.js",
+            "dist/credentials/ZendeskOAuth2Api.credentials.js",
             "dist/credentials/ZohoOAuth2Api.credentials.js",
             "dist/credentials/ZulipApi.credentials.js"
         ],
@@ -320,6 +320,7 @@
         "formidable": "^1.2.1",
         "glob-promise": "^3.4.0",
         "gm": "^1.23.1",
+        "googleapis": "~50.0.0",
         "imap-simple": "^4.3.0",
         "iso-639-1": "^2.1.3",
         "jsonwebtoken": "^8.5.1",
