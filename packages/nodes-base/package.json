@@ -99,6 +99,7 @@
             "dist/credentials/PagerDutyApi.credentials.js",
             "dist/credentials/PayPalApi.credentials.js",
             "dist/credentials/PipedriveApi.credentials.js",
+            "dist/credentials/PipedriveOAuth2Api.credentials.js",
             "dist/credentials/Postgres.credentials.js",
             "dist/credentials/Redis.credentials.js",
             "dist/credentials/RocketchatApi.credentials.js",
@@ -126,7 +127,6 @@
             "dist/credentials/WooCommerceApi.credentials.js",
             "dist/credentials/WordpressApi.credentials.js",
             "dist/credentials/ZendeskApi.credentials.js",
-            "dist/credentials/ZendeskOAuth2Api.credentials.js",
             "dist/credentials/ZohoOAuth2Api.credentials.js",
             "dist/credentials/ZulipApi.credentials.js"
         ],
