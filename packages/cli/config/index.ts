@@ -98,19 +98,6 @@ const config = convict({
 		},
 	},
 
-	credentials: {
-		overwrite: {
-			// Allows to set default values for credentials which
-			// get automatically prefilled and the user does not get
-			// displayed and can not change.
-			// Format: { CREDENTIAL_NAME: { PARAMTER: VALUE }}
-			doc: 'Overwrites for credentials',
-			format: '*',
-			default: '{}',
-			env: 'CREDENTIALS_OVERWRITE'
-		}
-	},
-
 	executions: {
 
 		// By default workflows get always executed in their own process.
@@ -263,6 +250,13 @@ const config = convict({
 			env: 'N8N_ENDPOINT_WEBHOOK_TEST',
 			doc: 'Path for test-webhook endpoint'
 		},
+	},
+
+	externalHookFiles: {
+		doc: 'Files containing external hooks. Multiple files can be separated by colon (":")',
+		format: String,
+		default: '',
+		env: 'EXTERNAL_HOOK_FILES'
 	},
 
 	nodes: {

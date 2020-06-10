@@ -17,7 +17,7 @@ import {
 export class GumroadTrigger implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Gumroad Trigger',
-		name: 'gumroadTrigger',
+		name: 'gumroad',
 		icon: 'file:gumroad.png',
 		group: ['trigger'],
 		version: 1,

@@ -33,7 +33,7 @@ import {
 export class Coda implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Coda',
-		name: 'coda',
+		name: 'Coda',
 		icon: 'file:coda.png',
 		group: ['output'],
 		version: 1,

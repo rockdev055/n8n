@@ -15,6 +15,8 @@ import * as basicAuth from 'basic-auth';
 
 import { Response } from 'express';
 
+import { set } from 'lodash';
+
 import * as fs from 'fs';
 
 import * as formidable from 'formidable';

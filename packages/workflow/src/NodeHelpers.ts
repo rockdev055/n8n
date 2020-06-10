@@ -277,7 +277,6 @@ export function displayParameter(nodeValues: INodeParameters, parameter: INodePr
 	nodeValuesRoot = nodeValuesRoot || nodeValues;
 
 	let value;
-	const values: any[] = []; // tslint:disable-line:no-any
 	if (parameter.displayOptions.show) {
 		// All the defined rules have to match to display parameter
 		for (const propertyName of Object.keys(parameter.displayOptions.show)) {
@@ -289,14 +288,7 @@ export function displayParameter(nodeValues: INodeParameters, parameter: INodePr
 				value = get(nodeValues, propertyName);
 			}
 
-			values.length = 0;
-			if (!Array.isArray(value)) {
-				values.push(value);
-			} else {
-				values.push.apply(values, value);
-			}
-
-			if (values.length === 0 || !parameter.displayOptions.show[propertyName].some(v => values.includes(v))) {
+			if (value === undefined || !parameter.displayOptions.show[propertyName].includes(value as string)) {
 				return false;
 			}
 		}
@@ -312,15 +304,7 @@ export function displayParameter(nodeValues: INodeParameters, parameter: INodePr
 				// Get the value from current level
 				value = get(nodeValues, propertyName);
 			}
-
-			values.length = 0;
-			if (!Array.isArray(value)) {
-				values.push(value);
-			} else {
-				values.push.apply(values, value);
-			}
-
-			if (values.length !== 0 && parameter.displayOptions.hide[propertyName].some(v => values.includes(v))) {
+			if (value !== undefined && parameter.displayOptions.hide[propertyName].includes(value as string)) {
 				return false;
 			}
 		}
@@ -1091,29 +1075,5 @@ export function mergeIssues(destination: INodeIssues, source: INodeIssues | null
 
 	if (source.typeUnknown === true) {
 		destination.typeUnknown = true;
-	}
-}
-
-
-
-/**
- * Merges the given node properties
- *
- * @export
- * @param {INodeProperties[]} mainProperties
- * @param {INodeProperties[]} addProperties
- */
-export function mergeNodeProperties(mainProperties: INodeProperties[], addProperties: INodeProperties[]): void {
-	let existingIndex: number;
-	for (const property of addProperties) {
-		existingIndex = mainProperties.findIndex(element => element.name === property.name);
-
-		if (existingIndex === -1) {
-			// Property does not exist yet, so add
-			mainProperties.push(property);
-		} else {
-			// Property exists already, so overwrite
-			mainProperties[existingIndex] = property;
-		}
 	}
 }

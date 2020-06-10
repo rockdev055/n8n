@@ -12,7 +12,7 @@ import {
 	INodeType,
 } from 'n8n-workflow';
 
-import { getAuthenticationClient } from '../GoogleApi';
+import { getAuthenticationClient } from './GoogleApi';
 
 
 export class GoogleDrive implements INodeType {
@@ -933,7 +933,7 @@ export class GoogleDrive implements INodeType {
 
 					let queryCorpora = '';
 					if (options.corpora) {
-						queryCorpora = options.corpora as string;
+						queryCorpora = (options.corpora as string[]).join(', ');
 					}
 
 					let driveId : string | undefined;

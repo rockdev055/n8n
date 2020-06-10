@@ -1,6 +1,6 @@
 {
     "name": "n8n",
-    "version": "0.67.3",
+    "version": "0.65.0",
     "description": "n8n Workflow Automation Tool",
     "license": "SEE LICENSE IN LICENSE.md",
     "homepage": "https://n8n.io",
@@ -28,8 +28,7 @@
         "start:windows": "cd bin && n8n",
         "test": "jest",
         "tslint": "tslint -p tsconfig.json -c tslint.json",
-        "watch": "tsc --watch",
-        "typeorm": "ts-node ./node_modules/typeorm/cli.js"
+        "watch": "tsc --watch"
     },
     "bin": {
         "n8n": "./bin/n8n"
@@ -71,9 +70,8 @@
         "p-cancelable": "^2.0.0",
         "run-script-os": "^1.0.7",
         "ts-jest": "^24.0.2",
-        "tslint": "^6.1.2",
-        "typescript": "~3.7.4",
-        "ts-node": "^8.9.1"
+        "tslint": "^5.17.0",
+        "typescript": "~3.7.4"
     },
     "dependencies": {
         "@oclif/command": "^1.5.18",
@@ -82,11 +80,9 @@
         "basic-auth": "^2.0.1",
         "body-parser": "^1.18.3",
         "body-parser-xml": "^1.1.0",
-        "client-oauth2": "^4.2.5",
         "compression": "^1.7.4",
         "connect-history-api-fallback": "^1.6.0",
         "convict": "^5.0.0",
-        "csrf": "^3.1.0",
         "dotenv": "^8.0.0",
         "express": "^4.16.4",
         "flatted": "^2.0.0",
@@ -99,18 +95,16 @@
         "lodash.get": "^4.4.2",
         "mongodb": "^3.5.5",
         "mysql2": "^2.0.1",
-        "n8n-core": "~0.34.0",
-        "n8n-editor-ui": "~0.45.0",
-        "n8n-nodes-base": "~0.62.1",
-        "n8n-workflow": "~0.31.0",
-        "oauth-1.0a": "^2.2.6",
+        "n8n-core": "~0.32.0",
+        "n8n-editor-ui": "~0.43.0",
+        "n8n-nodes-base": "~0.60.0",
+        "n8n-workflow": "~0.29.0",
         "open": "^7.0.0",
         "pg": "^7.11.0",
         "request-promise-native": "^1.0.7",
-        "sqlite3": "^4.2.0",
+        "sqlite3": "^4.0.6",
         "sse-channel": "^3.1.1",
-        "tslib": "1.11.2",
-        "typeorm": "^0.2.24"
+        "typeorm": "^0.2.16"
     },
     "jest": {
         "transform": {

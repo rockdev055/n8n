@@ -30,17 +30,17 @@ import {
 	NotificationRecipientsRestrictions,
  } from './IssueInterface';
 
-export class Jira implements INodeType {
+export class JiraSoftwareCloud implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Jira Software',
-		name: 'jira',
+		name: 'Jira Software Cloud',
 		icon: 'file:jira.png',
 		group: ['output'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
 		description: 'Consume Jira Software API',
 		defaults: {
-			name: 'Jira',
+			name: 'Jira Software',
 			color: '#4185f7',
 		},
 		inputs: ['main'],
@@ -111,10 +111,9 @@ export class Jira implements INodeType {
 			// select them easily
 			async getProjects(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
 				const returnData: INodePropertyOptions[] = [];
-				const jiraVersion = this.getCurrentNodeParameter('jiraVersion') as string;
-
+				const jiraCloudCredentials = this.getCredentials('jiraSoftwareCloudApi');
 				let endpoint = '/project/search';
-				if (jiraVersion === 'server') {
+				if (jiraCloudCredentials === undefined) {
 					endpoint = '/project';
 				}
 				let projects = await jiraSoftwareCloudApiRequest.call(this, endpoint, 'GET');
@@ -140,9 +139,9 @@ export class Jira implements INodeType {
 				const returnData: INodePropertyOptions[] = [];
 
 				const issueTypes = await jiraSoftwareCloudApiRequest.call(this, '/issuetype', 'GET');
-				const jiraVersion = this.getCurrentNodeParameter('jiraVersion') as string;
-				if (jiraVersion === 'server') {
-					for (const issueType of issueTypes) {
+
+				for (const issueType of issueTypes) {
+					if (issueType.scope.project.id === projectId) {
 						const issueTypeName = issueType.name;
 						const issueTypeId = issueType.id;
 
@@ -151,20 +150,7 @@ export class Jira implements INodeType {
 							value: issueTypeId,
 						});
 					}
-				} else {
-					for (const issueType of issueTypes) {
-						if (issueType.scope.project.id === projectId) {
-							const issueTypeName = issueType.name;
-							const issueTypeId = issueType.id;
-
-							returnData.push({
-								name: issueTypeName,
-								value: issueTypeId,
-							});
-						}
-					}
 				}
-
 				return returnData;
 			},
 
@@ -210,37 +196,18 @@ export class Jira implements INodeType {
 			// select them easily
 			async getUsers(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
 				const returnData: INodePropertyOptions[] = [];
-				const jiraVersion = this.getCurrentNodeParameter('jiraVersion') as string;
-				if (jiraVersion === 'server') {
-					// the interface call must bring username
-					const users = await jiraSoftwareCloudApiRequest.call(this, '/user/search', 'GET', {},
-						{
-							username: "'",
-						}
-					);
-					for (const user of users) {
-						const userName = user.displayName;
-						const userId = user.name;
 
-						returnData.push({
-							name: userName,
-							value: userId,
-						});
-					}
-				} else {
-					const users = await jiraSoftwareCloudApiRequest.call(this, '/users/search', 'GET');
+				const users = await jiraSoftwareCloudApiRequest.call(this, '/users/search', 'GET');
 
-					for (const user of users) {
-						const userName = user.displayName;
-						const userId = user.accountId;
+				for (const user of users) {
+					const userName = user.displayName;
+					const userId = user.accountId;
 
-						returnData.push({
-							name: userName,
-							value: userId,
-						});
-					}
+					returnData.push({
+						name: userName,
+						value: userId,
+					});
 				}
-
 				return returnData;
 			},
 
@@ -291,8 +258,6 @@ export class Jira implements INodeType {
 
 		const resource = this.getNodeParameter('resource', 0) as string;
 		const operation = this.getNodeParameter('operation', 0) as string;
-		const jiraVersion = this.getNodeParameter('jiraVersion', 0) as string;
-
 
 		for (let i = 0; i < length; i++) {
 			if (resource === 'issue') {
@@ -315,24 +280,15 @@ export class Jira implements INodeType {
 					if (additionalFields.labels) {
 						fields.labels = additionalFields.labels as string[];
 					}
-					if (additionalFields.serverLabels) {
-						fields.labels = additionalFields.serverLabels as string[];
-					}
 					if (additionalFields.priority) {
 						fields.priority = {
 							id: additionalFields.priority as string,
 						};
 					}
 					if (additionalFields.assignee) {
-						if (jiraVersion === 'server') {
-							fields.assignee = {
-								name: additionalFields.assignee as string,
-							};
-						} else {
-							fields.assignee = {
-								id: additionalFields.assignee as string,
-							};
-						}
+						fields.assignee = {
+							id: additionalFields.assignee as string,
+						};
 					}
 					if (additionalFields.description) {
 						fields.description = additionalFields.description as string;
@@ -377,24 +333,15 @@ export class Jira implements INodeType {
 					if (updateFields.labels) {
 						fields.labels = updateFields.labels as string[];
 					}
-					if (updateFields.serverLabels) {
-						fields.labels = updateFields.serverLabels as string[];
-					}
 					if (updateFields.priority) {
 						fields.priority = {
 							id: updateFields.priority as string,
 						};
 					}
 					if (updateFields.assignee) {
-						if (jiraVersion === 'server') {
-							fields.assignee = {
-								name: updateFields.assignee as string,
-							};
-						} else {
-							fields.assignee = {
-								id: updateFields.assignee as string,
-							};
-						}
+						fields.assignee = {
+							id: updateFields.assignee as string,
+						};
 					}
 					if (updateFields.description) {
 						fields.description = updateFields.description as string;

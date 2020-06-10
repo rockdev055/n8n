@@ -20,7 +20,7 @@ import {
 export class BitbucketTrigger implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Bitbucket Trigger',
-		name: 'bitbucketTrigger',
+		name: 'bitbucket',
 		icon: 'file:bitbucket.png',
 		group: ['trigger'],
 		version: 1,

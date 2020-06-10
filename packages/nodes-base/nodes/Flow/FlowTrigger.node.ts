@@ -17,7 +17,7 @@ import {
 export class FlowTrigger implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Flow Trigger',
-		name: 'flowTrigger',
+		name: 'flow',
 		icon: 'file:flow.png',
 		group: ['trigger'],
 		version: 1,

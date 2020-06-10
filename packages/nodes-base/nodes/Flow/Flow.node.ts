@@ -18,11 +18,12 @@ import {
 import {
 	ITask, TaskInfo,
  } from './TaskInterface';
+import { response } from 'express';
 
 export class Flow implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Flow',
-		name: 'flow',
+		name: 'Flow',
 		icon: 'file:flow.png',
 		group: ['output'],
 		version: 1,

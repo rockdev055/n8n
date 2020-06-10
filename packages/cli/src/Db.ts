@@ -1,7 +1,7 @@
 import {
-	DatabaseType,
 	GenericHelpers,
 	IDatabaseCollections,
+	DatabaseType,
 } from './';
 
 import {
@@ -14,13 +14,11 @@ import {
 	getRepository,
 } from 'typeorm';
 
-import * as config from '../config';
-
 import {
 	MongoDb,
-	MySQLDb,
 	PostgresDb,
 	SQLite,
+	MySQLDb,
 } from './databases';
 
 export let collections: IDatabaseCollections = {
@@ -29,90 +27,64 @@ export let collections: IDatabaseCollections = {
 	Workflow: null,
 };
 
-import {
-	InitialMigration1587669153312
-} from './databases/postgresdb/migrations';
-
-import {
-	InitialMigration1587563438936
-} from './databases/mongodb/migrations';
-
-import {
-	InitialMigration1588157391238
-} from './databases/mysqldb/migrations';
-
-import {
-	InitialMigration1588102412422
-} from './databases/sqlite/migrations';
-
 import * as path from 'path';
 
-export async function init(): Promise<IDatabaseCollections> {
+export async function init(synchronize?: boolean): Promise<IDatabaseCollections> {
 	const dbType = await GenericHelpers.getConfigValue('database.type') as DatabaseType;
 	const n8nFolder = UserSettings.getUserN8nFolderPath();
 
 	let entities;
 	let connectionOptions: ConnectionOptions;
 
-	const entityPrefix = config.get('database.tablePrefix');
-
+	let dbNotExistError: string | undefined;
 	switch (dbType) {
 		case 'mongodb':
 			entities = MongoDb;
 			connectionOptions = {
 				type: 'mongodb',
-				entityPrefix,
+				entityPrefix: await GenericHelpers.getConfigValue('database.tablePrefix') as string,
 				url: await GenericHelpers.getConfigValue('database.mongodb.connectionUrl') as string,
 				useNewUrlParser: true,
-				migrations: [InitialMigration1587563438936],
-				migrationsRun: true,
-				migrationsTableName: `${entityPrefix}migrations`,
 			};
 			break;
 
 		case 'postgresdb':
+			dbNotExistError = 'does not exist';
 			entities = PostgresDb;
 			connectionOptions = {
 				type: 'postgres',
-				entityPrefix,
+				entityPrefix: await GenericHelpers.getConfigValue('database.tablePrefix') as string,
 				database: await GenericHelpers.getConfigValue('database.postgresdb.database') as string,
 				host: await GenericHelpers.getConfigValue('database.postgresdb.host') as string,
 				password: await GenericHelpers.getConfigValue('database.postgresdb.password') as string,
 				port: await GenericHelpers.getConfigValue('database.postgresdb.port') as number,
 				username: await GenericHelpers.getConfigValue('database.postgresdb.user') as string,
-				schema: config.get('database.postgresdb.schema'),
-				migrations: [InitialMigration1587669153312],
-				migrationsRun: true,
-				migrationsTableName: `${entityPrefix}migrations`,
+				schema: await GenericHelpers.getConfigValue('database.postgresdb.schema') as string,
 			};
 			break;
 
 		case 'mariadb':
 		case 'mysqldb':
+			dbNotExistError = 'does not exist';
 			entities = MySQLDb;
 			connectionOptions = {
 				type: dbType === 'mysqldb' ? 'mysql' : 'mariadb',
 				database: await GenericHelpers.getConfigValue('database.mysqldb.database') as string,
-				entityPrefix,
+				entityPrefix: await GenericHelpers.getConfigValue('database.tablePrefix') as string,
 				host: await GenericHelpers.getConfigValue('database.mysqldb.host') as string,
 				password: await GenericHelpers.getConfigValue('database.mysqldb.password') as string,
 				port: await GenericHelpers.getConfigValue('database.mysqldb.port') as number,
 				username: await GenericHelpers.getConfigValue('database.mysqldb.user') as string,
-				migrations: [InitialMigration1588157391238],
-				migrationsRun: true,
-				migrationsTableName: `${entityPrefix}migrations`,
 			};
 			break;
 
 		case 'sqlite':
+			dbNotExistError = 'no such table:';
 			entities = SQLite;
 			connectionOptions = {
 				type: 'sqlite',
-				database:  path.join(n8nFolder, 'database.sqlite'),
-				entityPrefix,
-				migrations: [InitialMigration1588102412422],
-				migrationsRun: true,
-				migrationsTableName: `${entityPrefix}migrations`,
+				database: path.join(n8nFolder, 'database.sqlite'),
+				entityPrefix: await GenericHelpers.getConfigValue('database.tablePrefix') as string,
 			};
 			break;
 
@@ -122,19 +94,38 @@ export async function init(): Promise<IDatabaseCollections> {
 
 	Object.assign(connectionOptions, {
 		entities: Object.values(entities),
-		synchronize: false,
-		logging: false,
+		synchronize: synchronize === true || process.env['NODE_ENV'] !== 'production',
+		logging: false
 	});
 
 	const connection = await createConnection(connectionOptions);
 
-	await connection.runMigrations({
-		transaction: 'none',
-	});
-
+	// TODO: Fix that properly
+	// @ts-ignore
 	collections.Credentials = getRepository(entities.CredentialsEntity);
+	// @ts-ignore
 	collections.Execution = getRepository(entities.ExecutionEntity);
+	// @ts-ignore
 	collections.Workflow = getRepository(entities.WorkflowEntity);
+
+	// Make sure that database did already get initialized
+	try {
+		// Try a simple query, if it fails it is normally a sign that
+		// database did not get initialized
+		await collections.Workflow!.findOne({ id: 1 });
+	} catch (error) {
+		// If query errors and the problem is that the database does not exist
+		// run the init again with "synchronize: true"
+		if (dbNotExistError !== undefined && error.message.includes(dbNotExistError)) {
+			// Disconnect before we try to connect again
+			if (connection.isConnected) {
+				await connection.close();
+			}
+
+			return init(true);
+		}
+		throw error;
+	}
 
 	return collections;
 }
