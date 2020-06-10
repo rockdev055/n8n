@@ -152,7 +152,7 @@ export function getCredentials(workflow: Workflow, node: INode, type: string, ad
 		throw new Error(`Node type "${node.type}" does not have any credentials of type "${type}" defined!`);
 	}
 
-	if (NodeHelpers.displayParameter(node.parameters, nodeCredentialDescription, node.parameters) === false) {
+	if (NodeHelpers.displayParameter(additionalData.currentNodeParameters || node.parameters, nodeCredentialDescription, node.parameters) === false) {
 		// Credentials should not be displayed so return undefined even if they would be defined
 		return undefined;
 	}
@@ -289,7 +289,8 @@ export function getNodeWebhookUrl(name: string, workflow: Workflow, node: INode,
 		return undefined;
 	}
 
-	return NodeHelpers.getNodeWebhookUrl(baseUrl, workflow.id!, node, path.toString());
+	const isFullPath: boolean = workflow.getSimpleParameterValue(node, webhookDescription['isFullPath'], false) as boolean;
+	return NodeHelpers.getNodeWebhookUrl(baseUrl, workflow.id!, node, path.toString(), isFullPath);
 }
 
 
@@ -666,14 +667,14 @@ export function getLoadOptionsFunctions(workflow: Workflow, node: INode, additio
 				return getCredentials(workflow, node, type, additionalData);
 			},
 			getCurrentNodeParameter: (parameterName: string): NodeParameterValue | INodeParameters | NodeParameterValue[] | INodeParameters[] | object | undefined => {
-				const nodeParameters = JSON.parse('' + additionalData.currentNodeParameters);
+				const nodeParameters = additionalData.currentNodeParameters;
 				if (nodeParameters && nodeParameters[parameterName]) {
 					return nodeParameters[parameterName];
 				}
 				return undefined;
 			},
 			getCurrentNodeParameters: (): INodeParameters | undefined => {
-				return JSON.parse('' + additionalData.currentNodeParameters);
+				return additionalData.currentNodeParameters;
 			},
 			getNode: () => {
 				return getNode(node);

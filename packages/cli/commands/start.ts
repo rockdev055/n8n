@@ -5,13 +5,13 @@ import {
 } from 'n8n-core';
 import { Command, flags } from '@oclif/command';
 const open = require('open');
+// import { dirname } from 'path';
 
 import * as config from '../config';
 import {
 	ActiveWorkflowRunner,
 	CredentialTypes,
 	Db,
-	ExternalHooks,
 	GenericHelpers,
 	LoadNodesAndCredentials,
 	NodeTypes,
@@ -107,10 +107,6 @@ export class Start extends Command {
 				// Load all node and credential types
 				const loadNodesAndCredentials = LoadNodesAndCredentials();
 				await loadNodesAndCredentials.init();
-
-				// Load all external hooks
-				const externalHooks = ExternalHooks();
-				await externalHooks.init();
 
 				// Add the found types to an instance other parts of the application can use
 				const nodeTypes = NodeTypes();

@@ -15,8 +15,6 @@ import * as basicAuth from 'basic-auth';
 
 import { Response } from 'express';
 
-import { set } from 'lodash';
-
 import * as fs from 'fs';
 
 import * as formidable from 'formidable';
@@ -79,6 +77,7 @@ export class Webhook implements INodeType {
 			{
 				name: 'default',
 				httpMethod: '={{$parameter["httpMethod"]}}',
+				isFullPath: true,
 				responseCode: '={{$parameter["responseCode"]}}',
 				responseMode: '={{$parameter["responseMode"]}}',
 				responseData: '={{$parameter["responseData"]}}',
@@ -135,7 +134,7 @@ export class Webhook implements INodeType {
 				default: '',
 				placeholder: 'webhook',
 				required: true,
-				description: 'The path to listen to. Slashes("/") in the path are not allowed.',
+				description: 'The path to listen to.',
 			},
 			{
 				displayName: 'Response Code',
