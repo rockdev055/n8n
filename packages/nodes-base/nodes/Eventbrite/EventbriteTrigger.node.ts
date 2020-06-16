@@ -35,25 +35,7 @@ export class EventbriteTrigger implements INodeType {
 			{
 				name: 'eventbriteApi',
 				required: true,
-				displayOptions: {
-					show: {
-						authentication: [
-							'accessToken',
-						],
-					},
-				},
-			},
-			{
-				name: 'eventbriteOAuth2Api',
-				required: true,
-				displayOptions: {
-					show: {
-						authentication: [
-							'oAuth2',
-						],
-					},
-				},
-			},
+			}
 		],
 		webhooks: [
 			{
@@ -64,23 +46,6 @@ export class EventbriteTrigger implements INodeType {
 			},
 		],
 		properties: [
-			{
-				displayName: 'Authentication',
-				name: 'authentication',
-				type: 'options',
-				options: [
-					{
-						name: 'Access Token',
-						value: 'accessToken',
-					},
-					{
-						name: 'OAuth2',
-						value: 'oAuth2',
-					},
-				],
-				default: 'accessToken',
-				description: 'The resource to operate on.',
-			},
 			{
 				displayName: 'Organization',
 				name: 'organization',
@@ -227,12 +192,10 @@ export class EventbriteTrigger implements INodeType {
 		default: {
 			async checkExists(this: IHookFunctions): Promise<boolean> {
 				const webhookData = this.getWorkflowStaticData('node');
-				const organisation = this.getNodeParameter('organization') as string;
-
 				if (webhookData.webhookId === undefined) {
 					return false;
 				}
-				const endpoint = `/organizations/${organisation}/webhooks/`;
+				const endpoint = `/webhooks/${webhookData.webhookId}/`;
 				try {
 					await eventbriteApiRequest.call(this, 'GET', endpoint);
 				} catch (e) {
@@ -243,10 +206,9 @@ export class EventbriteTrigger implements INodeType {
 			async create(this: IHookFunctions): Promise<boolean> {
 				const webhookUrl = this.getNodeWebhookUrl('default');
 				const webhookData = this.getWorkflowStaticData('node');
-				const organisation = this.getNodeParameter('organization') as string;
 				const event = this.getNodeParameter('event') as string;
 				const actions = this.getNodeParameter('actions') as string[];
-				const endpoint = `/organizations/${organisation}/webhooks/`;
+				const endpoint = `/webhooks/`;
 				const body: IDataObject = {
 					endpoint_url: webhookUrl,
 					actions: actions.join(','),
