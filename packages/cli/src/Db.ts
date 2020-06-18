@@ -27,12 +27,10 @@ export let collections: IDatabaseCollections = {
 	Credentials: null,
 	Execution: null,
 	Workflow: null,
-	Webhook: null,
 };
 
 import {
-	InitialMigration1587669153312,
-	WebhookModel1589476000887,
+	InitialMigration1587669153312
 } from './databases/postgresdb/migrations';
 
 import {
@@ -40,13 +38,11 @@ import {
 } from './databases/mongodb/migrations';
 
 import {
-	InitialMigration1588157391238,
-	WebhookModel1592447867632,
+	InitialMigration1588157391238
 } from './databases/mysqldb/migrations';
 
 import {
-	InitialMigration1588102412422,
-	WebhookModel1592445003908,
+	InitialMigration1588102412422
 } from './databases/sqlite/migrations';
 
 import * as path from 'path';
@@ -85,7 +81,7 @@ export async function init(): Promise<IDatabaseCollections> {
 				port: await GenericHelpers.getConfigValue('database.postgresdb.port') as number,
 				username: await GenericHelpers.getConfigValue('database.postgresdb.user') as string,
 				schema: config.get('database.postgresdb.schema'),
-				migrations: [InitialMigration1587669153312, WebhookModel1589476000887],
+				migrations: [InitialMigration1587669153312],
 				migrationsRun: true,
 				migrationsTableName: `${entityPrefix}migrations`,
 			};
@@ -102,7 +98,7 @@ export async function init(): Promise<IDatabaseCollections> {
 				password: await GenericHelpers.getConfigValue('database.mysqldb.password') as string,
 				port: await GenericHelpers.getConfigValue('database.mysqldb.port') as number,
 				username: await GenericHelpers.getConfigValue('database.mysqldb.user') as string,
-				migrations: [InitialMigration1588157391238, WebhookModel1592447867632],
+				migrations: [InitialMigration1588157391238],
 				migrationsRun: true,
 				migrationsTableName: `${entityPrefix}migrations`,
 			};
@@ -114,7 +110,7 @@ export async function init(): Promise<IDatabaseCollections> {
 				type: 'sqlite',
 				database:  path.join(n8nFolder, 'database.sqlite'),
 				entityPrefix,
-				migrations: [InitialMigration1588102412422, WebhookModel1592445003908],
+				migrations: [InitialMigration1588102412422],
 				migrationsRun: true,
 				migrationsTableName: `${entityPrefix}migrations`,
 			};
@@ -139,7 +135,6 @@ export async function init(): Promise<IDatabaseCollections> {
 	collections.Credentials = getRepository(entities.CredentialsEntity);
 	collections.Execution = getRepository(entities.ExecutionEntity);
 	collections.Workflow = getRepository(entities.WorkflowEntity);
-	collections.Webhook = getRepository(entities.WebhookEntity);
 
 	return collections;
 }
