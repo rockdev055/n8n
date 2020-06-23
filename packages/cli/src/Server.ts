@@ -444,11 +444,9 @@ class App {
 			const newWorkflowData = req.body as IWorkflowBase;
 			const id = req.params.id;
 
-            await this.externalHooks.run('workflow.update', [newWorkflowData]);
+			await this.externalHooks.run('workflow.update', [newWorkflowData]);
 
-			const isActive = await this.activeWorkflowRunner.isActive(id);
-
-			if (isActive) {
+			if (this.activeWorkflowRunner.isActive(id)) {
 				// When workflow gets saved always remove it as the triggers could have been
 				// changed and so the changes would not take effect
 				await this.activeWorkflowRunner.remove(id);
@@ -515,11 +513,9 @@ class App {
 		this.app.delete('/rest/workflows/:id', ResponseHelper.send(async (req: express.Request, res: express.Response): Promise<boolean> => {
 			const id = req.params.id;
 
-            await this.externalHooks.run('workflow.delete', [id]);
+			await this.externalHooks.run('workflow.delete', [id]);
 
-			const isActive = await this.activeWorkflowRunner.isActive(id);
-
-			if (isActive) {
+			if (this.activeWorkflowRunner.isActive(id)) {
 				// Before deleting a workflow deactivate it
 				await this.activeWorkflowRunner.remove(id);
 			}
@@ -528,7 +524,6 @@ class App {
 
 			return true;
 		}));
-
 
 
 		this.app.post('/rest/workflows/run', ResponseHelper.send(async (req: express.Request, res: express.Response): Promise<IExecutionPushResponse> => {
@@ -660,8 +655,7 @@ class App {
 
 		// Returns the active workflow ids
 		this.app.get('/rest/active', ResponseHelper.send(async (req: express.Request, res: express.Response): Promise<string[]> => {
-			const activeWorkflows = await this.activeWorkflowRunner.getActiveWorkflows();
-			return activeWorkflows.map(workflow => workflow.id.toString()) as string[];
+			return this.activeWorkflowRunner.getActiveWorkflows();
 		}));
 
 
