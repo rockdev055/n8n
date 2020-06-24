@@ -5,6 +5,7 @@ import {
 } from 'n8n-core';
 import { Command, flags } from '@oclif/command';
 const open = require('open');
+// import { dirname } from 'path';
 
 import * as config from '../config';
 import {
@@ -12,7 +13,6 @@ import {
 	CredentialTypes,
 	CredentialsOverwrites,
 	Db,
-	ExternalHooks,
 	GenericHelpers,
 	LoadNodesAndCredentials,
 	NodeTypes,
@@ -112,10 +112,6 @@ export class Start extends Command {
 				// Load the credentials overwrites if any exist
 				const credentialsOverwrites = CredentialsOverwrites();
 				await credentialsOverwrites.init();
-
-				// Load all external hooks
-				const externalHooks = ExternalHooks();
-				await externalHooks.init();
 
 				// Add the found types to an instance other parts of the application can use
 				const nodeTypes = NodeTypes();

@@ -182,12 +182,6 @@ const config = convict({
 		env: 'N8N_PORT',
 		doc: 'HTTP port n8n can be reached'
 	},
-	listen_address: {
-		format: String,
-		default: '0.0.0.0',
-		env: 'N8N_LISTEN_ADDRESS',
-		doc: 'IP address n8n should listen on'
-	},
 	protocol: {
 		format: ['http', 'https'],
 		default: 'http',
@@ -269,13 +263,6 @@ const config = convict({
 			env: 'N8N_ENDPOINT_WEBHOOK_TEST',
 			doc: 'Path for test-webhook endpoint'
 		},
-	},
-
-	externalHookFiles: {
-		doc: 'Files containing external hooks. Multiple files can be separated by colon (":")',
-		format: String,
-		default: '',
-		env: 'EXTERNAL_HOOK_FILES'
 	},
 
 	nodes: {

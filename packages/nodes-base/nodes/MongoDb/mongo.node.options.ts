@@ -29,11 +29,6 @@ export const nodeDescription: INodeTypeDescription = {
 			type: 'options',
 			options: [
 				{
-					name: 'Delete',
-					value: 'delete',
-					description: 'Delete documents.'
-				},
-				{
 					name: 'Find',
 					value: 'find',
 					description: 'Find documents.'
@@ -63,35 +58,12 @@ export const nodeDescription: INodeTypeDescription = {
 		},
 
 		// ----------------------------------
-		//         delete
-		// ----------------------------------
-		{
-			displayName: 'Delete Query (JSON format)',
-			name: 'query',
-			type: 'json',
-			typeOptions: {
-				rows: 5
-			},
-			displayOptions: {
-				show: {
-					operation: [
-						'delete'
-					],
-				},
-			},
-			default: '{}',
-			placeholder: `{ "birth": { "$gt": "1950-01-01" } }`,
-			required: true,
-			description: 'MongoDB Delete query.'
-		},
-
-		// ----------------------------------
 		//         find
 		// ----------------------------------
 		{
 			displayName: 'Query (JSON format)',
 			name: 'query',
-			type: 'json',
+			type: 'string',
 			typeOptions: {
 				rows: 5
 			},
