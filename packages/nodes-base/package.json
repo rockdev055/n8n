@@ -119,7 +119,6 @@
       "dist/credentials/StripeApi.credentials.js",
       "dist/credentials/SalesmateApi.credentials.js",
       "dist/credentials/SegmentApi.credentials.js",
-      "dist/credentials/SpotifyOAuth2Api.credentials.js",
       "dist/credentials/SurveyMonkeyApi.credentials.js",
       "dist/credentials/SurveyMonkeyOAuth2Api.credentials.js",
       "dist/credentials/TelegramApi.credentials.js",
@@ -139,6 +138,8 @@
       "dist/credentials/ZendeskApi.credentials.js",
       "dist/credentials/ZendeskOAuth2Api.credentials.js",
       "dist/credentials/ZohoOAuth2Api.credentials.js",
+      "dist/credentials/ZoomApi.credentials.js",
+      "dist/credentials/ZoomOAuth2Api.credentials.js",
       "dist/credentials/ZulipApi.credentials.js"
     ],
     "nodes": [
@@ -264,7 +265,6 @@
       "dist/nodes/Slack/Slack.node.js",
       "dist/nodes/Sms77/Sms77.node.js",
       "dist/nodes/SplitInBatches.node.js",
-      "dist/nodes/Spotify/Spotify.node.js",
       "dist/nodes/SpreadsheetFile.node.js",
       "dist/nodes/SseTrigger.node.js",
       "dist/nodes/Start.node.js",
@@ -294,6 +294,7 @@
       "dist/nodes/Zendesk/Zendesk.node.js",
       "dist/nodes/Zendesk/ZendeskTrigger.node.js",
       "dist/nodes/Zoho/ZohoCrm.node.js",
+      "dist/nodes/Zoom/Zoom.node.js",
       "dist/nodes/Zulip/Zulip.node.js"
     ]
   },
