@@ -61,9 +61,48 @@ export class Pipedrive implements INodeType {
 			{
 				name: 'pipedriveApi',
 				required: true,
-			}
+				displayOptions: {
+					show: {
+						authentication: [
+							'basicAuth',
+						],
+					},
+				},
+			},
+			{
+				name: 'pipedriveOAuth2Api',
+				required: true,
+				displayOptions: {
+					show: {
+						authentication: [
+							'oAuth2',
+						],
+					},
+				},
+			},
 		],
 		properties: [
+			{
+				displayName: 'Authentication',
+				name: 'authentication',
+				type: 'options',
+				options: [
+					{
+						name: 'Basic Auth',
+						value: 'basicAuth'
+					},
+					{
+						name: 'OAuth2',
+						value: 'oAuth2',
+					},
+					{
+						name: 'None',
+						value: 'none',
+					},
+				],
+				default: 'basicAuth',
+				description: 'Method of authentication.',
+			},
 			{
 				displayName: 'Resource',
 				name: 'resource',

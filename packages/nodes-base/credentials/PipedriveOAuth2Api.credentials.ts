@@ -4,31 +4,31 @@ import {
 } from 'n8n-workflow';
 
 
-export class DropboxOAuth2Api implements ICredentialType {
-	name = 'dropboxOAuth2Api';
+export class PipedriveOAuth2Api implements ICredentialType {
+	name = 'pipedriveOAuth2Api';
 	extends = [
 		'oAuth2Api',
 	];
-	displayName = 'Dropbox OAuth2 API';
+	displayName = 'Pipedrive OAuth2 API';
 	properties = [
 		{
 			displayName: 'Authorization URL',
 			name: 'authUrl',
 			type: 'hidden' as NodePropertyTypes,
-			default: 'https://www.dropbox.com/oauth2/authorize',
+			default: 'https://oauth.pipedrive.com/oauth/authorize',
 			required: true,
 		},
 		{
 			displayName: 'Access Token URL',
 			name: 'accessTokenUrl',
 			type: 'hidden' as NodePropertyTypes,
-			default: 'https://api.dropboxapi.com/oauth2/token',
+			default: 'https://oauth.pipedrive.com/oauth/token',
 			required: true,
-        },
-        {
+		},
+		{
 			displayName: 'Scope',
 			name: 'scope',
-			type: 'hidden' as NodePropertyTypes,
+			type: 'string' as NodePropertyTypes,
 			default: '',
 		},
 		{
