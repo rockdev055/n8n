@@ -227,94 +227,6 @@ export const contactFields = [
 		},
 		options: [
 			{
-				displayName: 'Address',
-				name: 'addressUi',
-				placeholder: 'Address',
-				type: 'fixedCollection',
-				typeOptions: {
-					multipleValues: false,
-				},
-				default: {},
-				options: [
-					{
-						name: 'addressValues',
-						displayName: 'Address',
-						values: [
-							{
-								displayName: 'Address Line 1',
-								name: 'address1',
-								type: 'string',
-								default: '',
-							},
-							{
-								displayName: 'Address Line 2',
-								name: 'address2',
-								type: 'string',
-								default: '',
-							},
-							{
-								displayName: 'City',
-								name: 'city',
-								type: 'string',
-								default: '',
-							},
-							{
-								displayName: 'State',
-								name: 'state',
-								type: 'string',
-								default: '',
-							},
-							{
-								displayName: 'Country',
-								name: 'country',
-								type: 'string',
-								default: '',
-							},
-							{
-								displayName: 'Zip Code',
-								name: 'zipCode',
-								type: 'string',
-								default: '',
-							},
-						],
-					},
-				],
-			},
-			{
-				displayName: 'B2B or B2C',
-				name: 'b2bOrb2c',
-				type: 'options',
-				options: [
-					{
-						name: 'B2B',
-						value: 'B2B',
-					},
-					{
-						name: 'B2C',
-						value: 'B2C',
-					},
-				],
-				default: '',
-			},
-			{
-				displayName: 'CRM ID',
-				name: 'crmId',
-				type: 'string',
-				default: '',
-			},
-			{
-				displayName: 'Fax',
-				name: 'fax',
-				type: 'string',
-				default: '',
-			},
-			{
-				displayName: 'Has Purchased',
-				name: 'hasPurchased',
-				type: 'boolean',
-				default: false,
-			},
-			{
 				displayName: 'IP Address',
 				name: 'ipAddress',
 				type: 'string',
@@ -329,123 +241,11 @@ export const contactFields = [
 				description: 'Date/time in UTC;',
 			},
 			{
-				displayName: 'Mobile',
-				name: 'mobile',
-				type: 'string',
-				default: '',
-			},
-			{
 				displayName: 'Owner ID',
 				name: 'ownerId',
 				type: 'string',
 				default: '',
 				description: 'ID of a Mautic user to assign this contact to',
-			},
-			{
-				displayName: 'Phone',
-				name: 'phone',
-				type: 'string',
-				default: '',
-			},
-			{
-				displayName: 'Prospect or Customer',
-				name: 'prospectOrCustomer',
-				type: 'options',
-				options: [
-					{
-						name: 'Prospect',
-						value: 'Prospect',
-					},
-					{
-						name: 'Customer',
-						value: 'Customer',
-					},
-				],
-				default: '',
-			},
-			{
-				displayName: 'Sandbox',
-				name: 'sandbox',
-				type: 'boolean',
-				default: false,
-			},
-			{
-				displayName: 'Stage',
-				name: 'stage',
-				type: 'options',
-				typeOptions: {
-					loadOptionsMethod: 'getStages',
-				},
-				default: '',
-			},
-			{
-				displayName: 'Tags',
-				name: 'tags',
-				type: 'multiOptions',
-				typeOptions: {
-					loadOptionsMethod: 'getTags',
-				},
-				default: '',
-			},
-			{
-				displayName: 'Social Media',
-				name: 'socialMediaUi',
-				placeholder: 'Social Media',
-				type: 'fixedCollection',
-				typeOptions: {
-					multipleValues: false,
-				},
-				default: {},
-				options: [
-					{
-						name: 'socialMediaValues',
-						displayName: 'Social Media',
-						values: [
-							{
-								displayName: 'Facebook',
-								name: 'facebook',
-								type: 'string',
-								default: '',
-							},
-							{
-								displayName: 'Foursquare',
-								name: 'foursquare',
-								type: 'string',
-								default: '',
-							},
-							{
-								displayName: 'Instagram',
-								name: 'instagram',
-								type: 'string',
-								default: '',
-							},
-							{
-								displayName: 'LinkedIn',
-								name: 'linkedIn',
-								type: 'string',
-								default: '',
-							},
-							{
-								displayName: 'Skype',
-								name: 'skype',
-								type: 'string',
-								default: '',
-							},
-							{
-								displayName: 'Twitter',
-								name: 'twitter',
-								type: 'string',
-								default: '',
-							},
-						],
-					},
-				],
-			},
-			{
-				displayName: 'Website',
-				name: 'website',
-				type: 'string',
-				default: '',
 			},
 		],
 	},
@@ -519,103 +319,6 @@ export const contactFields = [
 				description: 'Contact parameters',
 			},
 			{
-				displayName: 'Address',
-				name: 'addressUi',
-				placeholder: 'Address',
-				type: 'fixedCollection',
-				typeOptions: {
-					multipleValues: false,
-				},
-				displayOptions: {
-					show: {
-						'/jsonParameters': [
-							false,
-						],
-					},
-				},
-				default: {},
-				options: [
-					{
-						name: 'addressValues',
-						displayName: 'Address',
-						values: [
-							{
-								displayName: 'Address Line 1',
-								name: 'address1',
-								type: 'string',
-								default: '',
-							},
-							{
-								displayName: 'Address Line 2',
-								name: 'address2',
-								type: 'string',
-								default: '',
-							},
-							{
-								displayName: 'City',
-								name: 'city',
-								type: 'string',
-								default: '',
-							},
-							{
-								displayName: 'State',
-								name: 'state',
-								type: 'string',
-								default: '',
-							},
-							{
-								displayName: 'Country',
-								name: 'country',
-								type: 'string',
-								default: '',
-							},
-							{
-								displayName: 'Zip Code',
-								name: 'zipCode',
-								type: 'string',
-								default: '',
-							},
-						],
-					},
-				],
-			},
-			{
-				displayName: 'B2B or B2C',
-				name: 'b2bOrb2c',
-				type: 'options',
-				displayOptions: {
-					show: {
-						'/jsonParameters': [
-							false,
-						],
-					},
-				},
-				options: [
-					{
-						name: 'B2B',
-						value: 'B2B',
-					},
-					{
-						name: 'B2C',
-						value: 'B2C',
-					},
-				],
-				default: '',
-			},
-			{
-				displayName: 'CRM ID',
-				name: 'crmId',
-				type: 'string',
-				displayOptions: {
-					show: {
-						'/jsonParameters': [
-							false,
-						],
-					},
-				},
-				default: '',
-			},
-			{
 				displayName: 'Email',
 				name: 'email',
 				type: 'string',
@@ -628,19 +331,6 @@ export const contactFields = [
 				},
 				default: '',
 				description: 'Email address of the contact.',
-			},
-			{
-				displayName: 'Fax',
-				name: 'fax',
-				type: 'string',
-				displayOptions: {
-					show: {
-						'/jsonParameters': [
-							false,
-						],
-					},
-				},
-				default: '',
 			},
 			{
 				displayName: 'First Name',
@@ -657,47 +347,6 @@ export const contactFields = [
 				description: 'First Name',
 			},
 			{
-				displayName: 'Has Purchased',
-				name: 'hasPurchased',
-				type: 'boolean',
-				displayOptions: {
-					show: {
-						'/jsonParameters': [
-							false,
-						],
-					},
-				},
-				default: false,
-			},
-			{
-				displayName: 'IP Address',
-				name: 'ipAddress',
-				type: 'string',
-				displayOptions: {
-					show: {
-						'/jsonParameters': [
-							false,
-						],
-					},
-				},
-				default: '',
-				description: 'IP address to associate with the contact',
-			},
-			{
-				displayName: 'Last Active',
-				name: 'lastActive',
-				type: 'dateTime',
-				displayOptions: {
-					show: {
-						'/jsonParameters': [
-							false,
-						],
-					},
-				},
-				default: '',
-				description: 'Date/time in UTC;',
-			},
-			{
 				displayName: 'Last Name',
 				name: 'lastName',
 				type: 'string',
@@ -710,60 +359,6 @@ export const contactFields = [
 				},
 				default: '',
 				description: 'LastName',
-			},
-			{
-				displayName: 'Mobile',
-				name: 'mobile',
-				type: 'string',
-				displayOptions: {
-					show: {
-						'/jsonParameters': [
-							false,
-						],
-					},
-				},
-				default: '',
-			},
-			{
-				displayName: 'Owner ID',
-				name: 'ownerId',
-				type: 'string',
-				displayOptions: {
-					show: {
-						'/jsonParameters': [
-							false,
-						],
-					},
-				},
-				default: '',
-				description: 'ID of a Mautic user to assign this contact to',
-			},
-			{
-				displayName: 'Phone',
-				name: 'phone',
-				type: 'string',
-				displayOptions: {
-					show: {
-						'/jsonParameters': [
-							false,
-						],
-					},
-				},
-				default: '',
-			},
-			{
-				displayName: 'Position',
-				name: 'position',
-				type: 'string',
-				displayOptions: {
-					show: {
-						'/jsonParameters': [
-							false,
-						],
-					},
-				},
-				default: '',
-				description: 'Position',
 			},
 			{
 				displayName: 'Primary Company',
@@ -783,72 +378,18 @@ export const contactFields = [
 				description: 'Primary company',
 			},
 			{
-				displayName: 'Prospect or Customer',
-				name: 'prospectOrCustomer',
-				type: 'options',
+				displayName: 'Position',
+				name: 'position',
+				type: 'string',
 				displayOptions: {
 					show: {
 						'/jsonParameters': [
 							false,
 						],
 					},
-				},
-				options: [
-					{
-						name: 'Prospect',
-						value: 'Prospect',
-					},
-					{
-						name: 'Customer',
-						value: 'Customer',
-					},
-				],
-				default: '',
-			},
-			{
-				displayName: 'Sandbox',
-				name: 'sandbox',
-				type: 'boolean',
-				displayOptions: {
-					show: {
-						'/jsonParameters': [
-							false,
-						],
-					},
-				},
-				default: false,
-			},
-			{
-				displayName: 'Stage',
-				name: 'stage',
-				type: 'options',
-				displayOptions: {
-					show: {
-						'/jsonParameters': [
-							false,
-						],
-					},
-				},
-				typeOptions: {
-					loadOptionsMethod: 'getStages',
 				},
 				default: '',
-			},
-			{
-				displayName: 'Tags',
-				name: 'tags',
-				type: 'multiOptions',
-				displayOptions: {
-					show: {
-						'/jsonParameters': [
-							false,
-						],
-					},
-				},
-				typeOptions: {
-					loadOptionsMethod: 'getTags',
-				},
-				default: '',
+				description: 'Position',
 			},
 			{
 				displayName: 'Title',
@@ -865,92 +406,25 @@ export const contactFields = [
 				description: 'Title',
 			},
 			{
-				displayName: 'Social Media',
-				name: 'socialMediaUi',
-				placeholder: 'Social Media',
-				type: 'fixedCollection',
-				displayOptions: {
-					show: {
-						'/jsonParameters': [
-							false,
-						],
-					},
-				},
-				typeOptions: {
-					multipleValues: false,
-				},
-				default: {},
-				options: [
-					{
-						name: 'socialMediaValues',
-						displayName: 'Social Media',
-						values: [
-							{
-								displayName: 'Facebook',
-								name: 'facebook',
-								type: 'string',
-								default: '',
-							},
-							{
-								displayName: 'Foursquare',
-								name: 'foursquare',
-								type: 'string',
-								default: '',
-							},
-							{
-								displayName: 'Instagram',
-								name: 'instagram',
-								type: 'string',
-								default: '',
-							},
-							{
-								displayName: 'LinkedIn',
-								name: 'linkedIn',
-								type: 'string',
-								default: '',
-							},
-							{
-								displayName: 'Skype',
-								name: 'skype',
-								type: 'string',
-								default: '',
-							},
-							{
-								displayName: 'Twitter',
-								name: 'twitter',
-								type: 'string',
-								default: '',
-							},
-						],
-					},
-				],
-			},
-			{
-				displayName: 'Website',
-				name: 'website',
-				type: 'string',
-				displayOptions: {
-					show: {
-						'/jsonParameters': [
-							false,
-						],
-					},
-				},
-				default: '',
-			},
-			{
 				displayName: 'IP Address',
 				name: 'ipAddress',
 				type: 'string',
-				displayOptions: {
-					show: {
-						'/jsonParameters': [
-							false,
-						],
-					},
-				},
 				default: '',
 				description: 'IP address to associate with the contact',
+			},
+			{
+				displayName: 'Last Active',
+				name: 'lastActive',
+				type: 'dateTime',
+				default: '',
+				description: 'Date/time in UTC;',
+			},
+			{
+				displayName: 'Owner ID',
+				name: 'ownerId',
+				type: 'string',
+				default: '',
+				description: 'ID of a Mautic user to assign this contact to',
 			},
 		],
 	},
