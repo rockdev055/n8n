@@ -4,38 +4,32 @@ import {
 } from 'n8n-workflow';
 
 
-export class SpotifyOAuth2Api implements ICredentialType {
-	name = 'spotifyOAuth2Api';
+export class EventbriteOAuth2Api implements ICredentialType {
+	name = 'eventbriteOAuth2Api';
 	extends = [
 		'oAuth2Api',
 	];
-	displayName = 'Spotify OAuth2 API';
+	displayName = 'Eventbrite OAuth2 API';
 	properties = [
-		{
-			displayName: 'Spotify Server',
-			name: 'server',
-			type: 'hidden' as NodePropertyTypes,
-			default: 'https://api.spotify.com/',
-		},
 		{
 			displayName: 'Authorization URL',
 			name: 'authUrl',
 			type: 'hidden' as NodePropertyTypes,
-			default: 'https://accounts.spotify.com/authorize',
+			default: 'https://www.eventbrite.com/oauth/authorize',
 			required: true,
 		},
 		{
 			displayName: 'Access Token URL',
 			name: 'accessTokenUrl',
 			type: 'hidden' as NodePropertyTypes,
-			default: 'https://accounts.spotify.com/api/token',
+			default: 'https://www.eventbrite.com/oauth/token',
 			required: true,
 		},
 		{
 			displayName: 'Scope',
 			name: 'scope',
 			type: 'hidden' as NodePropertyTypes,
-			default: 'user-read-playback-state playlist-read-collaborative user-modify-playback-state playlist-modify-public user-read-currently-playing playlist-read-private user-read-recently-played playlist-modify-private',
+			default: '',
 		},
 		{
 			displayName: 'Auth URI Query Parameters',
@@ -47,7 +41,7 @@ export class SpotifyOAuth2Api implements ICredentialType {
 			displayName: 'Authentication',
 			name: 'authentication',
 			type: 'hidden' as NodePropertyTypes,
-			default: 'header',
-        }
+			default: 'body'
+		},
 	];
 }
