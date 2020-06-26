@@ -107,7 +107,6 @@
       "dist/credentials/PayPalApi.credentials.js",
       "dist/credentials/PipedriveApi.credentials.js",
       "dist/credentials/Postgres.credentials.js",
-      "dist/credentials/PostmarkApi.credentials.js",
       "dist/credentials/Redis.credentials.js",
       "dist/credentials/RocketchatApi.credentials.js",
       "dist/credentials/RundeckApi.credentials.js",
@@ -139,6 +138,8 @@
       "dist/credentials/ZendeskApi.credentials.js",
       "dist/credentials/ZendeskOAuth2Api.credentials.js",
       "dist/credentials/ZohoOAuth2Api.credentials.js",
+      "dist/credentials/ZoomApi.credentials.js",
+      "dist/credentials/ZoomOAuth2Api.credentials.js",
       "dist/credentials/ZulipApi.credentials.js"
     ],
     "nodes": [
@@ -249,7 +250,6 @@
       "dist/nodes/Pipedrive/Pipedrive.node.js",
       "dist/nodes/Pipedrive/PipedriveTrigger.node.js",
       "dist/nodes/Postgres/Postgres.node.js",
-      "dist/nodes/Postmark/PostmarkTrigger.node.js",
       "dist/nodes/ReadBinaryFile.node.js",
       "dist/nodes/ReadBinaryFiles.node.js",
       "dist/nodes/ReadPdf.node.js",
@@ -294,6 +294,7 @@
       "dist/nodes/Zendesk/Zendesk.node.js",
       "dist/nodes/Zendesk/ZendeskTrigger.node.js",
       "dist/nodes/Zoho/ZohoCrm.node.js",
+      "dist/nodes/Zoom/Zoom.node.js",
       "dist/nodes/Zulip/Zulip.node.js"
     ]
   },
