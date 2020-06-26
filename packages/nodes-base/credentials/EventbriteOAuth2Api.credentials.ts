@@ -3,52 +3,45 @@ import {
 	NodePropertyTypes,
 } from 'n8n-workflow';
 
-//https://api.slack.com/authentication/oauth-v2
-const userScopes = [
-	'chat:write',
-	'files:read',
-	'files:write',
-	'stars:read',
-	'stars:write',
-];
 
-export class SlackOAuth2Api implements ICredentialType {
-	name = 'slackOAuth2Api';
+export class EventbriteOAuth2Api implements ICredentialType {
+	name = 'eventbriteOAuth2Api';
 	extends = [
 		'oAuth2Api',
 	];
-	displayName = 'Slack OAuth2 API';
+	displayName = 'Eventbrite OAuth2 API';
 	properties = [
 		{
 			displayName: 'Authorization URL',
 			name: 'authUrl',
 			type: 'hidden' as NodePropertyTypes,
-			default: 'https://slack.com/oauth/v2/authorize',
+			default: 'https://www.eventbrite.com/oauth/authorize',
+			required: true,
 		},
 		{
 			displayName: 'Access Token URL',
 			name: 'accessTokenUrl',
 			type: 'hidden' as NodePropertyTypes,
-			default: 'https://slack.com/api/oauth.v2.access',
+			default: 'https://www.eventbrite.com/oauth/token',
+			required: true,
 		},
-		//https://api.slack.com/scopes
 		{
 			displayName: 'Scope',
 			name: 'scope',
 			type: 'hidden' as NodePropertyTypes,
-			default: 'chat:write',
+			default: '',
 		},
 		{
 			displayName: 'Auth URI Query Parameters',
 			name: 'authQueryParameters',
 			type: 'hidden' as NodePropertyTypes,
-			default: `user_scope=${userScopes.join(' ')}`,
+			default: '',
 		},
 		{
 			displayName: 'Authentication',
 			name: 'authentication',
 			type: 'hidden' as NodePropertyTypes,
-			default: 'body',
+			default: 'body'
 		},
 	];
 }

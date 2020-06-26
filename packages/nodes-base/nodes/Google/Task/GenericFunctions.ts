@@ -1,6 +1,6 @@
 import {
 	OptionsWithUri,
- } from 'request';
+} from 'request';
 
 import {
 	IExecuteFunctions,
@@ -12,10 +12,18 @@ import {
 	IDataObject,
 } from 'n8n-workflow';
 
-export async function googleApiRequest(this: IExecuteFunctions | IExecuteSingleFunctions | ILoadOptionsFunctions, method: string, resource: string, body: any = {}, qs: IDataObject = {}, uri?: string, headers: IDataObject = {}): Promise<any> { // tslint:disable-line:no-any
+export async function googleApiRequest(
+	this: IExecuteFunctions | IExecuteSingleFunctions | ILoadOptionsFunctions,
+	method: string,
+	resource: string,
+	body: any = {},
+	qs: IDataObject = {},
+	uri?: string,
+	headers: IDataObject = {}
+): Promise<any> {
 	const options: OptionsWithUri = {
 		headers: {
-			'Content-Type': 'application/json',
+			'Content-Type': 'application/json'
 		},
 		method,
 		body,
@@ -23,6 +31,7 @@ export async function googleApiRequest(this: IExecuteFunctions | IExecuteSingleF
 		uri: uri || `https://www.googleapis.com${resource}`,
 		json: true
 	};
+
 	try {
 		if (Object.keys(headers).length !== 0) {
 			options.headers = Object.assign({}, options.headers, headers);
@@ -31,7 +40,11 @@ export async function googleApiRequest(this: IExecuteFunctions | IExecuteSingleF
 			delete options.body;
 		}
 		//@ts-ignore
-		return await this.helpers.requestOAuth2.call(this, 'googleCalendarOAuth2Api', options);
+		return await this.helpers.requestOAuth2.call(
+			this,
+			'googleTasksOAuth2Api',
+			options
+		);
 	} catch (error) {
 		if (error.response && error.response.body && error.response.body.error) {
 
@@ -40,22 +53,34 @@ export async function googleApiRequest(this: IExecuteFunctions | IExecuteSingleF
 			errors = errors.map((e: IDataObject) => e.message);
 			// Try to return the error prettier
 			throw new Error(
-				`Google Calendar error response [${error.statusCode}]: ${errors.join('|')}`
+				`Google Tasks error response [${error.statusCode}]: ${errors.join('|')}`
 			);
 		}
 		throw error;
 	}
 }
 
-export async function googleApiRequestAllItems(this: IExecuteFunctions | ILoadOptionsFunctions, propertyName: string ,method: string, endpoint: string, body: any = {}, query: IDataObject = {}): Promise<any> { // tslint:disable-line:no-any
-
+export async function googleApiRequestAllItems(
+	this: IExecuteFunctions | ILoadOptionsFunctions,
+	propertyName: string,
+	method: string,
+	endpoint: string,
+	body: any = {},
+	query: IDataObject = {}
+): Promise<any> {
 	const returnData: IDataObject[] = [];
 
 	let responseData;
 	query.maxResults = 100;
 
 	do {
-		responseData = await googleApiRequest.call(this, method, endpoint, body, query);
+		responseData = await googleApiRequest.call(
+			this,
+			method,
+			endpoint,
+			body,
+			query
+		);
 		query.pageToken = responseData['nextPageToken'];
 		returnData.push.apply(returnData, responseData[propertyName]);
 	} while (
