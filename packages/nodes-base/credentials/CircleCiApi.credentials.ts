@@ -3,10 +3,9 @@ import {
 	NodePropertyTypes,
 } from 'n8n-workflow';
 
-
-export class CustomerIoApi implements ICredentialType {
-	name = 'customerIoApi';
-	displayName = 'Customer.io API';
+export class CircleCiApi implements ICredentialType {
+	name = 'circleCiApi';
+	displayName = 'CircleCI API';
 	properties = [
 		{
 			displayName: 'API Key',
@@ -14,6 +13,5 @@ export class CustomerIoApi implements ICredentialType {
 			type: 'string' as NodePropertyTypes,
 			default: '',
 		},
-
 	];
 }
