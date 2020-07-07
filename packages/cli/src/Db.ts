@@ -14,8 +14,6 @@ import {
 	getRepository,
 } from 'typeorm';
 
-import { TlsOptions } from 'tls';
-
 import * as config from '../config';
 
 import {
@@ -74,22 +72,6 @@ export async function init(): Promise<IDatabaseCollections> {
 
 		case 'postgresdb':
 			entities = PostgresDb;
-
-			const sslCa = await GenericHelpers.getConfigValue('database.postgresdb.ssl.ca') as string;
-			const sslCert = await GenericHelpers.getConfigValue('database.postgresdb.ssl.cert') as string;
-			const sslKey = await GenericHelpers.getConfigValue('database.postgresdb.ssl.key') as string;
-			const sslRejectUnauthorized = await GenericHelpers.getConfigValue('database.postgresdb.ssl.rejectUnauthorized') as boolean;
-
-			let ssl: TlsOptions | undefined = undefined;
-			if (sslCa !== '' || sslCert !== '' || sslKey !== '' || sslRejectUnauthorized !== true) {
-				ssl = {
-					ca: sslCa || undefined,
-					cert: sslCert || undefined,
-					key: sslKey || undefined,
-					rejectUnauthorized: sslRejectUnauthorized,
-				};
-			}
-
 			connectionOptions = {
 				type: 'postgres',
 				entityPrefix,
@@ -102,9 +84,7 @@ export async function init(): Promise<IDatabaseCollections> {
 				migrations: [InitialMigration1587669153312],
 				migrationsRun: true,
 				migrationsTableName: `${entityPrefix}migrations`,
-				ssl,
 			};
-
 			break;
 
 		case 'mariadb':
