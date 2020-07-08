@@ -22,23 +22,23 @@ import {
 	extractValues,
 } from './GenericFunctions';
 
-export class MicrosoftSqlServer implements INodeType {
+export class MicrosoftSql implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'Microsoft SQL Server',
-		name: 'microsoftSqlServer',
+		displayName: 'Microsoft SQL',
+		name: 'microsoftSql',
 		icon: 'file:mssql.png',
 		group: ['input'],
 		version: 1,
-		description: 'Gets, add and update data in Microsoft SQL Server.',
+		description: 'Gets, add and update data in Microsoft SQL.',
 		defaults: {
-			name: 'Microsoft SQL Server',
+			name: 'Microsoft SQL',
 			color: '#1d4bab',
 		},
 		inputs: ['main'],
 		outputs: ['main'],
 		credentials: [
 			{
-				name: 'microsoftSqlServer',
+				name: 'microsoftSql',
 				required: true,
 			},
 		],
@@ -204,7 +204,7 @@ export class MicrosoftSqlServer implements INodeType {
 	};
 
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
-		const credentials = this.getCredentials('microsoftSqlServer');
+		const credentials = this.getCredentials('microsoftSql');
 
 		if (credentials === undefined) {
 			throw new Error('No credentials got returned!');
