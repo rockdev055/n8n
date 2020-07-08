@@ -58,9 +58,6 @@ import {
 	WorkflowExecuteAdditionalData,
 	WorkflowRunner,
 	GenericHelpers,
-	CredentialsOverwrites,
-	ICredentialsOverwrite,
-	LoadNodesAndCredentials,
 } from './';
 
 import {
@@ -108,7 +105,6 @@ class App {
 	testWebhooks: TestWebhooks.TestWebhooks;
 	endpointWebhook: string;
 	endpointWebhookTest: string;
-	endpointPresetCredentials: string;
 	externalHooks: IExternalHooksClass;
 	saveDataErrorExecution: string;
 	saveDataSuccessExecution: string;
@@ -122,8 +118,6 @@ class App {
 	protocol: string;
 	sslKey:  string;
 	sslCert: string;
-
-	presetCredentialsLoaded: boolean;
 
 	constructor() {
 		this.app = express();
@@ -147,9 +141,6 @@ class App {
 		this.sslCert = config.get('ssl_cert');
 
 		this.externalHooks = ExternalHooks();
-
-		this.presetCredentialsLoaded = false;
-		this.endpointPresetCredentials = config.get('credentials.overwrite.endpoint') as string;
 	}
 
 
@@ -1203,6 +1194,15 @@ class App {
 
 			let options = {};
 
+			const oAuth2Parameters = {
+				clientId: _.get(oauthCredentials, 'clientId') as string,
+				clientSecret: _.get(oauthCredentials, 'clientSecret', '') as string,
+				accessTokenUri: _.get(oauthCredentials, 'accessTokenUrl', '') as string,
+				authorizationUri: _.get(oauthCredentials, 'authUrl', '') as string,
+				redirectUri: `${WebhookHelpers.getWebhookBaseUrl()}${this.restEndpoint}/oauth2-credential/callback`,
+				scopes: _.split(_.get(oauthCredentials, 'scope', 'openid,') as string, ',')
+			};
+
 			if (_.get(oauthCredentials, 'authentication', 'header') as string === 'body') {
 				options = {
 					body: {
@@ -1210,16 +1210,10 @@ class App {
 						client_secret: _.get(oauthCredentials, 'clientSecret', '') as string,
 					},
 				};
+				delete oAuth2Parameters.clientSecret;
 			}
 
-			const oAuthObj = new clientOAuth2({
-				clientId: _.get(oauthCredentials, 'clientId') as string,
-				clientSecret: _.get(oauthCredentials, 'clientSecret', '') as string,
-				accessTokenUri: _.get(oauthCredentials, 'accessTokenUrl', '') as string,
-				authorizationUri: _.get(oauthCredentials, 'authUrl', '') as string,
-				redirectUri: `${WebhookHelpers.getWebhookBaseUrl()}${this.restEndpoint}/oauth2-credential/callback`,
-				scopes: _.split(_.get(oauthCredentials, 'scope', 'openid,') as string, ',')
-			});
+			const oAuthObj = new clientOAuth2(oAuth2Parameters);
 
 			const oauthToken = await oAuthObj.code.getToken(req.originalUrl, options);
 
@@ -1658,40 +1652,6 @@ class App {
 			ResponseHelper.sendSuccessResponse(res, response.data, true, response.responseCode);
 		});
 
-
-		if (this.endpointPresetCredentials !== '') {
-
-			// POST endpoint to set preset credentials
-			this.app.post(`/${this.endpointPresetCredentials}`, async (req: express.Request, res: express.Response) => {
-
-				if (this.presetCredentialsLoaded === false) {
-
-					const body = req.body as ICredentialsOverwrite;
-
-					if (req.headers['content-type'] !== 'application/json') {
-						ResponseHelper.sendErrorResponse(res, new Error('Body must be a valid JSON, make sure the content-type is application/json'));
-						return;
-					}
-
-					const loadNodesAndCredentials = LoadNodesAndCredentials();
-
-					const credentialsOverwrites = CredentialsOverwrites();
-
-					await credentialsOverwrites.init(body);
-
-					const credentialTypes = CredentialTypes();
-
-					await credentialTypes.init(loadNodesAndCredentials.credentialTypes);
-
-					this.presetCredentialsLoaded = true;
-
-					ResponseHelper.sendSuccessResponse(res, { success: true }, true, 200);
-
-				} else {
-					ResponseHelper.sendErrorResponse(res, new Error('Preset credentials can be set once'));
-				}
-			});
-		}
 
 		// Serve the website
 		const startTime = (new Date()).toUTCString();
