@@ -294,7 +294,7 @@ export class MicrosoftSql implements INodeType {
 				const tables = createTableStruct(
 					this.getNodeParameter,
 					items,
-					['updateKey'].concat(updateKeys),
+					['updateKey'],
 					'updateKey',
 				);
 				const queriesResults = await executeQueryQueue(
