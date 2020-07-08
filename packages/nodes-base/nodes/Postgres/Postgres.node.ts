@@ -8,7 +8,31 @@ import {
 
 import * as pgPromise from 'pg-promise';
 
-import { executeInsert, executeQuery } from './Postgres.node.functions';
+
+/**
+ * Returns of copy of the items which only contains the json data and
+ * of that only the define properties
+ *
+ * @param {INodeExecutionData[]} items The items to copy
+ * @param {string[]} properties The properties it should include
+ * @returns
+ */
+function getItemCopy(items: INodeExecutionData[], properties: string[]): IDataObject[] {
+	// Prepare the data to insert and copy it to be returned
+	let newItem: IDataObject;
+	return items.map((item) => {
+		newItem = {};
+		for (const property of properties) {
+			if (item.json[property] === undefined) {
+				newItem[property] = null;
+			} else {
+				newItem[property] = JSON.parse(JSON.stringify(item.json[property]));
+			}
+		}
+		return newItem;
+	});
+}
+
 
 export class Postgres implements INodeType {
 	description: INodeTypeDescription = {
@@ -28,7 +52,7 @@ export class Postgres implements INodeType {
 			{
 				name: 'postgres',
 				required: true,
-			},
+			}
 		],
 		properties: [
 			{
@@ -68,7 +92,9 @@ export class Postgres implements INodeType {
 				},
 				displayOptions: {
 					show: {
-						operation: ['executeQuery'],
+						operation: [
+							'executeQuery'
+						],
 					},
 				},
 				default: '',
@@ -76,6 +102,7 @@ export class Postgres implements INodeType {
 				required: true,
 				description: 'The SQL query to execute.',
 			},
+
 
 			// ----------------------------------
 			//         insert
@@ -86,7 +113,9 @@ export class Postgres implements INodeType {
 				type: 'string',
 				displayOptions: {
 					show: {
-						operation: ['insert'],
+						operation: [
+							'insert'
+						],
 					},
 				},
 				default: 'public',
@@ -99,7 +128,9 @@ export class Postgres implements INodeType {
 				type: 'string',
 				displayOptions: {
 					show: {
-						operation: ['insert'],
+						operation: [
+							'insert'
+						],
 					},
 				},
 				default: '',
@@ -112,13 +143,14 @@ export class Postgres implements INodeType {
 				type: 'string',
 				displayOptions: {
 					show: {
-						operation: ['insert'],
+						operation: [
+							'insert'
+						],
 					},
 				},
 				default: '',
 				placeholder: 'id,name,description',
-				description:
-					'Comma separated list of the properties which should used as columns for the new rows.',
+				description: 'Comma separated list of the properties which should used as columns for the new rows.',
 			},
 			{
 				displayName: 'Return Fields',
@@ -126,13 +158,15 @@ export class Postgres implements INodeType {
 				type: 'string',
 				displayOptions: {
 					show: {
-						operation: ['insert'],
+						operation: [
+							'insert'
+						],
 					},
 				},
 				default: '*',
-				description:
-					'Comma separated list of the fields that the operation will return',
+				description: 'Comma separated list of the fields that the operation will return',
 			},
+
 
 			// ----------------------------------
 			//         update
@@ -143,7 +177,9 @@ export class Postgres implements INodeType {
 				type: 'string',
 				displayOptions: {
 					show: {
-						operation: ['update'],
+						operation: [
+							'update'
+						],
 					},
 				},
 				default: '',
@@ -156,13 +192,14 @@ export class Postgres implements INodeType {
 				type: 'string',
 				displayOptions: {
 					show: {
-						operation: ['update'],
+						operation: [
+							'update'
+						],
 					},
 				},
 				default: 'id',
 				required: true,
-				description:
-					'Name of the property which decides which rows in the database should be updated. Normally that would be "id".',
+				description: 'Name of the property which decides which rows in the database should be updated. Normally that would be "id".',
 			},
 			{
 				displayName: 'Columns',
@@ -170,18 +207,22 @@ export class Postgres implements INodeType {
 				type: 'string',
 				displayOptions: {
 					show: {
-						operation: ['update'],
+						operation: [
+							'update'
+						],
 					},
 				},
 				default: '',
 				placeholder: 'name,description',
-				description:
-					'Comma separated list of the properties which should used as columns for rows to update.',
+				description: 'Comma separated list of the properties which should used as columns for rows to update.',
 			},
-		],
+
+		]
 	};
 
+
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
+
 		const credentials = this.getCredentials('postgres');
 
 		if (credentials === undefined) {
@@ -196,10 +237,8 @@ export class Postgres implements INodeType {
 			database: credentials.database as string,
 			user: credentials.user as string,
 			password: credentials.password as string,
-			ssl: !['disable', undefined].includes(
-				credentials.ssl as string | undefined,
-			),
-			sslmode: (credentials.ssl as string) || 'disable',
+			ssl: !['disable', undefined].includes(credentials.ssl as string | undefined),
+			sslmode: credentials.ssl as string || 'disable',
 		};
 
 		const db = pgp(config);
@@ -214,25 +253,39 @@ export class Postgres implements INodeType {
 			//         executeQuery
 			// ----------------------------------
 
-			const queryResult = await executeQuery(
-				this.getNodeParameter,
-				pgp,
-				db,
-				items,
-			);
+			const queries: string[] = [];
+			for (let i = 0; i < items.length; i++) {
+				queries.push(this.getNodeParameter('query', i) as string);
+			}
+
+			const queryResult = await db.any(pgp.helpers.concat(queries));
 
 			returnItems = this.helpers.returnJsonArray(queryResult as IDataObject[]);
+
 		} else if (operation === 'insert') {
 			// ----------------------------------
 			//         insert
 			// ----------------------------------
 
-			const [insertData, insertItems] = await executeInsert(
-				this.getNodeParameter,
-				pgp,
-				db,
-				items,
-			);
+			const table = this.getNodeParameter('table', 0) as string;
+			const schema = this.getNodeParameter('schema', 0) as string;
+			let returnFields = (this.getNodeParameter('returnFields', 0) as string).split(',') as string[];
+			const columnString = this.getNodeParameter('columns', 0) as string;
+			const columns = columnString.split(',').map(column => column.trim());
+
+			const cs = new pgp.helpers.ColumnSet(columns);
+
+			const te = new pgp.helpers.TableName({ table, schema });
+
+			// Prepare the data to insert and copy it to be returned
+			const insertItems = getItemCopy(items, columns);
+
+			// Generate the multi-row insert query and return the id of new row
+			returnFields = returnFields.map(value => value.trim()).filter(value => !!value);
+			const query = pgp.helpers.insert(insertItems, cs, te) + (returnFields.length ?  ` RETURNING ${returnFields.join(',')}` : '');
+
+			// Executing the query to insert the data
+			const insertData = await db.manyOrNone(query);
 
 			// Add the id to the data
 			for (let i = 0; i < insertData.length; i++) {
@@ -240,9 +293,10 @@ export class Postgres implements INodeType {
 					json: {
 						...insertData[i],
 						...insertItems[i],
-					},
+					}
 				});
 			}
+
 		} else if (operation === 'update') {
 			// ----------------------------------
 			//         update
@@ -254,26 +308,22 @@ export class Postgres implements INodeType {
 
 			const columns = columnString.split(',').map(column => column.trim());
 
-			// // Make sure that the updateKey does also get queried
-			// if (!columns.includes(updateKey)) {
-			// 	columns.unshift(updateKey);
-			// }
+			// Make sure that the updateKey does also get queried
+			if (!columns.includes(updateKey)) {
+				columns.unshift(updateKey);
+			}
 
-			// // Prepare the data to update and copy it to be returned
-			// const updateItems = getItemCopy(items, columns);
+			// Prepare the data to update and copy it to be returned
+			const updateItems = getItemCopy(items, columns);
 
-			// // Generate the multi-row update query
-			// const query =
-			// 	pgp.helpers.update(updateItems, columns, table) +
-			// 	' WHERE v.' +
-			// 	updateKey +
-			// 	' = t.' +
-			// 	updateKey;
+			// Generate the multi-row update query
+			const query = pgp.helpers.update(updateItems, columns, table) + ' WHERE v.' + updateKey + ' = t.' + updateKey;
 
-			// // Executing the query to update the data
-			// await db.none(query);
+			// Executing the query to update the data
+			await db.none(query);
 
-			// returnItems = this.helpers.returnJsonArray(updateItems as IDataObject[]);
+			returnItems = this.helpers.returnJsonArray(updateItems	 as IDataObject[]);
+
 		} else {
 			await pgp.end();
 			throw new Error(`The operation "${operation}" is not supported!`);
