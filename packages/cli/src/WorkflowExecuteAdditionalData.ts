@@ -41,8 +41,6 @@ import {
 
 import * as config from '../config';
 
-import { LessThanOrEqual } from "typeorm";
-
 
 /**
  * Checks if there was an error and if errorWorkflow is defined. If so it collects
@@ -78,30 +76,6 @@ function executeErrorWorkflow(workflowData: IWorkflowBase, fullRunData: IRun, mo
 		};
 		// Run the error workflow
 		WorkflowHelpers.executeErrorWorkflow(workflowData.settings.errorWorkflow as string, workflowErrorData);
-	}
-}
-
-/**
- * Prunes Saved Execution which are older than configured.
- * Throttled to be executed just once in configured timeframe.
- *
- */
-let throttling: boolean;
-function pruneExecutionData(): void {
-	if (!throttling) {
-		throttling = true;
-		const timeout = config.get('executions.pruneDataTimeout') as number; // in ms
-		const maxAge = config.get('executions.pruneDataMaxAge') as number; // in h
-		const date = new Date(); // today
-		date.setHours(date.getHours() - maxAge);
-
-		// throttle just on success to allow for self healing on failure
-		Db.collections.Execution!.delete({ startedAt: LessThanOrEqual(date.toISOString()) })
-		.then(data =>
-			setTimeout(() => {
-				throttling = false;
-			}, timeout)
-		).catch(err => throttling = false)
 	}
 }
 
@@ -282,11 +256,6 @@ function hookFunctionsSave(parentProcessMode?: string): IWorkflowExecuteHooks {
 						// If the retry was successful save the reference it on the original execution
 						// await Db.collections.Execution!.save(executionData as IExecutionFlattedDb);
 						await Db.collections.Execution!.update(this.retryOf, { retrySuccessId: executionResult.id });
-					}
-
-					// Prune old execution data
-					if (config.get('executions.pruneData')) {
-						pruneExecutionData()
 					}
 
 					if (!isManualMode) {

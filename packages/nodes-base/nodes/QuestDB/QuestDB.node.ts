@@ -3,25 +3,25 @@ import { IDataObject, INodeExecutionData, INodeType, INodeTypeDescription } from
 
 import * as pgPromise from 'pg-promise';
 
-import { pgInsert, pgQuery, pgUpdate } from './Postgres.node.functions';
+import { pgInsert, pgQuery, pgUpdate } from '../Postgres/Postgres.node.functions';
 
-export class Postgres implements INodeType {
+export class QuestDB implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'Postgres',
-		name: 'postgres',
-		icon: 'file:postgres.png',
+		displayName: 'QuestDB',
+		name: 'questdb',
+		icon: 'file:questdb.png',
 		group: ['input'],
 		version: 1,
-		description: 'Gets, add and update data in Postgres.',
+		description: 'Gets, add and update data in QuestDB.',
 		defaults: {
-			name: 'Postgres',
-			color: '#336791',
+			name: 'QuestDB',
+			color: '#2C4A79',
 		},
 		inputs: ['main'],
 		outputs: ['main'],
 		credentials: [
 			{
-				name: 'postgres',
+				name: 'questdb',
 				required: true,
 			},
 		],
@@ -176,7 +176,7 @@ export class Postgres implements INodeType {
 	};
 
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
-		const credentials = this.getCredentials('postgres');
+		const credentials = this.getCredentials('questdb');
 
 		if (credentials === undefined) {
 			throw new Error('No credentials got returned!');

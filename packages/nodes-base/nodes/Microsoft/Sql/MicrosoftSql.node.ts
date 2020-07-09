@@ -222,7 +222,7 @@ export class MicrosoftSql implements INodeType {
 		const pool = new mssql.ConnectionPool(config);
 		await pool.connect();
 
-		let returnItems = [];
+		let returnItems: INodeExecutionData[] = [];
 
 		const items = this.getInputData();
 		const operation = this.getNodeParameter('operation', 0) as string;
@@ -249,7 +249,7 @@ export class MicrosoftSql implements INodeType {
 				// ----------------------------------
 
 				const tables = createTableStruct(this.getNodeParameter, items);
-				await executeQueryQueue(
+				const queriesResults = await executeQueryQueue(
 					tables,
 					({
 						table,
@@ -274,7 +274,15 @@ export class MicrosoftSql implements INodeType {
 					},
 				);
 
-				returnItems = items;
+				const rowsAffected = flatten(queriesResults).reduce(
+					(acc: number, resp: mssql.IResult<object>): number =>
+						(acc += resp.rowsAffected.reduce((sum, val) => (sum += val))),
+					0,
+				);
+
+				returnItems = this.helpers.returnJsonArray({
+					rowsAffected,
+				} as IDataObject);
 			} else if (operation === 'update') {
 				// ----------------------------------
 				//         update
@@ -286,10 +294,10 @@ export class MicrosoftSql implements INodeType {
 				const tables = createTableStruct(
 					this.getNodeParameter,
 					items,
-					['updateKey'].concat(updateKeys),
+					['updateKey'],
 					'updateKey',
 				);
-				await executeQueryQueue(
+				const queriesResults = await executeQueryQueue(
 					tables,
 					({
 						table,
@@ -318,7 +326,15 @@ export class MicrosoftSql implements INodeType {
 					},
 				);
 
-				returnItems = items;
+				const rowsAffected = flatten(queriesResults).reduce(
+					(acc: number, resp: mssql.IResult<object>): number =>
+						(acc += resp.rowsAffected.reduce((sum, val) => (sum += val))),
+					0,
+				);
+
+				returnItems = this.helpers.returnJsonArray({
+					rowsAffected,
+				} as IDataObject);
 			} else if (operation === 'delete') {
 				// ----------------------------------
 				//         delete
@@ -364,14 +380,14 @@ export class MicrosoftSql implements INodeType {
 					}),
 				);
 
-				const rowsDeleted = flatten(queriesResults).reduce(
+				const rowsAffected = flatten(queriesResults).reduce(
 					(acc: number, resp: mssql.IResult<object>): number =>
 						(acc += resp.rowsAffected.reduce((sum, val) => (sum += val))),
 					0,
 				);
 
 				returnItems = this.helpers.returnJsonArray({
-					rowsDeleted,
+					rowsAffected,
 				} as IDataObject);
 			} else {
 				await pool.close();
