@@ -41,13 +41,8 @@ export async function prepareUserSettings(): Promise<IUserSettings> {
 		userSettings = {};
 	}
 
-	if (process.env[ENCRYPTION_KEY_ENV_OVERWRITE] !== undefined) {
-		// Use the encryption key which got set via environment
-		userSettings.encryptionKey = process.env[ENCRYPTION_KEY_ENV_OVERWRITE];
-	} else {
-		// Generate a new encryption key
-		userSettings.encryptionKey = randomBytes(24).toString('base64');
-	}
+	// Settings and/or key do not exist. So generate a new encryption key
+	userSettings.encryptionKey = randomBytes(24).toString('base64');
 
 	console.log(`UserSettings got generated and saved to: ${settingsPath}`);
 

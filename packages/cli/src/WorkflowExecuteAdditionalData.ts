@@ -41,8 +41,6 @@ import {
 
 import * as config from '../config';
 
-import { LessThanOrEqual } from "typeorm";
-
 
 /**
  * Checks if there was an error and if errorWorkflow is defined. If so it collects
@@ -78,25 +76,6 @@ function executeErrorWorkflow(workflowData: IWorkflowBase, fullRunData: IRun, mo
 		};
 		// Run the error workflow
 		WorkflowHelpers.executeErrorWorkflow(workflowData.settings.errorWorkflow as string, workflowErrorData);
-	}
-}
-
-/**
- * Prunes Saved Execution which are older than configured.
- * Throttled to be executed just once in configured timeframe.
- *
- */
-let inThrottle: boolean;
-function pruneSavedExecutions(): void {
-	console.log('THROTTLE:', inThrottle);
-	if (!inThrottle) {
-		inThrottle = true;
-		Db.collections.Execution!.delete({ startedAt: LessThanOrEqual(new Date().toISOString()) });
-		console.log('Deleting logs');
-		setTimeout(() => {
-			console.log('resetting throttle');
-			inThrottle = false;
-		}, 30000);
 	}
 }
 
@@ -272,7 +251,6 @@ function hookFunctionsSave(parentProcessMode?: string): IWorkflowExecuteHooks {
 
 					// Save the Execution in DB
 					const executionResult = await Db.collections.Execution!.save(executionData as IExecutionFlattedDb);
-					pruneSavedExecutions()
 
 					if (fullRunData.finished === true && this.retryOf !== undefined) {
 						// If the retry was successful save the reference it on the original execution
@@ -338,14 +316,14 @@ export async function executeWorkflow(workflowInfo: IExecuteWorkflowInfo, additi
 	// Does not get used so set it simply to empty string
 	const executionId = '';
 
-	// Get the needed credentials for the current workflow as they will differ to the ones of the
-	// calling workflow.
-	const credentials = await WorkflowCredentials(workflowData!.nodes);
-
 	// Create new additionalData to have different workflow loaded and to call
 	// different webooks
-	const additionalDataIntegrated = await getBase(credentials);
+	const additionalDataIntegrated = await getBase(additionalData.credentials);
 	additionalDataIntegrated.hooks = getWorkflowHooksIntegrated(mode, executionId, workflowData!, { parentProcessMode: additionalData.hooks!.mode });
+
+	// Get the needed credentials for the current workflow as they will differ to the ones of the
+	// calling workflow.
+	additionalDataIntegrated.credentials = await WorkflowCredentials(workflowData!.nodes);
 
 	// Find Start-Node
 	const requiredNodeTypes = ['n8n-nodes-base.start'];

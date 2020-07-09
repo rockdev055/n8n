@@ -63,34 +63,6 @@ const config = convict({
 				default: 'public',
 				env: 'DB_POSTGRESDB_SCHEMA'
 			},
-
-			ssl: {
-				ca: {
-					doc: 'SSL certificate authority',
-					format: String,
-					default: '',
-					env: 'DB_POSTGRESDB_SSL_CA',
-				},
-				cert: {
-					doc: 'SSL certificate',
-					format: String,
-					default: '',
-					env: 'DB_POSTGRESDB_SSL_CERT',
-				},
-				key: {
-					doc: 'SSL key',
-					format: String,
-					default: '',
-					env: 'DB_POSTGRESDB_SSL_KEY',
-				},
-				rejectUnauthorized: {
-					doc: 'If unauthorized SSL connections should be rejected',
-					format: 'Boolean',
-					default: true,
-					env: 'DB_POSTGRESDB_SSL_REJECT_UNAUTHORIZED',
-				},
-			}
-
 		},
 		mysqldb: {
 			database: {
@@ -128,23 +100,15 @@ const config = convict({
 
 	credentials: {
 		overwrite: {
-			data: {
-				// Allows to set default values for credentials which
-				// get automatically prefilled and the user does not get
-				// displayed and can not change.
-				// Format: { CREDENTIAL_NAME: { PARAMTER: VALUE }}
-				doc: 'Overwrites for credentials',
-				format: '*',
-				default: '{}',
-				env: 'CREDENTIALS_OVERWRITE_DATA'
-			},
-			endpoint: {
-				doc: 'Fetch credentials from API',
-				format: String,
-				default: '',
-				env: 'CREDENTIALS_OVERWRITE_ENDPOINT',
-			},
-		},
+			// Allows to set default values for credentials which
+			// get automatically prefilled and the user does not get
+			// displayed and can not change.
+			// Format: { CREDENTIAL_NAME: { PARAMTER: VALUE }}
+			doc: 'Overwrites for credentials',
+			format: '*',
+			default: '{}',
+			env: 'CREDENTIALS_OVERWRITE'
+		}
 	},
 
 	executions: {
