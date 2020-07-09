@@ -48,9 +48,6 @@ export async function pipedriveApiRequest(this: IHookFunctions | IExecuteFunctio
 	query.api_token = credentials.apiToken;
 
 	const options: OptionsWithUri = {
-		headers: {
-			"Accept": "application/json",
-		},
 		method,
 		qs: query,
 		uri: `https://api.pipedrive.com/v1${endpoint}`,
@@ -96,7 +93,7 @@ export async function pipedriveApiRequest(this: IHookFunctions | IExecuteFunctio
 
 		if (error.response && error.response.body && error.response.body.error) {
 			// Try to return the error prettier
-			let errorMessage = `Pipedrive error response [${error.statusCode}]: ${error.response.body.error.message}`;
+			let errorMessage = `Pipedrive error response [${error.statusCode}]: ${error.response.body.error}`;
 			if (error.response.body.error_info) {
 				errorMessage += ` - ${error.response.body.error_info}`;
 			}
@@ -127,7 +124,7 @@ export async function pipedriveApiRequestAllItems(this: IHookFunctions | IExecut
 	if (query === undefined) {
 		query = {};
 	}
-	query.limit = 100;
+	query.limit = 500;
 	query.start = 0;
 
 	const returnData: IDataObject[] = [];
@@ -136,12 +133,7 @@ export async function pipedriveApiRequestAllItems(this: IHookFunctions | IExecut
 
 	do {
 		responseData = await pipedriveApiRequest.call(this, method, endpoint, body, query);
-		// the search path returns data diferently
-		if (responseData.data.items) {
-			returnData.push.apply(returnData, responseData.data.items);
-		} else {
-			returnData.push.apply(returnData, responseData.data);
-		}
+		returnData.push.apply(returnData, responseData.data);
 
 		query.start = responseData.additionalData.pagination.next_start;
 	} while (
