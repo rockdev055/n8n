@@ -63,6 +63,34 @@ const config = convict({
 				default: 'public',
 				env: 'DB_POSTGRESDB_SCHEMA'
 			},
+
+			ssl: {
+				ca: {
+					doc: 'SSL certificate authority',
+					format: String,
+					default: '',
+					env: 'DB_POSTGRESDB_SSL_CA',
+				},
+				cert: {
+					doc: 'SSL certificate',
+					format: String,
+					default: '',
+					env: 'DB_POSTGRESDB_SSL_CERT',
+				},
+				key: {
+					doc: 'SSL key',
+					format: String,
+					default: '',
+					env: 'DB_POSTGRESDB_SSL_KEY',
+				},
+				rejectUnauthorized: {
+					doc: 'If unauthorized SSL connections should be rejected',
+					format: 'Boolean',
+					default: true,
+					env: 'DB_POSTGRESDB_SSL_REJECT_UNAUTHORIZED',
+				},
+			}
+
 		},
 		mysqldb: {
 			database: {
@@ -100,15 +128,23 @@ const config = convict({
 
 	credentials: {
 		overwrite: {
-			// Allows to set default values for credentials which
-			// get automatically prefilled and the user does not get
-			// displayed and can not change.
-			// Format: { CREDENTIAL_NAME: { PARAMTER: VALUE }}
-			doc: 'Overwrites for credentials',
-			format: '*',
-			default: '{}',
-			env: 'CREDENTIALS_OVERWRITE'
-		}
+			data: {
+				// Allows to set default values for credentials which
+				// get automatically prefilled and the user does not get
+				// displayed and can not change.
+				// Format: { CREDENTIAL_NAME: { PARAMTER: VALUE }}
+				doc: 'Overwrites for credentials',
+				format: '*',
+				default: '{}',
+				env: 'CREDENTIALS_OVERWRITE_DATA'
+			},
+			endpoint: {
+				doc: 'Fetch credentials from API',
+				format: String,
+				default: '',
+				env: 'CREDENTIALS_OVERWRITE_ENDPOINT',
+			},
+		},
 	},
 
 	executions: {
@@ -125,8 +161,8 @@ const config = convict({
 
 		// If a workflow executes all the data gets saved by default. This
 		// could be a problem when a workflow gets executed a lot and processes
-		// a lot of data. To not write the database full it is possible to
-		// not save the execution at all.
+		// a lot of data. To not exceed the database's capacity it is possible to
+		// prune the database regularly or to not save the execution at all.
 		// Depending on if the execution did succeed or error a different
 		// save behaviour can be set.
 		saveDataOnError: {
@@ -151,6 +187,27 @@ const config = convict({
 			doc: 'Save data of executions when started manually via editor',
 			default: false,
 			env: 'EXECUTIONS_DATA_SAVE_MANUAL_EXECUTIONS'
+		},
+
+		// To not exceed the database's capacity and keep its size moderate
+		// the execution data gets pruned regularly (default: 1 hour interval).
+		// All saved execution data older than the max age will be deleted.
+		// Pruning is currently not activated by default, which will change in
+		// a future version.
+		pruneData: {
+			doc: 'Delete data of past executions on a rolling basis',
+			default: false,
+			env: 'EXECUTIONS_DATA_PRUNE'
+		},
+		pruneDataMaxAge: {
+			doc: 'How old (hours) the execution data has to be to get deleted',
+			default: 336,
+			env: 'EXECUTIONS_DATA_MAX_AGE'
+		},
+		pruneDataTimeout: {
+			doc: 'Timeout (ms) after execution data has been pruned',
+			default: 3600000,
+			env: 'EXECUTIONS_DATA_PRUNE_TIMEOUT'
 		},
 	},
 
