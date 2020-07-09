@@ -6,12 +6,14 @@ import {
 	ILoadOptionsFunctions,
 } from 'n8n-core';
 import { IDataObject } from 'n8n-workflow';
-import { attachmentFields } from '../Salesforce/AttachmentDescription';
 
 export async function bitlyApiRequest(this: IHookFunctions | IExecuteFunctions | IExecuteSingleFunctions | ILoadOptionsFunctions, method: string, resource: string, body: any = {}, qs: IDataObject = {}, uri?: string, option: IDataObject = {}): Promise<any> { // tslint:disable-line:no-any
-	const authenticationMethod = this.getNodeParameter('authentication', 0) as string;
+	const credentials = this.getCredentials('bitlyApi');
+	if (credentials === undefined) {
+		throw new Error('No credentials got returned!');
+	}
 	let options: OptionsWithUri = {
-		headers: {},
+		headers: { Authorization: `Bearer ${credentials.accessToken}`},
 		method,
 		qs,
 		body,
@@ -22,22 +24,10 @@ export async function bitlyApiRequest(this: IHookFunctions | IExecuteFunctions |
 	if (Object.keys(options.body).length === 0) {
 		delete options.body;
 	}
-
-	try{
-		if (authenticationMethod === 'accessToken') {
-			const credentials = this.getCredentials('bitlyApi');
-			if (credentials === undefined) {
-				throw new Error('No credentials got returned!');
-			}
-			options.headers = { Authorization: `Bearer ${credentials.accessToken}`};
-
-			return await this.helpers.request!(options);
-		} else {
-			//@ts-ignore
-			return await this.helpers.requestOAuth2!.call(this, 'bitlyOAuth2Api', options, 'Bearer');
-		}
-	} catch(error) {
-		throw new Error(error);
+	try {
+		return await this.helpers.request!(options);
+	} catch (err) {
+		throw new Error(err);
 	}
 }
 

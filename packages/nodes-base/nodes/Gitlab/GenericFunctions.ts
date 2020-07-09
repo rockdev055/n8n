@@ -1,7 +1,6 @@
 import {
 	IExecuteFunctions,
 	IHookFunctions,
-	ILoadOptionsFunctions,
 } from 'n8n-core';
 
 import {
@@ -17,7 +16,7 @@ import {
  * @param {object} body
  * @returns {Promise<any>}
  */
-export async function gitlabApiRequest(this: IHookFunctions | IExecuteFunctions | ILoadOptionsFunctions, method: string, endpoint: string, body: object, query?: object): Promise<any> { // tslint:disable-line:no-any
+export async function gitlabApiRequest(this: IHookFunctions | IExecuteFunctions, method: string, endpoint: string, body: object, query?: object): Promise<any> { // tslint:disable-line:no-any
 	const credentials = this.getCredentials('gitlabApi');
 	if (credentials === undefined) {
 		throw new Error('No credentials got returned!');
@@ -35,9 +34,7 @@ export async function gitlabApiRequest(this: IHookFunctions | IExecuteFunctions 
 	};
 
 	try {
-		//@ts-ignore
-		return await this.helpers?.request(options);
-
+		return await this.helpers.request(options);
 	} catch (error) {
 		if (error.statusCode === 401) {
 			// Return a clear error
