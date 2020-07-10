@@ -126,7 +126,7 @@ import RunData from '@/components/RunData.vue';
 
 import mixins from 'vue-typed-mixins';
 
-import { debounce, isEqual } from 'lodash';
+import { debounce } from 'lodash';
 import axios from 'axios';
 import {
 	IConnection,
@@ -330,8 +330,6 @@ export default mixins(
 				this.$store.commit('setWorkflowSettings', data.settings || {});
 
 				await this.addNodes(data.nodes, data.connections);
-
-				return data;
 			},
 			mouseDown (e: MouseEvent) {
 				// Save the location of the mouse click
@@ -1311,7 +1309,6 @@ export default mixins(
 				if (this.$route.name === 'ExecutionById') {
 					// Load an execution
 					const executionId = this.$route.params.id;
-
 					await this.openExecution(executionId);
 				} else {
 					// Load a workflow
@@ -1319,6 +1316,7 @@ export default mixins(
 					if (this.$route.params.name) {
 						workflowId = this.$route.params.name;
 					}
+
 					if (workflowId !== null) {
 						// Open existing workflow
 						await this.openWorkflow(workflowId);
@@ -1330,22 +1328,6 @@ export default mixins(
 
 				document.addEventListener('keydown', this.keyDown);
 				document.addEventListener('keyup', this.keyUp);
-
-				window.addEventListener("beforeunload", (e) => {
-					let workflowId = null as string | null;
-					if (this.$route.params.name) {
-						workflowId = this.$route.params.name;
-					}
-					if(workflowId !== null) {
-						//const dataHasChanged = await this.dataHasChanged(workflowId);
-					}
-
-					const confirmationMessage = 'It looks like you have been editing something. '
-											+ 'If you leave before saving, your changes will be lost.';
-
-					(e || window.event).returnValue = confirmationMessage; //Gecko + IE
-					return confirmationMessage; //Gecko + Webkit, Safari, Chrome etc.
-				});
 			},
 			__addConnection (connection: [IConnection, IConnection], addVisualConnection = false) {
 				if (addVisualConnection === true) {
@@ -1890,13 +1872,13 @@ export default mixins(
 
 		async mounted () {
 			this.$root.$on('importWorkflowData', async (data: IDataObject) => {
-				const resData = await this.importWorkflowData(data.data as IWorkflowDataUpdate);
+				await this.importWorkflowData(data.data as IWorkflowDataUpdate);
 			});
 
 			this.$root.$on('importWorkflowUrl', async (data: IDataObject) => {
 				const workflowData = await this.getWorkflowDataFromUrl(data.url as string);
 				if (workflowData !== undefined) {
-					const resData = await this.importWorkflowData(workflowData);
+					await this.importWorkflowData(workflowData);
 				}
 			});
 
