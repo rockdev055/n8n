@@ -122,13 +122,6 @@ export default mixins(
 				readOnly: !!this.resolvedValue,
 				modules: {
 					autoformat: {},
-					keyboard: {
-						bindings: {
-							'list autofill': {
-								prefix: /^$/,
-							},
-						},
-					},
 				},
 			});
 

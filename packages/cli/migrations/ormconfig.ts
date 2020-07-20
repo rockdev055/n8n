@@ -44,9 +44,9 @@ module.exports = [
         "logging": false,
         "host": "localhost",
         "username": "postgres",
-        "password": "",
+        "password": "docker",
         "port": 5432,
-        "database": "n8n",
+        "database": "postgres",
         "schema": "public",
         "entities": Object.values(PostgresDb),
         "migrations": [
@@ -68,7 +68,7 @@ module.exports = [
         "username": "root",
         "password": "password",
         "host": "localhost",
-        "port": "3306",
+        "port": "3308",
         "logging": false,
         "entities": Object.values(MySQLDb),
         "migrations": [
@@ -90,7 +90,7 @@ module.exports = [
         "username": "root",
         "password": "password",
         "host": "localhost",
-        "port": "3306",
+        "port": "3308",
         "logging": false,
         "entities": Object.values(MySQLDb),
         "migrations": [

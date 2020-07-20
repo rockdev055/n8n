@@ -39,7 +39,6 @@ export class ExecutionEntity implements IExecutionFlattedDb {
 	@Column('Date')
 	startedAt: Date;
 
-	@Index()
 	@Column('Date')
 	stoppedAt: Date;
 

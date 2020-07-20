@@ -70,9 +70,10 @@ export async function zoomApiRequestAllItems(
 	propertyName: string,
 	method: string,
 	endpoint: string,
-	body: IDataObject = {},
+	body: any = {},
 	query: IDataObject = {}
-): Promise<any> {  // tslint:disable-line:no-any
+): Promise<any> {
+	// tslint:disable-line:no-any
 	const returnData: IDataObject[] = [];
 	let responseData;
 	query.page_number = 0;
