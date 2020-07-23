@@ -27,7 +27,7 @@ export class ClassNameReplace implements INodeType {
 			{
 				name: 'default',
 				httpMethod: 'POST',
-				responseMode: 'onReceived',
+				reponseMode: 'onReceived',
 				// Each webhook property can either be hardcoded
 				// like the above ones or referenced from a parameter
 				// like the "path" property bellow
