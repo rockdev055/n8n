@@ -14,6 +14,7 @@ import {
 	gitlabApiRequest,
 } from './GenericFunctions';
 
+
 export class GitlabTrigger implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Gitlab Trigger',
@@ -33,25 +34,7 @@ export class GitlabTrigger implements INodeType {
 			{
 				name: 'gitlabApi',
 				required: true,
-				displayOptions: {
-					show: {
-						authentication: [
-							'accessToken',
-						],
-					},
-				},
-			},
-			{
-				name: 'gitlabOAuth2Api',
-				required: true,
-				displayOptions: {
-					show: {
-						authentication: [
-							'oAuth2',
-						],
-					},
-				},
-			},
+			}
 		],
 		webhooks: [
 			{
@@ -62,23 +45,6 @@ export class GitlabTrigger implements INodeType {
 			},
 		],
 		properties: [
-			{
-				displayName: 'Authentication',
-				name: 'authentication',
-				type: 'options',
-				options: [
-					{
-						name: 'Access Token',
-						value: 'accessToken',
-					},
-					{
-						name: 'OAuth2',
-						value: 'oAuth2',
-					},
-				],
-				default: 'accessToken',
-				description: 'The resource to operate on.',
-			},
 			{
 				displayName: 'Repository Owner',
 				name: 'owner',
@@ -169,10 +135,7 @@ export class GitlabTrigger implements INodeType {
 				// Webhook got created before so check if it still exists
 				const owner = this.getNodeParameter('owner') as string;
 				const repository = this.getNodeParameter('repository') as string;
-
-				const path = (`${owner}/${repository}`).replace(/\//g,'%2F');
-
-				const endpoint = `/projects/${path}/hooks/${webhookData.webhookId}`;
+				const endpoint = `/projects/${owner}%2F${repository}/hooks/${webhookData.webhookId}`;
 
 				try {
 					await gitlabApiRequest.call(this, 'GET', endpoint, {});
@@ -212,21 +175,14 @@ export class GitlabTrigger implements INodeType {
 					events[`${e}_events`] = true;
 				}
 
-				// gitlab set the push_events to true when the field it's not sent.
-				// set it to false when it's not picked by the user.
-				if (events['push_events'] === undefined) {
-					events['push_events'] = false;
-				}
-
-				const path = (`${owner}/${repository}`).replace(/\//g,'%2F');
-
-				const endpoint = `/projects/${path}/hooks`;
+				const endpoint = `/projects/${owner}%2F${repository}/hooks`;
 
 				const body = {
 					url: webhookUrl,
-					...events,
+					events,
 					enable_ssl_verification: false,
 				};
+
 
 				let responseData;
 				try {
@@ -252,10 +208,7 @@ export class GitlabTrigger implements INodeType {
 				if (webhookData.webhookId !== undefined) {
 					const owner = this.getNodeParameter('owner') as string;
 					const repository = this.getNodeParameter('repository') as string;
-
-					const path = (`${owner}/${repository}`).replace(/\//g,'%2F');
-
-					const endpoint = `/projects/${path}/hooks/${webhookData.webhookId}`;
+					const endpoint = `/projects/${owner}%2F${repository}/hooks/${webhookData.webhookId}`;
 					const body = {};
 
 					try {
