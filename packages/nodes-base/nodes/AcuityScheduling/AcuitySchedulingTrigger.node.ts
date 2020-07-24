@@ -32,25 +32,7 @@ export class AcuitySchedulingTrigger implements INodeType {
 			{
 				name: 'acuitySchedulingApi',
 				required: true,
-				displayOptions: {
-					show: {
-						authentication: [
-							'apiKey',
-						],
-					},
-				},
-			},
-			{
-				name: 'acuitySchedulingOAuth2Api',
-				required: true,
-				displayOptions: {
-					show: {
-						authentication: [
-							'oAuth2',
-						],
-					},
-				},
-			},
+			}
 		],
 		webhooks: [
 			{
@@ -61,23 +43,6 @@ export class AcuitySchedulingTrigger implements INodeType {
 			},
 		],
 		properties: [
-			{
-				displayName: 'Authentication',
-				name: 'authentication',
-				type: 'options',
-				options: [
-					{
-						name: 'API Key',
-						value: 'apiKey',
-					},
-					{
-						name: 'OAuth2',
-						value: 'oAuth2',
-					},
-				],
-				default: 'apiKey',
-				description: 'Method of authentication.',
-			},
 			{
 				displayName: 'Event',
 				name: 'event',
