@@ -781,11 +781,7 @@ export class Workflow {
 			node = this.nodes[nodeName];
 			nodeType = this.nodeTypes.getByName(node.type) as INodeType;
 
-
 			if (nodeType.trigger !== undefined || nodeType.poll !== undefined) {
-				if (node.disabled === true) {
-					continue;
-				}
 				return node;
 			}
 		}
