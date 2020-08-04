@@ -28,12 +28,12 @@ import { IDeal } from './DealInterface';
 
 export class AgileCrm implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'Agile CRM',
+		displayName: 'AgileCRM',
 		name: 'agileCrm',
 		icon: 'file:agilecrm.png',
 		group: ['transform'],
 		version: 1,
-		description: 'Consume Agile CRM API',
+		description: 'Consume AgileCRM API',
 		defaults: {
 			name: 'AgileCRM',
 			color: '#772244',

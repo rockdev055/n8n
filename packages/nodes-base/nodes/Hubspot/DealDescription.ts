@@ -23,7 +23,7 @@ export const dealOperations = [
 			{
 				name: 'Delete',
 				value: 'delete',
-				description: 'Delete a deal',
+				description: 'Delete a deals',
 			},
 			{
 				name: 'Get',

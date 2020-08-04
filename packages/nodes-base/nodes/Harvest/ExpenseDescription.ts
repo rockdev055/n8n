@@ -26,12 +26,12 @@ export const expenseOperations = [
 			{
 				name: 'Create',
 				value: 'create',
-				description: `Create an expense`,
+				description: `Create a expense`,
 			},
 			{
 				name: 'Update',
 				value: 'update',
-				description: `Update an expense`,
+				description: `Update a expense`,
 			},
 			{
 				name: 'Delete',

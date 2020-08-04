@@ -16,7 +16,7 @@ export const invoiceOperations = [
 			{
 				name: 'Get',
 				value: 'get',
-				description: 'Get data of an invoice',
+				description: 'Get data of a invoice',
 			},
 			{
 				name: 'Get All',
@@ -26,17 +26,17 @@ export const invoiceOperations = [
 			{
 				name: 'Create',
 				value: 'create',
-				description: `Create an invoice`,
+				description: `Create a invoice`,
 			},
 			{
 				name: 'Update',
 				value: 'update',
-				description: `Update an invoice`,
+				description: `Update a invoice`,
 			},
 			{
 				name: 'Delete',
 				value: 'delete',
-				description: `Delete an invoice`,
+				description: `Delete a invoice`,
 			},
 		],
 		default: 'getAll',

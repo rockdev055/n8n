@@ -113,9 +113,7 @@ export class Uplead implements INodeType {
 			if (Array.isArray(responseData.data)) {
 				returnData.push.apply(returnData, responseData.data as IDataObject[]);
 			} else {
-				if (responseData.data !== null) {
-					returnData.push(responseData.data as IDataObject);
-				}
+				returnData.push(responseData.data as IDataObject);
 			}
 		}
 		return [this.helpers.returnJsonArray(returnData)];

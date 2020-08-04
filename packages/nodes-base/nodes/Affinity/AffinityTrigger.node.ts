@@ -52,10 +52,10 @@ export class AffinityTrigger implements INodeType {
 				options: [
 					{
 						name: 'file.created',
-						value: 'file.created',
+						value: 'file.deleted',
 					},
 					{
-						name: 'file.deleted',
+						name: 'file.created',
 						value: 'file.deleted',
 					},
 					{
@@ -136,7 +136,7 @@ export class AffinityTrigger implements INodeType {
 					},
 					{
 						name: 'opportunity.deleted',
-						value: 'opportunity.deleted',
+						value: 'organization.deleted',
 					},
 					{
 						name: 'person.created',

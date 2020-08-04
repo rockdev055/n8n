@@ -4,7 +4,7 @@ import {sms77ApiRequest} from './GenericFunctions';
 
 export class Sms77 implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'sms77',
+		displayName: 'Sms77',
 		name: 'sms77',
 		icon: 'file:sms77.png',
 		group: ['transform'],

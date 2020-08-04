@@ -23,7 +23,7 @@ export const contactOperations = [
 			{
 				name: 'Delete',
 				value: 'delete',
-				description: 'Delete a contact',
+				description: 'Delete a contacts',
 			},
 			{
 				name: 'Get',

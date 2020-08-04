@@ -31,7 +31,7 @@ export const dealOperations = [
 			{
 				name: 'Get All',
 				value: 'getAll',
-				description: 'Get all deals',
+				description: 'Get all companies',
 			},
 			{
 				name: 'Update',

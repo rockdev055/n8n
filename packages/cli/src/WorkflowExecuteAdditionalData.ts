@@ -41,8 +41,6 @@ import {
 
 import * as config from '../config';
 
-import { LessThanOrEqual } from "typeorm";
-
 
 /**
  * Checks if there was an error and if errorWorkflow is defined. If so it collects
@@ -78,30 +76,6 @@ function executeErrorWorkflow(workflowData: IWorkflowBase, fullRunData: IRun, mo
 		};
 		// Run the error workflow
 		WorkflowHelpers.executeErrorWorkflow(workflowData.settings.errorWorkflow as string, workflowErrorData);
-	}
-}
-
-/**
- * Prunes Saved Execution which are older than configured.
- * Throttled to be executed just once in configured timeframe.
- *
- */
-let throttling = false;
-function pruneExecutionData(): void {
-	if (!throttling) {
-		throttling = true;
-		const timeout = config.get('executions.pruneDataTimeout') as number; // in seconds
-		const maxAge = config.get('executions.pruneDataMaxAge') as number; // in h
-		const date = new Date(); // today
-		date.setHours(date.getHours() - maxAge);
-
-		// throttle just on success to allow for self healing on failure
-		Db.collections.Execution!.delete({ stoppedAt: LessThanOrEqual(date.toISOString()) })
-		.then(data =>
-			setTimeout(() => {
-				throttling = false;
-			}, timeout * 1000)
-		).catch(err => throttling = false);
 	}
 }
 
@@ -214,11 +188,6 @@ function hookFunctionsSave(parentProcessMode?: string): IWorkflowExecuteHooks {
 		workflowExecuteBefore: [],
 		workflowExecuteAfter: [
 			async function (this: WorkflowHooks, fullRunData: IRun, newStaticData: IDataObject): Promise<void> {
-
-				// Prune old execution data
-				if (config.get('executions.pruneData')) {
-					pruneExecutionData();
-				}
 
 				const isManualMode = [this.mode, parentProcessMode].includes('manual');
 
@@ -347,14 +316,14 @@ export async function executeWorkflow(workflowInfo: IExecuteWorkflowInfo, additi
 	// Does not get used so set it simply to empty string
 	const executionId = '';
 
-	// Get the needed credentials for the current workflow as they will differ to the ones of the
-	// calling workflow.
-	const credentials = await WorkflowCredentials(workflowData!.nodes);
-
 	// Create new additionalData to have different workflow loaded and to call
 	// different webooks
-	const additionalDataIntegrated = await getBase(credentials);
+	const additionalDataIntegrated = await getBase(additionalData.credentials);
 	additionalDataIntegrated.hooks = getWorkflowHooksIntegrated(mode, executionId, workflowData!, { parentProcessMode: additionalData.hooks!.mode });
+
+	// Get the needed credentials for the current workflow as they will differ to the ones of the
+	// calling workflow.
+	additionalDataIntegrated.credentials = await WorkflowCredentials(workflowData!.nodes);
 
 	// Find Start-Node
 	const requiredNodeTypes = ['n8n-nodes-base.start'];

@@ -16,12 +16,12 @@ export const companyOperations = [
 			{
 				name: 'Enrich',
 				value: 'enrich',
-				description: 'Look up person and company data based on an email or domain',
+				description: 'Lets you look up person and company data based on an email or domain',
 			},
 			{
 				name: 'Autocomplete',
 				value: 'autocomplete',
-				description: 'Auto-complete company names and retrieve logo and domain',
+				description: 'Lets you auto-complete company names and retreive logo and domain',
 			},
 		],
 		default: 'enrich',

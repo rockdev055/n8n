@@ -2,7 +2,6 @@ import {
 	BINARY_ENCODING,
 	IExecuteFunctions,
 } from 'n8n-core';
-
 import {
 	IDataObject,
 	INodeTypeDescription,
@@ -10,9 +9,8 @@ import {
 	INodeType,
 } from 'n8n-workflow';
 
-import {
-	dropboxApiRequest
-} from './GenericFunctions';
+import { OptionsWithUri } from 'request';
+
 
 export class Dropbox implements INodeType {
 	description: INodeTypeDescription = {
@@ -25,7 +23,7 @@ export class Dropbox implements INodeType {
 		description: 'Access data on Dropbox',
 		defaults: {
 			name: 'Dropbox',
-			color: '#0062ff',
+			color: '#22BB44',
 		},
 		inputs: ['main'],
 		outputs: ['main'],
@@ -33,44 +31,9 @@ export class Dropbox implements INodeType {
 			{
 				name: 'dropboxApi',
 				required: true,
-				displayOptions: {
-					show: {
-						authentication: [
-							'accessToken',
-						],
-					},
-				},
-			},
-			{
-				name: 'dropboxOAuth2Api',
-				required: true,
-				displayOptions: {
-					show: {
-						authentication: [
-							'oAuth2',
-						],
-					},
-				},
-			},
+			}
 		],
 		properties: [
-			{
-				displayName: 'Authentication',
-				name: 'authentication',
-				type: 'options',
-				options: [
-					{
-						name: 'Access Token',
-						value: 'accessToken',
-					},
-					{
-						name: 'OAuth2',
-						value: 'oAuth2',
-					}
-				],
-				default: 'accessToken',
-				description: 'Means of authenticating with the service.',
-			},
 			{
 				displayName: 'Resource',
 				name: 'resource',
@@ -478,6 +441,11 @@ export class Dropbox implements INodeType {
 		const items = this.getInputData();
 		const returnData: IDataObject[] = [];
 
+		const credentials = this.getCredentials('dropboxApi');
+
+		if (credentials === undefined) {
+			throw new Error('No credentials got returned!');
+		}
 
 		const resource = this.getNodeParameter('resource', 0) as string;
 		const operation = this.getNodeParameter('operation', 0) as string;
@@ -485,13 +453,15 @@ export class Dropbox implements INodeType {
 		let endpoint = '';
 		let requestMethod = '';
 		let body: IDataObject | Buffer;
-		let options;
-		const query: IDataObject = {};
+		let isJson = false;
 
-		const headers: IDataObject = {};
+		let headers: IDataObject;
 
 		for (let i = 0; i < items.length; i++) {
 			body = {};
+			headers = {
+				'Authorization': `Bearer ${credentials.accessToken}`,
+			};
 
 			if (resource === 'file') {
 				if (operation === 'download') {
@@ -500,9 +470,8 @@ export class Dropbox implements INodeType {
 					// ----------------------------------
 
 					requestMethod = 'POST';
-
-					query.arg = JSON.stringify({
-						path: this.getNodeParameter('path', i) as string
+					headers['Dropbox-API-Arg'] = JSON.stringify({
+						path: this.getNodeParameter('path', i) as string,
 					});
 
 					endpoint = 'https://content.dropboxapi.com/2/files/download';
@@ -514,18 +483,14 @@ export class Dropbox implements INodeType {
 
 					requestMethod = 'POST';
 					headers['Content-Type'] = 'application/octet-stream';
-
-					query.arg = JSON.stringify({
+					headers['Dropbox-API-Arg'] = JSON.stringify({
 						mode: 'overwrite',
-						path: this.getNodeParameter('path', i) as string
+						path: this.getNodeParameter('path', i) as string,
 					});
 
 					endpoint = 'https://content.dropboxapi.com/2/files/upload';
 
 					if (this.getNodeParameter('binaryData', i) === true) {
-
-						options = { json: false };
-
 						// Is binary file to upload
 						const item = items[i];
 
@@ -553,6 +518,7 @@ export class Dropbox implements INodeType {
 					// ----------------------------------
 
 					requestMethod = 'POST';
+					isJson = true;
 					body = {
 						path: this.getNodeParameter('path', i) as string,
 					};
@@ -565,6 +531,7 @@ export class Dropbox implements INodeType {
 					// ----------------------------------
 
 					requestMethod = 'POST';
+					isJson = true;
 					body = {
 						path: this.getNodeParameter('path', i) as string,
 						limit: 2000,
@@ -584,6 +551,7 @@ export class Dropbox implements INodeType {
 					// ----------------------------------
 
 					requestMethod = 'POST';
+					isJson = true;
 					body = {
 						from_path: this.getNodeParameter('path', i) as string,
 						to_path: this.getNodeParameter('toPath', i) as string,
@@ -597,6 +565,7 @@ export class Dropbox implements INodeType {
 					// ----------------------------------
 
 					requestMethod = 'POST';
+					isJson = true;
 					body = {
 						path: this.getNodeParameter('path', i) as string,
 					};
@@ -609,6 +578,7 @@ export class Dropbox implements INodeType {
 					// ----------------------------------
 
 					requestMethod = 'POST';
+					isJson = true;
 					body = {
 						from_path: this.getNodeParameter('path', i) as string,
 						to_path: this.getNodeParameter('toPath', i) as string,
@@ -620,15 +590,40 @@ export class Dropbox implements INodeType {
 				throw new Error(`The resource "${resource}" is not known!`);
 			}
 
-			if (resource === 'file' && operation === 'download') {
-				// Return the data as a buffer
-				options = { encoding: null };
+
+			const options: OptionsWithUri = {
+				headers,
+				method: requestMethod,
+				qs: {},
+				uri: endpoint,
+				json: isJson,
+			};
+
+			if (Object.keys(body).length) {
+				options.body = body;
 			}
 
-			let responseData = await dropboxApiRequest.call(this, requestMethod, endpoint, body, query, headers, options);
+			if (resource === 'file' && operation === 'download') {
+				// Return the data as a buffer
+				options.encoding = null;
+			}
 
-			if (resource === 'file' && operation === 'upload') {
-				responseData = JSON.parse(responseData);
+			let responseData;
+			try {
+				responseData = await this.helpers.request(options);
+			} catch (error) {
+				if (error.statusCode === 401) {
+					// Return a clear error
+					throw new Error('The Dropbox credentials are not valid!');
+				}
+
+				if (error.error && error.error.error_summary) {
+					// Try to return the error prettier
+					throw new Error(`Dropbox error response [${error.statusCode}]: ${error.error.error_summary}`);
+				}
+
+				// If that data does not exist for some reason return the actual error
+				throw error;
 			}
 
 			if (resource === 'file' && operation === 'download') {
@@ -650,7 +645,7 @@ export class Dropbox implements INodeType {
 				const dataPropertyNameDownload = this.getNodeParameter('binaryPropertyName', i) as string;
 
 				const filePathDownload = this.getNodeParameter('path', i) as string;
-				items[i].binary![dataPropertyNameDownload] = await this.helpers.prepareBinaryData(Buffer.from(responseData), filePathDownload);
+				items[i].binary![dataPropertyNameDownload] = await this.helpers.prepareBinaryData(responseData, filePathDownload);
 
 			} else if (resource === 'folder' && operation === 'list') {
 
@@ -677,6 +672,8 @@ export class Dropbox implements INodeType {
 
 					returnData.push(newItem as IDataObject);
 				}
+			} else if (resource === 'file' && operation === 'upload') {
+				returnData.push(JSON.parse(responseData) as IDataObject);
 			} else {
 				returnData.push(responseData as IDataObject);
 			}

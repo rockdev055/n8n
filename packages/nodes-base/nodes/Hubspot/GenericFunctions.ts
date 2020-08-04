@@ -15,12 +15,11 @@ import {
 
 export async function hubspotApiRequest(this: IHookFunctions | IExecuteFunctions | IExecuteSingleFunctions | ILoadOptionsFunctions, method: string, endpoint: string, body: any = {}, query: IDataObject = {}, uri?: string): Promise<any> { // tslint:disable-line:no-any
 
-	let authenticationMethod = this.getNodeParameter('authentication', 0);
+	const node = this.getNode();
+	const credentialName = Object.keys(node.credentials!)[0];
+	const credentials = this.getCredentials(credentialName);
 
-	if (this.getNode().type.includes('Trigger')) {
-		authenticationMethod = 'developerApi';
-	}
-
+	query!.hapikey = credentials!.apiKey as string;
 	const options: OptionsWithUri = {
 		method,
 		qs: query,
@@ -29,42 +28,18 @@ export async function hubspotApiRequest(this: IHookFunctions | IExecuteFunctions
 		json: true,
 		useQuerystring: true,
 	};
-
 	try {
-		if (authenticationMethod === 'apiKey') {
-			const credentials = this.getCredentials('hubspotApi');
-
-			options.qs.hapikey = credentials!.apiKey as string;
-
-			return await this.helpers.request!(options);
-		} else if (authenticationMethod === 'developerApi') {
-			const credentials = this.getCredentials('hubspotDeveloperApi');
-
-			options.qs.hapikey = credentials!.apiKey as string;
-
-			return await this.helpers.request!(options);
-		} else {
-			// @ts-ignore
-			return await this.helpers.requestOAuth2!.call(this, 'hubspotOAuth2Api', options, { tokenType: 'Bearer' });
-		}
+		return await this.helpers.request!(options);
 	} catch (error) {
-		let errorMessages;
+		if (error.response && error.response.body && error.response.body.errors) {
+			// Try to return the error prettier
+			let errorMessages = error.response.body.errors;
 
-		if (error.response && error.response.body) {
-
-			if (error.response.body.message) {
-
-				errorMessages = [error.response.body.message];
-
-			} else if (error.response.body.errors) {
-				// Try to return the error prettier
-				errorMessages = error.response.body.errors;
-
-				if (errorMessages[0].message) {
-					// @ts-ignore
-					errorMessages = errorMessages.map(errorItem => errorItem.message);
-				}
+			if (errorMessages[0].message) {
+				// @ts-ignore
+				errorMessages = errorMessages.map(errorItem => errorItem.message);
 			}
+
 			throw new Error(`Hubspot error response [${error.statusCode}]: ${errorMessages.join('|')}`);
 		}
 

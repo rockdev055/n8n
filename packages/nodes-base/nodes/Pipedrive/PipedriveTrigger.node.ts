@@ -14,10 +14,8 @@ import {
 } from './GenericFunctions';
 
 import * as basicAuth from 'basic-auth';
+import { Response } from 'express';
 
-import {
-	Response,
-} from 'express';
 
 function authorizationError(resp: Response, realm: string, responseCode: number, message?: string) {
 	if (message === undefined) {
@@ -181,6 +179,7 @@ export class PipedriveTrigger implements INodeType {
 				description: 'Type of object to receive notifications about.',
 			},
 		],
+
 	};
 
 	// @ts-ignore (because of request)
@@ -276,6 +275,8 @@ export class PipedriveTrigger implements INodeType {
 			},
 		},
 	};
+
+
 
 	async webhook(this: IWebhookFunctions): Promise<IWebhookResponseData> {
 		const req = this.getRequestObject();

@@ -21,12 +21,12 @@ export const taskOpeations = [
 			{
 				name: 'Update',
 				value: 'update',
-				description: 'Update a task',
+				description: 'Update task',
 			},
 			{
 				name: 'Get',
 				value: 'get',
-				description: 'Get a task',
+				description: 'Get task',
 			},
 			{
 				name: 'Get All',

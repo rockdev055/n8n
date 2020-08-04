@@ -20,13 +20,13 @@ import {
 
 export class HubspotTrigger implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'HubSpot Trigger',
+		displayName: 'Hubspot Trigger',
 		name: 'hubspotTrigger',
 		icon: 'file:hubspot.png',
 		group: ['trigger'],
 		version: 1,
 		subtitle: '={{($parameter["appId"]) ? $parameter["event"] : ""}}',
-		description: 'Starts the workflow when HubSpot events occur.',
+		description: 'Starts the workflow when Hubspot events occure.',
 		defaults: {
 			name: 'Hubspot Trigger',
 			color: '#ff7f64',
@@ -246,13 +246,7 @@ export class HubspotTrigger implements INodeType {
 	};
 
 	async webhook(this: IWebhookFunctions): Promise<IWebhookResponseData> {
-
-		const credentials = this.getCredentials('hubspotDeveloperApi') as IDataObject;
-
-		if (credentials === undefined) {
-			throw new Error('No credentials found!');
-		}
-
+		const credentials = this.getCredentials('hubspotDeveloperApi');
 		const req = this.getRequestObject();
 		const bodyData = req.body;
 		const headerData = this.getHeaderData();
@@ -260,18 +254,12 @@ export class HubspotTrigger implements INodeType {
 		if (headerData['x-hubspot-signature'] === undefined) {
 			return {};
 		}
-
-		// check signare if client secret is defined
-
-		if (credentials.clientSecret !== '') {
-			const hash = `${credentials!.clientSecret}${JSON.stringify(bodyData)}`;
-			const signature =  createHash('sha256').update(hash).digest('hex');
-			//@ts-ignore
-			if (signature !== headerData['x-hubspot-signature']) {
-				return {};
-			}
+		const hash = `${credentials!.clientSecret}${JSON.stringify(bodyData)}`;
+		const signature =  createHash('sha256').update(hash).digest('hex');
+		//@ts-ignore
+		if (signature !== headerData['x-hubspot-signature']) {
+			return {};
 		}
-
 		for (let i = 0; i < bodyData.length; i++) {
 			const subscriptionType = bodyData[i].subscriptionType as string;
 			if (subscriptionType.includes('contact')) {

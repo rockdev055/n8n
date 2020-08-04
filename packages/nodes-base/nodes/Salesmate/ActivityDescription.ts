@@ -16,17 +16,17 @@ export const activityOperations = [
 			{
 				name: 'Create',
 				value: 'create',
-				description: 'Create an activity',
+				description: 'Create a activity',
 			},
 			{
 				name: 'Delete',
 				value: 'delete',
-				description: 'Delete an activity',
+				description: 'Delete a activity',
 			},
 			{
 				name: 'Get',
 				value: 'get',
-				description: 'Get an activity',
+				description: 'Get a activity',
 			},
 			{
 				name: 'Get All',
@@ -36,7 +36,7 @@ export const activityOperations = [
 			{
 				name: 'Update',
 				value: 'update',
-				description: 'Update an activity',
+				description: 'Update a activity',
 			},
 		],
 		default: 'create',

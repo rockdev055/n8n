@@ -38,25 +38,7 @@ export class MauticTrigger implements INodeType {
 			{
 				name: 'mauticApi',
 				required: true,
-				displayOptions: {
-					show: {
-						authentication: [
-							'credentials',
-						],
-					},
-				},
-			},
-			{
-				name: 'mauticOAuth2Api',
-				required: true,
-				displayOptions: {
-					show: {
-						authentication: [
-							'oAuth2',
-						],
-					},
-				},
-			},
+			}
 		],
 		webhooks: [
 			{
@@ -67,22 +49,6 @@ export class MauticTrigger implements INodeType {
 			},
 		],
 		properties: [
-			{
-				displayName: 'Authentication',
-				name: 'authentication',
-				type: 'options',
-				options: [
-					{
-						name: 'Credentials',
-						value: 'credentials',
-					},
-					{
-						name: 'OAuth2',
-						value: 'oAuth2',
-					},
-				],
-				default: 'credentials',
-			},
 			{
 				displayName: 'Events',
 				name: 'events',

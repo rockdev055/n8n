@@ -3,6 +3,7 @@ import {
 	NodePropertyTypes,
 } from 'n8n-workflow';
 
+
 export class DropboxApi implements ICredentialType {
 	name = 'dropboxApi';
 	displayName = 'Dropbox API';

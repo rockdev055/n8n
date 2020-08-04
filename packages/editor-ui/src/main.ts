@@ -71,7 +71,6 @@ import {
 	faSave,
 	faSearchMinus,
 	faSearchPlus,
-	faServer,
 	faSignInAlt,
 	faSlidersH,
 	faSpinner,
@@ -147,7 +146,6 @@ library.add(faRss);
 library.add(faSave);
 library.add(faSearchMinus);
 library.add(faSearchPlus);
-library.add(faServer);
 library.add(faSignInAlt);
 library.add(faSlidersH);
 library.add(faSpinner);

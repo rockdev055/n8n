@@ -190,18 +190,17 @@ process.on('message', async (message: IProcessMessage) => {
 
 			// Once the workflow got executed make sure the process gets killed again
 			process.exit();
-		} else if (message.type === 'stopExecution' || message.type === 'timeout') {
+		} else if (message.type === 'stopExecution') {
 			// The workflow execution should be stopped
 			let runData: IRun;
 
 			if (workflowRunner.workflowExecute !== undefined) {
 				// Workflow started already executing
+
 				runData = workflowRunner.workflowExecute.getFullRunData(workflowRunner.startedAt);
 
-				const timeOutError = message.type === 'timeout' ? { message: 'Workflow execution timed out!' } as IExecutionError : undefined;
-
-				// If there is any data send it to parent process, if execution timedout add the error
-				await workflowRunner.workflowExecute.processSuccessExecution(workflowRunner.startedAt, workflowRunner.workflow!, timeOutError);
+				// If there is any data send it to parent process
+				await workflowRunner.workflowExecute.processSuccessExecution(workflowRunner.startedAt, workflowRunner.workflow!);
 			} else {
 				// Workflow did not get started yet
 				runData = {
@@ -210,7 +209,7 @@ process.on('message', async (message: IProcessMessage) => {
 							runData: {},
 						},
 					},
-					finished: message.type !== 'timeout',
+					finished: true,
 					mode: workflowRunner.data!.executionMode,
 					startedAt: workflowRunner.startedAt,
 					stoppedAt: new Date(),
@@ -219,7 +218,7 @@ process.on('message', async (message: IProcessMessage) => {
 				workflowRunner.sendHookToParentProcess('workflowExecuteAfter', [runData]);
 			}
 
-			await sendToParentProcess(message.type === 'timeout' ? message.type : 'end', {
+			await sendToParentProcess('end', {
 				runData,
 			});
 

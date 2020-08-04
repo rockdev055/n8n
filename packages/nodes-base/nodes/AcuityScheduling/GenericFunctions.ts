@@ -9,39 +9,34 @@ import {
 import { IDataObject } from 'n8n-workflow';
 
 export async function acuitySchedulingApiRequest(this: IHookFunctions | IExecuteFunctions | IExecuteSingleFunctions | ILoadOptionsFunctions | IWebhookFunctions, method: string, resource: string, body: any = {}, qs: IDataObject = {}, uri?: string, option: IDataObject = {}): Promise<any> { // tslint:disable-line:no-any
-	const authenticationMethod = this.getNodeParameter('authentication', 0);
+	const credentials = this.getCredentials('acuitySchedulingApi');
+	if (credentials === undefined) {
+		throw new Error('No credentials got returned!');
+	}
 
 	const options: OptionsWithUri = {
 		headers: {
 			'Content-Type': 'application/json',
 		},
-		auth: {},
+		auth: {
+			user: credentials.userId as string,
+			password: credentials.apiKey as string,
+		},
 		method,
 		qs,
 		body,
 		uri: uri ||`https://acuityscheduling.com/api/v1${resource}`,
 		json: true
 	};
-
 	try {
-		if (authenticationMethod === 'accessToken') {
-			const credentials = this.getCredentials('acuitySchedulingApi');
-			if (credentials === undefined) {
-				throw new Error('No credentials got returned!');
-			}
-
-			options.auth = {
-				user: credentials.userId as string,
-				password: credentials.apiKey as string,
-			};
-
-			return await this.helpers.request!(options);
-		} else {
-			delete options.auth;
-			//@ts-ignore
-			return await this.helpers.requestOAuth2!.call(this, 'acuitySchedulingOAuth2Api', options, true);
-		}
+		return await this.helpers.request!(options);
 	} catch (error) {
-		throw new Error('Acuity Scheduling Error: ' + error.message);
+
+		let errorMessage = error.message;
+		if (error.response.body && error.response.body.message) {
+			errorMessage = `[${error.response.body.status_code}] ${error.response.body.message}`;
+		}
+
+		throw new Error('Acuity Scheduling Error: ' + errorMessage);
 	}
 }

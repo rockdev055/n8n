@@ -84,32 +84,32 @@ export class GoogleSheets implements INodeType {
 					{
 						name: 'Append',
 						value: 'append',
-						description: 'Append data to a sheet',
+						description: 'Appends the data to a Sheet',
 					},
 					{
 						name: 'Clear',
 						value: 'clear',
-						description: 'Clear data from a sheet',
+						description: 'Clears data from a Sheet',
 					},
 					{
 						name: 'Delete',
 						value: 'delete',
-						description: 'Delete columns and rows from a sheet',
+						description: 'Delete columns and rows from a Sheet',
 					},
 					{
 						name: 'Lookup',
 						value: 'lookup',
-						description: 'Look up a specific column value and return the matching row'
+						description: 'Looks for a specific column value and then returns the matching row'
 					},
 					{
 						name: 'Read',
 						value: 'read',
-						description: 'Read data from a sheet'
+						description: 'Reads data from a Sheet'
 					},
 					{
 						name: 'Update',
 						value: 'update',
-						description: 'Update rows in a sheet'
+						description: 'Updates rows in a sheet'
 					},
 				],
 				default: 'read',
@@ -151,7 +151,7 @@ export class GoogleSheets implements INodeType {
 				displayName: 'To Delete',
 				name: 'toDelete',
 				placeholder: 'Add Columns/Rows to delete',
-				description: 'Deletes columns and rows from a sheet.',
+				description: 'Deletes colums and rows from a sheet.',
 				type: 'fixedCollection',
 				typeOptions: {
 					multipleValues: true,
@@ -363,7 +363,7 @@ export class GoogleSheets implements INodeType {
 					},
 				},
 				default: 0,
-				description: 'Index of the row which contains the keys. Starts at 0.<br />The incoming node data is matched to the keys for assignment. The matching is case sensitive.',
+				description: 'Index of the row which contains the keys. Starts at 0.<br />The incoming node data is matched to the keys for assignment. The matching is case sensitve.',
 			},
 
 
@@ -622,7 +622,7 @@ export class GoogleSheets implements INodeType {
 			// ----------------------------------
 			//         append
 			// ----------------------------------
-			const keyRow = parseInt(this.getNodeParameter('keyRow', 0) as string, 10);
+			const keyRow = this.getNodeParameter('keyRow', 0) as number;
 
 			const items = this.getInputData();
 
@@ -693,8 +693,8 @@ export class GoogleSheets implements INodeType {
 				return [];
 			}
 
-			const dataStartRow = parseInt(this.getNodeParameter('dataStartRow', 0) as string, 10);
-			const keyRow = parseInt(this.getNodeParameter('keyRow', 0) as string, 10);
+			const dataStartRow = this.getNodeParameter('dataStartRow', 0) as number;
+			const keyRow = this.getNodeParameter('keyRow', 0) as number;
 
 			const items = this.getInputData();
 
@@ -735,8 +735,8 @@ export class GoogleSheets implements INodeType {
 					}
 				];
 			} else {
-				const dataStartRow = parseInt(this.getNodeParameter('dataStartRow', 0) as string, 10);
-				const keyRow = parseInt(this.getNodeParameter('keyRow', 0) as string, 10);
+				const dataStartRow = this.getNodeParameter('dataStartRow', 0) as number;
+				const keyRow = this.getNodeParameter('keyRow', 0) as number;
 
 				returnData = sheet.structureArrayDataByColumn(sheetData, keyRow, dataStartRow);
 			}
@@ -769,8 +769,8 @@ export class GoogleSheets implements INodeType {
 				const data = await sheet.batchUpdate(updateData, valueInputMode);
 			} else {
 				const keyName = this.getNodeParameter('key', 0) as string;
-				const keyRow = parseInt(this.getNodeParameter('keyRow', 0) as string, 10);
-				const dataStartRow = parseInt(this.getNodeParameter('dataStartRow', 0) as string, 10);
+				const keyRow = this.getNodeParameter('keyRow', 0) as number;
+				const dataStartRow = this.getNodeParameter('dataStartRow', 0) as number;
 
 				const setData: IDataObject[] = [];
 				items.forEach((item) => {

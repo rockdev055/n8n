@@ -23,7 +23,7 @@ export const ticketOperations = [
 			{
 				name: 'Delete',
 				value: 'delete',
-				description: 'Delete a ticket',
+				description: 'Delete a tickets',
 			},
 			{
 				name: 'Get',

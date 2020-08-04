@@ -243,10 +243,9 @@ export class DateTime implements INodeType {
 				if (currentDate === undefined) {
 					continue;
 				}
-				if (options.fromFormat === undefined && !moment(currentDate as string | number).isValid()) {
+				if (!moment(currentDate as string | number).isValid()) {
 					throw new Error('The date input format could not be recognized. Please set the "From Format" field');
 				}
-
 				if (Number.isInteger(currentDate as unknown as number)) {
 					newDate = moment.unix(currentDate as unknown as number);
 				} else {
