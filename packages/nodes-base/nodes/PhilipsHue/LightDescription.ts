@@ -18,12 +18,12 @@ export const lightOperations = [
 			{
 				name: 'Delete',
 				value: 'delete',
-				description: 'Delete a light',
+				description: 'Delete an light',
 			},
 			{
 				name: 'Get',
 				value: 'get',
-				description: 'Retrieve a light',
+				description: 'Retrieve an light',
 			},
 			{
 				name: 'Get All',
@@ -194,9 +194,9 @@ export const lightFields = [
 				type: 'options',
 				options: [
 					{
-						name: 'None',
+						name: 'none',
 						value: 'none',
-						description: 'The light is not performing an alert effect',
+						description: 'the light is not performing an alert effect',
 					},
 					{
 						name: 'Select',
@@ -275,7 +275,7 @@ export const lightFields = [
 				type: 'options',
 				options: [
 					{
-						name: 'None',
+						name: 'none',
 						value: 'none',
 					},
 					{

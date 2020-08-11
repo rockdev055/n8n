@@ -228,7 +228,7 @@ export const meetingFields = [
 						type: 'options',
 						options: [
 							{
-								name: 'Attendees register once and can attend any of the occurrences',
+								name: 'Attendees register once and can attend any of the occurences',
 								value: 1,
 							},
 							{
@@ -479,7 +479,7 @@ export const meetingFields = [
 		},
 		options: [
 			{
-				displayName: 'Occurrence ID',
+				displayName: 'Occurence ID',
 				name: 'occurrenceId',
 				type: 'string',
 				default: '',
@@ -672,7 +672,7 @@ export const meetingFields = [
 						type: 'options',
 						options: [
 							{
-								name: 'Attendees register once and can attend any of the occurrences',
+								name: 'Attendees register once and can attend any of the occurences',
 								value: 1,
 							},
 							{

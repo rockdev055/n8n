@@ -48,9 +48,7 @@ export async function twitterApiRequestAllItems(this: IExecuteFunctions | ILoadO
 	const returnData: IDataObject[] = [];
 
 	let responseData;
-
 	query.count = 100;
-
 	do {
 		responseData = await twitterApiRequest.call(this, method, endpoint, body, query);
 		query.since_id = responseData.search_metadata.max_id;
