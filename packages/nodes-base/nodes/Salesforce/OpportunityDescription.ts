@@ -36,7 +36,7 @@ export const opportunityOperations = [
 			{
 				name: 'Get All',
 				value: 'getAll',
-				description: 'Get all opportunities',
+				description: 'Get all opportunitys',
 			},
 			{
 				name: 'Get Summary',
