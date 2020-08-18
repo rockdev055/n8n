@@ -9,7 +9,6 @@ export class MicrosoftOAuth2Api implements ICredentialType {
 		'oAuth2Api',
 	];
 	displayName = 'Microsoft OAuth2 API';
-	documentationUrl = 'microsoft';
 	properties = [
 		{
 			displayName: 'Authorization URL',

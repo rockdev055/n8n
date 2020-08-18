@@ -15,7 +15,6 @@ export class GoogleDriveOAuth2Api implements ICredentialType {
 		'googleOAuth2Api',
 	];
 	displayName = 'Google Drive OAuth2 API';
-	documentationUrl = 'google';
 	properties = [
 		{
 			displayName: 'Scope',

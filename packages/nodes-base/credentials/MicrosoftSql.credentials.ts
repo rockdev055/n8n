@@ -3,7 +3,6 @@ import { ICredentialType, NodePropertyTypes } from 'n8n-workflow';
 export class MicrosoftSql implements ICredentialType {
 	name = 'microsoftSql';
 	displayName = 'Microsoft SQL';
-	documentationUrl = 'microsoftSql';
 	properties = [
 		{
 			displayName: 'Server',

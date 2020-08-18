@@ -6,7 +6,6 @@ import {
 export class ClickUpApi implements ICredentialType {
 	name = 'clickUpApi';
 	displayName = 'ClickUp API';
-	documentationUrl = 'clickUp';
 	properties = [
 		{
 			displayName: 'Access Token',

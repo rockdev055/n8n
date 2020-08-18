@@ -7,7 +7,6 @@ import {
 export class FreshdeskApi implements ICredentialType {
 	name = 'freshdeskApi';
 	displayName = 'Freshdesk API';
-	documentationUrl = 'freshdesk';
 	properties = [
 		{
 			displayName: 'API Key',

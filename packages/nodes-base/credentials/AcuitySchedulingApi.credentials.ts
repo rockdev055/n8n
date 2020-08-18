@@ -6,7 +6,6 @@ import {
 export class AcuitySchedulingApi implements ICredentialType {
 	name = 'acuitySchedulingApi';
 	displayName = 'Acuity Scheduling API';
-	documentationUrl = 'acuityScheduling';
 	properties = [
 		{
 			displayName: 'User ID',

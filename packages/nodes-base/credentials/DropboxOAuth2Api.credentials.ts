@@ -10,7 +10,6 @@ export class DropboxOAuth2Api implements ICredentialType {
 		'oAuth2Api',
 	];
 	displayName = 'Dropbox OAuth2 API';
-	documentationUrl = 'dropbox';
 	properties = [
 		{
 			displayName: 'Authorization URL',

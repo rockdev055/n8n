@@ -6,7 +6,6 @@ import {
 export class CircleCiApi implements ICredentialType {
 	name = 'circleCiApi';
 	displayName = 'CircleCI API';
-	documentationUrl = 'circleCi';
 	properties = [
 		{
 			displayName: 'Personal API Token',

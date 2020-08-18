@@ -6,7 +6,6 @@ import {
 export class SurveyMonkeyApi implements ICredentialType {
 	name = 'surveyMonkeyApi';
 	displayName = 'SurveyMonkey API';
-	documentationUrl = 'surveyMonkey';
 	properties = [
 		{
 			displayName: 'Access Token',

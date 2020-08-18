@@ -6,7 +6,6 @@ import {
 export class HunterApi implements ICredentialType {
 	name = 'hunterApi';
 	displayName = 'Hunter API';
-	documentationUrl = 'hunter';
 	properties = [
 		{
 			displayName: 'API Key',

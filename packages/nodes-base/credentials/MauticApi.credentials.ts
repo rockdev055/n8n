@@ -6,7 +6,6 @@ import {
 export class MauticApi implements ICredentialType {
 	name = 'mauticApi';
 	displayName = 'Mautic API';
-	documentationUrl = 'mautic';
 	properties = [
 		{
 			displayName: 'URL',

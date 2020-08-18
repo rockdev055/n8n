@@ -6,7 +6,6 @@ import {
 export class WooCommerceApi implements ICredentialType {
 	name = 'wooCommerceApi';
 	displayName = 'WooCommerce API';
-	documentationUrl = 'wooCommerce';
 	properties = [
 		{
 			displayName: 'Consumer Key',

@@ -6,7 +6,6 @@ import {
 export class SalesmateApi implements ICredentialType {
 	name = 'salesmateApi';
 	displayName = 'Salesmate API';
-	documentationUrl = 'salesmate';
 	properties = [
 		{
 			displayName: 'Session Token',

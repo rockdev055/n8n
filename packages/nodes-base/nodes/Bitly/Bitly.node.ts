@@ -1,7 +1,6 @@
 import {
 	IExecuteFunctions,
 } from 'n8n-core';
-
 import {
 	IDataObject,
 	INodeTypeDescription,
@@ -10,12 +9,10 @@ import {
 	ILoadOptionsFunctions,
 	INodePropertyOptions,
 } from 'n8n-workflow';
-
 import {
 	linkFields,
 	linkOperations
 } from './LinkDescription';
-
 import {
 	bitlyApiRequest,
 	bitlyApiRequestAllItems,
@@ -40,44 +37,9 @@ export class Bitly implements INodeType {
 			{
 				name: 'bitlyApi',
 				required: true,
-				displayOptions: {
-					show: {
-						authentication: [
-							'accessToken',
-						],
-					},
-				},
-			},
-			{
-				name: 'bitlyOAuth2Api',
-				required: true,
-				displayOptions: {
-					show: {
-						authentication: [
-							'oAuth2',
-						],
-					},
-				},
-			},
+			}
 		],
 		properties: [
-			{
-				displayName: 'Authentication',
-				name: 'authentication',
-				type: 'options',
-				options: [
-					{
-						name: 'Access Token',
-						value: 'accessToken',
-					},
-					{
-						name: 'OAuth2',
-						value: 'oAuth2',
-					},
-				],
-				default: 'accessToken',
-				description: 'The resource to operate on.',
-			},
 			{
 				displayName: 'Resource',
 				name: 'resource',

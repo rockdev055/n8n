@@ -9,7 +9,6 @@ export class GoogleOAuth2Api implements ICredentialType {
 		'oAuth2Api',
 	];
 	displayName = 'Google OAuth2 API';
-	documentationUrl = 'google';
 	properties = [
 		{
 			displayName: 'Authorization URL',

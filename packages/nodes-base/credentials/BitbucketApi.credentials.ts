@@ -6,7 +6,6 @@ import {
 export class BitbucketApi implements ICredentialType {
 	name = 'bitbucketApi';
 	displayName = 'Bitbucket API';
-	documentationUrl = 'bitbucket';
 	properties = [
 		{
 			displayName: 'Username',

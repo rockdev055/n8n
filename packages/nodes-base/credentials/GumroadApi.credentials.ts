@@ -6,7 +6,6 @@ import {
 export class GumroadApi implements ICredentialType {
 	name = 'gumroadApi';
 	displayName = 'Gumroad API';
-	documentationUrl = 'gumroad';
 	properties = [
 		{
 			displayName: 'Access Token',
