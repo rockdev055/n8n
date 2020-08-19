@@ -7,7 +7,6 @@ import {
 export class TodoistApi implements ICredentialType {
 	name = 'todoistApi';
 	displayName = 'Todoist API';
-	documentationUrl = 'todoist';
 	properties = [
 		{
 			displayName: 'API Key',

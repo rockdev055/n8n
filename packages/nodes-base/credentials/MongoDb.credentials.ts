@@ -3,7 +3,6 @@ import { ICredentialType, NodePropertyTypes } from 'n8n-workflow';
 export class MongoDb implements ICredentialType {
 	name = 'mongoDb';
 	displayName = 'MongoDB';
-	documentationUrl = 'mongoDb';
 	properties = [
 		{
 			displayName: 'Configuration Type',

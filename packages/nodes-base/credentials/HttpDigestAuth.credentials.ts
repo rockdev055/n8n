@@ -7,7 +7,6 @@ import {
 export class HttpDigestAuth implements ICredentialType {
 	name = 'httpDigestAuth';
 	displayName = 'Digest Auth';
-	documentationUrl = 'httpRequest';
 	properties = [
 		{
 			displayName: 'User',

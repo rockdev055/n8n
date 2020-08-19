@@ -7,7 +7,6 @@ import {
 export class Amqp implements ICredentialType {
 	name = 'amqp';
 	displayName = 'AMQP';
-	documentationUrl = 'amqp';
 	properties = [
 		{
 			displayName: 'Hostname',

@@ -7,7 +7,6 @@ import {
 export class PostmarkApi implements ICredentialType {
 	name = 'postmarkApi';
 	displayName = 'Postmark API';
-	documentationUrl = 'postmark';
 	properties = [
 		{
 			displayName: 'Server API Token',

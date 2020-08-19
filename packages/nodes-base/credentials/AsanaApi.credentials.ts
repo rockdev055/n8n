@@ -7,7 +7,6 @@ import {
 export class AsanaApi implements ICredentialType {
 	name = 'asanaApi';
 	displayName = 'Asana API';
-	documentationUrl = 'asana';
 	properties = [
 		{
 			displayName: 'Access Token',

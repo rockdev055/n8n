@@ -7,7 +7,6 @@ import {
 export class MailgunApi implements ICredentialType {
 	name = 'mailgunApi';
 	displayName = 'Mailgun API';
-	documentationUrl = 'mailgun';
 	properties = [
 		{
 			displayName: 'API Domain',

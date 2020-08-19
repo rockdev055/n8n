@@ -10,7 +10,6 @@ export class SpotifyOAuth2Api implements ICredentialType {
 		'oAuth2Api',
 	];
 	displayName = 'Spotify OAuth2 API';
-	documentationUrl = 'spotify';
 	properties = [
 		{
 			displayName: 'Spotify Server',

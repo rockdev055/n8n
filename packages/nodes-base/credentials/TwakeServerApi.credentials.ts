@@ -6,7 +6,6 @@ import {
 export class TwakeServerApi implements ICredentialType {
 	name = 'twakeServerApi';
 	displayName = 'Twake API';
-	documentationUrl = 'twake';
 	properties = [
 		{
 			displayName: 'Host URL',

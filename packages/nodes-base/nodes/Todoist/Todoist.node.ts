@@ -1,4 +1,4 @@
-import { 
+import {
 	IExecuteSingleFunctions,
 } from 'n8n-core';
 import {
@@ -11,7 +11,6 @@ import {
 } from 'n8n-workflow';
 import {
 	todoistApiRequest,
-	filterAndExecuteForEachTask,
 } from './GenericFunctions';
 
 
@@ -84,26 +83,6 @@ export class Todoist implements INodeType {
 						value: 'create',
 						description: 'Create a new task',
 					},
-					{
-						name: 'Close by ID',
-						value: 'close_id',
-						description: 'Close a task by passing an ID',
-					},
-					{
-						name: 'Close matching',
-						value: 'close_match',
-						description: 'Close a task by passing a regular expression',
-					},
-					{
-						name: 'Delete by ID',
-						value: 'delete_id',
-						description: 'Delete a task by passing an ID',
-					},
-					{
-						name: 'Delete matching',
-						value: 'delete_match',
-						description: 'Delete a task by passing a regular expression',
-					},
 				],
 				default: 'create',
 				description: 'The operation to perform.',
@@ -122,13 +101,11 @@ export class Todoist implements INodeType {
 						],
 						operation: [
 							'create',
-							'close_match', 
-							'delete_match',
 						]
 					},
 				},
 				default: '',
-				description: 'The project you want to operate on.',
+				description: 'The project you want to add the task to.',
 			},
 			{
 				displayName: 'Labels',
@@ -171,31 +148,6 @@ export class Todoist implements INodeType {
 				default: '',
 				required: true,
 				description: 'Task content',
-			},
-			{
-				displayName: 'ID',
-				name: 'id',
-				type: 'string',
-				default: '',
-				required: true,
-				typeOptions: { rows: 1 },
-				displayOptions: {
-					show: { resource: ['task'], operation: ['close_id', 'delete_id'] }
-				},
-			},
-			{
-				displayName: 'Expression to match',
-				name: 'expression',
-				type: 'string',
-				default: '',
-				required: true,
-				typeOptions: { rows: 1 },
-				displayOptions: {
-					show: {
-						resource: ['task'],
-						operation: ['close_match', 'delete_match']
-					}
-				}
 			},
 			{
 				displayName: 'Options',
@@ -297,23 +249,12 @@ export class Todoist implements INodeType {
 	};
 
 	async executeSingle(this: IExecuteSingleFunctions): Promise<INodeExecutionData> {
-		const resource = this.getNodeParameter('resource') as string;
-		const operation = this.getNodeParameter('operation') as string;
-		try {
-			return {
-				json: { result: await OPERATIONS[resource]?.[operation]?.bind(this)() }
-			};
-		} catch (err) {
-			return { json: { error: `Todoist Error: ${err.message}` } };
-		}
-	}
-}
 
-const OPERATIONS: {
-	[key: string]: { [key: string]: (this: IExecuteSingleFunctions) => any };
-} = {
-	task: {
-		create(this: IExecuteSingleFunctions) {
+		const resource = this.getNodeParameter('resource') as string;
+		const opeation = this.getNodeParameter('operation') as string;
+		let response;
+
+		if (resource === 'task' && opeation === 'create') {
 			//https://developer.todoist.com/rest/v1/#create-a-new-task
 			const content = this.getNodeParameter('content') as string;
 			const projectId = this.getNodeParameter('project') as number;
@@ -338,25 +279,15 @@ const OPERATIONS: {
 				body.label_ids = labels;
 			}
 
-			return todoistApiRequest.call(this, '/tasks', 'POST', body);
-		},
-		close_id(this: IExecuteSingleFunctions) {
-			const id = this.getNodeParameter('id') as string;
-			return todoistApiRequest.call(this, `/tasks/${id}/close`, 'POST');
-		},
-		delete_id(this: IExecuteSingleFunctions) {
-			const id = this.getNodeParameter('id') as string;
-			return todoistApiRequest.call(this, `/tasks/${id}`, 'DELETE');
-		},
-		close_match(this) {
-			return filterAndExecuteForEachTask.call(this, t =>
-				todoistApiRequest.call(this, `/tasks/${t.id}/close`, 'POST')
-			);
-		},
-		delete_match(this) {
-			return filterAndExecuteForEachTask.call(this, t =>
-				todoistApiRequest.call(this, `/tasks/${t.id}`, 'DELETE')
-			);
+			try {
+				response = await todoistApiRequest.call(this, '/tasks', 'POST', body);
+			} catch (err) {
+				throw new Error(`Todoist Error: ${err}`);
+			}
 		}
+
+		return {
+			json: response
+		};
 	}
-};
+}

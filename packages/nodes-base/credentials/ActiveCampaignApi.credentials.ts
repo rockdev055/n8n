@@ -7,7 +7,6 @@ import {
 export class ActiveCampaignApi implements ICredentialType {
 	name = 'activeCampaignApi';
 	displayName = 'ActiveCampaign API';
-	documentationUrl = 'activeCampaign';
 	properties = [
 		{
 			displayName: 'API URL',

@@ -15,7 +15,6 @@ export class HubspotOAuth2Api implements ICredentialType {
 		'oAuth2Api',
 	];
 	displayName = 'Hubspot OAuth2 API';
-	documentationUrl = 'hubspot';
 	properties = [
 		{
 			displayName: 'Authorization URL',

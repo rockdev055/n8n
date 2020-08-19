@@ -9,7 +9,6 @@ export class ZohoOAuth2Api implements ICredentialType {
 		'oAuth2Api',
 	];
 	displayName = 'Zoho OAuth2 API';
-	documentationUrl = 'zoho';
 	properties = [
 		{
 			displayName: 'Authorization URL',

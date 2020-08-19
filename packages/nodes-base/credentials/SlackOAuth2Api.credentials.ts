@@ -18,7 +18,6 @@ export class SlackOAuth2Api implements ICredentialType {
 		'oAuth2Api',
 	];
 	displayName = 'Slack OAuth2 API';
-	documentationUrl = 'slack';
 	properties = [
 		{
 			displayName: 'Authorization URL',

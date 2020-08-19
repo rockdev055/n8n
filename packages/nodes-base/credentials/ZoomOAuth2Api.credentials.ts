@@ -7,7 +7,6 @@ export class ZoomOAuth2Api implements ICredentialType {
 	name = 'zoomOAuth2Api';
 	extends = ['oAuth2Api'];
 	displayName = 'Zoom OAuth2 API';
-	documentationUrl = 'zoom';
 	properties = [
 		{
 			displayName: 'Authorization URL',

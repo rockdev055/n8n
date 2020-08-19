@@ -6,7 +6,6 @@ import {
 export class AgileCrmApi implements ICredentialType {
 	name = 'agileCrmApi';
 	displayName = 'AgileCRM API';
-	documentationUrl = 'agileCrm';
 	properties = [
 		{
 			displayName: 'Email',

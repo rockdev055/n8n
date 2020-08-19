@@ -7,7 +7,6 @@ import {
 export class MandrillApi implements ICredentialType {
 	name = 'mandrillApi';
 	displayName = 'Mandrill API';
-	documentationUrl = 'mandrill';
 	properties = [
 		{
 			displayName: 'API Key',

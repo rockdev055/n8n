@@ -14,7 +14,6 @@ export class ZendeskOAuth2Api implements ICredentialType {
 		'oAuth2Api',
 	];
 	displayName = 'Zendesk OAuth2 API';
-	documentationUrl = 'zendesk';
 	properties = [
 		{
 			displayName: 'Subdomain',

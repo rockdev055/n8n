@@ -6,7 +6,6 @@ import {
 export class Ftp implements ICredentialType {
 	name = 'ftp';
 	displayName = 'FTP';
-	documentationUrl = 'ftp';
 	properties = [
 		{
 			displayName: 'Host',

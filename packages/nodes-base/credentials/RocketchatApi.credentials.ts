@@ -7,7 +7,6 @@ import {
 export class RocketchatApi implements ICredentialType {
 	name = 'rocketchatApi';
 	displayName = 'Rocket API';
-	documentationUrl = 'rocketchat';
 	properties = [
 		{
 			displayName: 'User Id',

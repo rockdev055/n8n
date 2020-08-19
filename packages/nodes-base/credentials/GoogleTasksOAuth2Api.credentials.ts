@@ -11,7 +11,6 @@ export class GoogleTasksOAuth2Api implements ICredentialType {
 	name = 'googleTasksOAuth2Api';
 	extends = ['googleOAuth2Api'];
 	displayName = 'Google Tasks OAuth2 API';
-	documentationUrl = 'google';
 	properties = [
 		{
 			displayName: 'Scope',

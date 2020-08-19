@@ -6,7 +6,6 @@ import {
 export class UnleashedSoftwareApi implements ICredentialType {
 	name = 'unleashedSoftwareApi';
 	displayName = 'Unleashed API';
-	documentationUrl = 'unleashedSoftware';
 	properties = [
 		{
 			displayName: 'API ID',
