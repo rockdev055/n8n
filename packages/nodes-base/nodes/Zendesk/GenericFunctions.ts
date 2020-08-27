@@ -23,10 +23,7 @@ export async function zendeskApiRequest(this: IHookFunctions | IExecuteFunctions
 		body,
 		//@ts-ignore
 		uri,
-		json: true,
-		qsStringifyOptions: {
-			arrayFormat: 'brackets',
-		},
+		json: true
 	};
 
 	options = Object.assign({}, options, option);
@@ -46,6 +43,8 @@ export async function zendeskApiRequest(this: IHookFunctions | IExecuteFunctions
 			options.uri = `https://${credentials.subdomain}.zendesk.com/api/v2${resource}.json`;
 			options.headers!['Authorization'] = `Basic ${base64Key}`;
 
+			//console.log(options);
+
 			return await this.helpers.request!(options);
 		} else {
 			const credentials = this.getCredentials('zendeskOAuth2Api');
@@ -59,7 +58,6 @@ export async function zendeskApiRequest(this: IHookFunctions | IExecuteFunctions
 			return await this.helpers.requestOAuth2!.call(this, 'zendeskOAuth2Api', options);
 		}
 	} catch(err) {
-
 		let errorMessage = err.message;
 		if (err.response && err.response.body && err.response.body.error) {
 			errorMessage = err.response.body.error;
