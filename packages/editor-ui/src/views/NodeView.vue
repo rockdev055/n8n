@@ -115,8 +115,6 @@ import { mouseSelect } from '@/components/mixins/mouseSelect';
 import { moveNodeWorkflow } from '@/components/mixins/moveNodeWorkflow';
 import { restApi } from '@/components/mixins/restApi';
 import { showMessage } from '@/components/mixins/showMessage';
-import { titleChange } from '@/components/mixins/titleChange';
-
 import { workflowHelpers } from '@/components/mixins/workflowHelpers';
 import { workflowRun } from '@/components/mixins/workflowRun';
 
@@ -167,7 +165,6 @@ export default mixins(
 	moveNodeWorkflow,
 	restApi,
 	showMessage,
-	titleChange,
 	workflowHelpers,
 	workflowRun,
 )
@@ -1327,8 +1324,6 @@ export default mixins(
 					}
 
 					if (workflowId !== null) {
-						const workflow = await this.restApi().getWorkflow(workflowId);
-						this.$titleSet(workflow.name, 'IDLE');
 						// Open existing workflow
 						await this.openWorkflow(workflowId);
 					} else {

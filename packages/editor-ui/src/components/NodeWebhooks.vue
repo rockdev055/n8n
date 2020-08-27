@@ -88,7 +88,7 @@ export default mixins(
 
 				this.$showMessage({
 					title: 'Copied',
-					message: `The webhook URL was successfully copied!`,
+					message: `The webhook URL got copied!`,
 					type: 'success',
 				});
 			},

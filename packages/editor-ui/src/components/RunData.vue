@@ -7,7 +7,7 @@
 			:disabled="workflowRunning"
 			@click.stop="runWorkflow(node.name)"
 			class="execute-node-button"
-			:title="`Executes this ${node.name} node after executing any previous nodes that have not yet returned data`"
+			:title="`Executes node ${node.name} and all not already executed nodes before it.`"
 		>
 			<div class="run-icon-button">
 				<font-awesome-icon v-if="!workflowRunning" icon="play-circle"/>
@@ -72,14 +72,14 @@
 				<span v-else>
 					<div v-if="showData === false" class="to-much-data">
 						<h3>
-							Node returned a large amount of data
+							Node contains large amount of data
 						</h3>
 
 						<div class="text">
 							The node contains {{parseInt(dataSize/1024).toLocaleString()}} KB of data.<br />
 							Displaying it could cause problems!<br />
 							<br />
-							If you do decide to display it, avoid the JSON view!
+							If you decide to display it anyway avoid the JSON view!
 						</div>
 
 						<el-button size="small" @click="displayMode = 'Table';showData = true;">
@@ -162,7 +162,7 @@
 				<div>
 					<strong>No data</strong><br />
 					<br />
-					Data returned by this node will display here<br />
+					To display data execute the node first by pressing the execute button above.
 				</div>
 			</div>
 		</div>

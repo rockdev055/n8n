@@ -4,13 +4,9 @@ import {
 	ILoadOptionsFunctions,
 } from 'n8n-core';
 
-import {
-	OptionsWithUri,
-} from 'request';
+import { OptionsWithUri } from 'request';
+import { IDataObject } from 'n8n-workflow';
 
-import {
-	IDataObject,
-} from 'n8n-workflow';
 
 /**
  * Make an API request to Trello

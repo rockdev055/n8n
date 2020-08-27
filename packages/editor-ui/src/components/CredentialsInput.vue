@@ -44,19 +44,19 @@
 					<el-button title="Connect OAuth Credentials" circle :disabled="true">
 						<font-awesome-icon icon="redo" />
 					</el-button>
-					Enter all required properties
+					Not all required credential properties are filled
 				</span>
 				<span v-else-if="isOAuthConnected === true">
 					<el-button title="Reconnect OAuth Credentials" @click.stop="oAuthCredentialAuthorize()" circle>
 						<font-awesome-icon icon="redo" />
 					</el-button>
-					Connected
+					Is connected
 				</span>
 				<span v-else>
 					<el-button title="Connect OAuth Credentials" @click.stop="oAuthCredentialAuthorize()" circle>
 						<font-awesome-icon icon="sign-in-alt" />
 					</el-button>
-					Not connected
+					Is NOT connected
 				</span>
 
 				<div v-if="credentialProperties.length">
@@ -91,7 +91,7 @@
 
 				<div v-if="nodesAccess.length === 0" class="no-nodes-access">
 					<strong>
-						Important
+						Important!
 					</strong><br />
 					Add at least one node which has access to the credentials!
 				</div>
@@ -163,8 +163,8 @@ export default mixins(
 			isMinimized: true,
 			helpTexts: {
 				credentialsData: 'The credentials to set.',
-				credentialsName: 'A recognizable label for the credentials. Descriptive names work <br />best here, so you can easily select it from a list later.',
-				nodesWithAccess: 'Nodes with access to these credentials.',
+				credentialsName: 'The name the credentials should be saved as. Use a name<br />which makes it clear to what exactly they give access to.<br />For credentials of an Email account that could be the Email address itself.',
+				nodesWithAccess: 'The nodes which allowed to use this credentials.',
 			},
 			credentialDataTemp: null as ICredentialsDecryptedResponse | null,
 			nodesAccess: [] as string[],
@@ -256,7 +256,7 @@ export default mixins(
 
 			this.$showMessage({
 				title: 'Copied',
-				message: `Callback URL was successfully copied!`,
+				message: `The callback URL got copied!`,
 				type: 'success',
 			});
 		},
@@ -401,7 +401,7 @@ export default mixins(
 
 					this.$showMessage({
 						title: 'Connected',
-						message: 'Connected successfully!',
+						message: 'Got connected!',
 						type: 'success',
 					});
 				}
