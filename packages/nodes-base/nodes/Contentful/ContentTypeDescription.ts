@@ -67,10 +67,10 @@ export const fields = [
 		},
 	},
 	{
-		displayName: 'Additional Fields',
-		name: 'additionalFields',
+		displayName: 'Options',
+		name: 'options',
 		type: 'collection',
-		placeholder: 'Add Field',
+		placeholder: 'Select Option',
 		default: {},
 		displayOptions: {
 			show: {
