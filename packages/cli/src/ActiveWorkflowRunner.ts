@@ -52,9 +52,6 @@ export class ActiveWorkflowRunner {
 		// so intead of pulling all the active wehhooks just pull the actives that have a trigger
 		const workflowsData: IWorkflowDb[] = await Db.collections.Workflow!.find({ active: true }) as IWorkflowDb[];
 
-		// Clear up active workflow table
-		await Db.collections.Webhook?.clear();
-
 		this.activeWorkflows = new ActiveWorkflows();
 
 		if (workflowsData.length !== 0) {
@@ -62,14 +59,22 @@ export class ActiveWorkflowRunner {
 			console.log('   Start Active Workflows:');
 			console.log(' ================================');
 
+			const nodeTypes = NodeTypes();
+
 			for (const workflowData of workflowsData) {
-				console.log(`   - ${workflowData.name}`);
-				try {
-					await this.add(workflowData.id.toString(), workflowData);
-					console.log(`     => Started`);
-				} catch (error) {
-					console.log(`     => ERROR: Workflow could not be activated:`);
-					console.log(`               ${error.message}`);
+
+				const workflow = new Workflow({ id: workflowData.id.toString(), name: workflowData.name, nodes: workflowData.nodes, connections: workflowData.connections, active: workflowData.active, nodeTypes, staticData: workflowData.staticData, settings: workflowData.settings});
+
+				if (workflow.getTriggerNodes().length !== 0
+					|| workflow.getPollNodes().length !== 0) {
+					console.log(`   - ${workflowData.name}`);
+					try {
+						await this.add(workflowData.id.toString(), workflowData);
+						console.log(`     => Started`);
+					} catch (error) {
+						console.log(`     => ERROR: Workflow could not be activated:`);
+						console.log(`               ${error.message}`);
+					}
 				}
 			}
 		}
@@ -82,18 +87,14 @@ export class ActiveWorkflowRunner {
 	 * @memberof ActiveWorkflowRunner
 	 */
 	async removeAll(): Promise<void> {
-		const activeWorkflowId: string[] = [];
-
-		if (this.activeWorkflows !== null) {
-			// TODO: This should be renamed!
-			activeWorkflowId.push.apply(activeWorkflowId, this.activeWorkflows.allActiveWorkflows());
+		if (this.activeWorkflows === null) {
+			return;
 		}
 
-		const activeWorkflows = await this.getActiveWorkflows();
-		activeWorkflowId.push.apply(activeWorkflowId, activeWorkflows.map(workflow => workflow.id));
+		const activeWorkflows = this.activeWorkflows.allActiveWorkflows();
 
 		const removePromises = [];
-		for (const workflowId of activeWorkflowId) {
+		for (const workflowId of activeWorkflows) {
 			removePromises.push(this.remove(workflowId));
 		}
 
@@ -182,7 +183,7 @@ export class ActiveWorkflowRunner {
 	 * @memberof ActiveWorkflowRunner
 	 */
 	getActiveWorkflows(): Promise<IWorkflowDb[]> {
-		return Db.collections.Workflow?.find({ where: { active: true }, select: ['id'] }) as Promise<IWorkflowDb[]>;
+		return Db.collections.Workflow?.find({ select: ['id'] }) as Promise<IWorkflowDb[]>;
 	}
 
 

@@ -7,7 +7,6 @@ import {
 export class HttpHeaderAuth implements ICredentialType {
 	name = 'httpHeaderAuth';
 	displayName = 'Header Auth';
-	documentationUrl = 'httpRequest';
 	properties = [
 		{
 			displayName: 'Name',

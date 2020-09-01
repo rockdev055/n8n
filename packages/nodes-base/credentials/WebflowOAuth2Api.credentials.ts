@@ -10,7 +10,6 @@ export class WebflowOAuth2Api implements ICredentialType {
 		'oAuth2Api',
 	];
 	displayName = 'Webflow OAuth2 API';
-	documentationUrl = 'webflow';
 	properties = [
 		{
 			displayName: 'Authorization URL',

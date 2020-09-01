@@ -6,7 +6,6 @@ import {
 export class WordpressApi implements ICredentialType {
 	name = 'wordpressApi';
 	displayName = 'Wordpress API';
-	documentationUrl = 'wordpress';
 	properties = [
 		{
 			displayName: 'Username',

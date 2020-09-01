@@ -100,14 +100,8 @@ export class FunctionItem implements INodeType {
 			throw new Error('No data got returned. Always an object has to be returned!');
 		}
 
-		const returnItem: INodeExecutionData = {
+		return {
 			json: jsonData
 		};
-
-		if (item.binary) {
-			returnItem.binary = item.binary;
-		}
-
-		return returnItem;
 	}
 }

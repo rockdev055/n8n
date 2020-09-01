@@ -6,7 +6,6 @@ import {
 export class EventbriteApi implements ICredentialType {
 	name = 'eventbriteApi';
 	displayName = 'Eventbrite API';
-	documentationUrl = 'eventbrite';
 	properties = [
 		{
 			displayName: 'Private Key',

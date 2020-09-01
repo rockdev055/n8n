@@ -6,7 +6,6 @@ import {
 export class CalendlyApi implements ICredentialType {
 	name = 'calendlyApi';
 	displayName = 'Calendly API';
-	documentationUrl = 'calendly';
 	properties = [
 		{
 			displayName: 'API Key',

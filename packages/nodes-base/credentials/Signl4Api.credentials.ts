@@ -6,7 +6,6 @@ import {
 export class Signl4Api implements ICredentialType {
 	name = 'signl4Api';
 	displayName = 'SIGNL4 Webhook';
-	documentationUrl = 'signl4';
 	properties = [
 		{
 			displayName: 'Team Secret',

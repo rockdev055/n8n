@@ -6,7 +6,6 @@ import {
 export class Sftp implements ICredentialType {
 	name = 'sftp';
 	displayName = 'SFTP';
-	documentationUrl = 'sftp';
 	properties = [
 		{
 			displayName: 'Host',

@@ -7,7 +7,6 @@ import {
 export class FlowApi implements ICredentialType {
 	name = 'flowApi';
 	displayName = 'Flow API';
-	documentationUrl = 'flow';
 	properties = [
 		{
 			displayName: 'Organization ID',

@@ -9,7 +9,6 @@ export class PagerDutyOAuth2Api implements ICredentialType {
 		'oAuth2Api',
 	];
 	displayName = 'PagerDuty OAuth2 API';
-	documentationUrl = 'pagerDuty';
 	properties = [
 		{
 			displayName: 'Authorization URL',

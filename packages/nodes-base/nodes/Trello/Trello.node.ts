@@ -1,7 +1,4 @@
-import {
-	IExecuteFunctions,
-} from 'n8n-core';
-
+import { IExecuteFunctions } from "n8n-core";
 import {
 	IDataObject,
 	INodeTypeDescription,
@@ -9,44 +6,13 @@ import {
 	INodeType,
 } from 'n8n-workflow';
 
-import {
-	apiRequest,
-} from './GenericFunctions';
-
-import {
-	attachmentOperations,
-	attachmentFields,
-} from './AttachmentDescription';
-
-import {
-	boardOperations,
-	boardFields,
-} from './BoardDescription';
-
-import {
-	cardOperations,
-	cardFields,
-} from './CardDescription';
-
-import {
-	cardCommentOperations,
-	cardCommentFields,
-} from './CardCommentDescription';
-
-import {
-	checklistOperations,
-	checklistFields,
-} from './ChecklistDescription';
-
-import {
-	labelOperations,
-	labelFields,
-} from './LabelDescription';
-
-import {
-	listOperations,
-	listFields,
-} from './ListDescription';
+import { apiRequest } from "./GenericFunctions";
+import { attachmentOperations, attachmentFields } from './AttachmentDescription';
+import { boardOperations, boardFields } from './BoardDescription';
+import { cardOperations, cardFields } from './CardDescription';
+import { checklistOperations, checklistFields } from './ChecklistDescription';
+import { labelOperations, labelFields } from './LabelDescription';
+import { listOperations, listFields } from './ListDescription';
 
 export class Trello implements INodeType {
 	description: INodeTypeDescription = {
@@ -67,7 +33,7 @@ export class Trello implements INodeType {
 			{
 				name: 'trelloApi',
 				required: true,
-			},
+			}
 		],
 		properties: [
 			{
@@ -86,10 +52,6 @@ export class Trello implements INodeType {
 					{
 						name: 'Card',
 						value: 'card',
-					},
-					{
-						name: 'Card Comment',
-						value: 'cardComment',
 					},
 					{
 						name: 'Checklist',
@@ -114,7 +76,6 @@ export class Trello implements INodeType {
 			...attachmentOperations,
 			...boardOperations,
 			...cardOperations,
-			...cardCommentOperations,
 			...checklistOperations,
 			...labelOperations,
 			...listOperations,
@@ -125,13 +86,14 @@ export class Trello implements INodeType {
 			...attachmentFields,
 			...boardFields,
 			...cardFields,
-			...cardCommentFields,
 			...checklistFields,
 			...labelFields,
 			...listFields
 
 		],
+
 	};
+
 
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 		const items = this.getInputData();
@@ -269,54 +231,6 @@ export class Trello implements INodeType {
 
 					const updateFields = this.getNodeParameter('updateFields', i) as IDataObject;
 					Object.assign(qs, updateFields);
-
-				} else {
-					throw new Error(`The operation "${operation}" is not known!`);
-				}
-
-			} else if (resource === 'cardComment') {
-
-				if (operation === 'create') {
-					// ----------------------------------
-					//         create
-					// ----------------------------------
-
-					const cardId = this.getNodeParameter('cardId', i) as string;
-
-					qs.text = this.getNodeParameter('text', i) as string;
-
-					requestMethod = 'POST';
-
-					endpoint = `cards/${cardId}/actions/comments`;
-
-
-				} else if (operation === 'delete') {
-					// ----------------------------------
-					//         delete
-					// ----------------------------------
-
-					requestMethod = 'DELETE';
-
-					const cardId = this.getNodeParameter('cardId', i) as string;
-
-					const commentId = this.getNodeParameter('commentId', i) as string;
-
-					endpoint = `/cards/${cardId}/actions/${commentId}/comments`;
-
-				} else if (operation === 'update') {
-					// ----------------------------------
-					//         update
-					// ----------------------------------
-
-					requestMethod = 'PUT';
-
-					const cardId = this.getNodeParameter('cardId', i) as string;
-
-					const commentId = this.getNodeParameter('commentId', i) as string;
-
-					qs.text = this.getNodeParameter('text', i) as string;
-
-					endpoint = `cards/${cardId}/actions/${commentId}/comments`;
 
 				} else {
 					throw new Error(`The operation "${operation}" is not known!`);

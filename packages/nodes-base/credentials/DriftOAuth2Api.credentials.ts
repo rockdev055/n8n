@@ -10,7 +10,6 @@ export class DriftOAuth2Api implements ICredentialType {
 		'oAuth2Api',
 	];
 	displayName = 'Drift OAuth2 API';
-	documentationUrl = 'drift';
 	properties = [
 		{
 			displayName: 'Authorization URL',

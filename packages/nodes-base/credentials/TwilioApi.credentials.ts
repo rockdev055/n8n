@@ -7,7 +7,6 @@ import {
 export class TwilioApi implements ICredentialType {
 	name = 'twilioApi';
 	displayName = 'Twilio API';
-	documentationUrl = 'twilio';
 	properties = [
 		{
 			displayName: 'Account SID',

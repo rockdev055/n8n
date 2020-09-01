@@ -7,7 +7,6 @@ import {
 export class GitlabApi implements ICredentialType {
 	name = 'gitlabApi';
 	displayName = 'Gitlab API';
-	documentationUrl = 'gitlab';
 	properties = [
 		{
 			displayName: 'Gitlab Server',
