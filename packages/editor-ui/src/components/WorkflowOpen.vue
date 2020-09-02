@@ -33,7 +33,6 @@ import WorkflowActivator from '@/components/WorkflowActivator.vue';
 
 import { restApi } from '@/components/mixins/restApi';
 import { genericHelpers } from '@/components/mixins/genericHelpers';
-import { workflowHelpers } from '@/components/mixins/workflowHelpers';
 import { showMessage } from '@/components/mixins/showMessage';
 import { titleChange } from '@/components/mixins/titleChange';
 import { IWorkflowShortResponse } from '@/Interface';
@@ -44,7 +43,7 @@ export default mixins(
 	genericHelpers,
 	restApi,
 	showMessage,
-	workflowHelpers,
+	titleChange,
 ).extend({
 	name: 'WorkflowOpen',
 	props: [
@@ -90,19 +89,10 @@ export default mixins(
 			this.$emit('closeDialog');
 			return false;
 		},
-		async openWorkflow (data: IWorkflowShortResponse, column: any) { // tslint:disable-line:no-any
+		openWorkflow (data: IWorkflowShortResponse, column: any) { // tslint:disable-line:no-any
 			if (column.label !== 'Active') {
-				const result = this.$store.getters.getStateIsDirty;
-				if(result) {
-					const importConfirm = await this.confirmMessage(`When you switch workflows your current workflow changes will be lost.`, 'Save your Changes?', 'warning', 'Yes, switch workflows and forget changes');
-					if (importConfirm === false) {
-						return;
-					} else {
-						this.$emit('openWorkflow', data.id);
-					}
-				} else {
-					this.$emit('openWorkflow', data.id);
-				}
+				this.$titleSet(data.name, 'IDLE');
+				this.$emit('openWorkflow', data.id);
 			}
 		},
 		openDialog () {
