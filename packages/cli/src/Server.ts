@@ -298,7 +298,7 @@ class App {
 		this.app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
 			(req as ICustomRequest).parsedUrl = parseUrl(req);
 			// @ts-ignore
-			req.rawBody = Buffer.from('', 'base64');
+			req.rawBody = new Buffer('', 'base64');
 			next();
 		});
 

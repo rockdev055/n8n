@@ -127,10 +127,8 @@ import NodeSettings from '@/components/NodeSettings.vue';
 import RunData from '@/components/RunData.vue';
 
 import mixins from 'vue-typed-mixins';
-
-import { v4 as uuidv4 } from 'uuid';
-
-import { debounce } from 'lodash';
+import { v4 as uuidv4} from 'uuid';
+import { debounce, isEqual } from 'lodash';
 import axios from 'axios';
 import {
 	IConnection,
@@ -190,6 +188,26 @@ export default mixins(
 			activeNode () {
 				// When a node gets set as active deactivate the create-menu
 				this.createNodeActive = false;
+			},
+			nodes: {
+				async handler (val, oldVal) {
+					// Load a workflow
+					let workflowId = null as string | null;
+					if (this.$route && this.$route.params.name) {
+						workflowId = this.$route.params.name;
+					}
+				},
+				deep: true,
+			},
+			connections: {
+				async handler (val, oldVal) {
+					// Load a workflow
+					let workflowId = null as string | null;
+					if (this.$route && this.$route.params.name) {
+						workflowId = this.$route.params.name;
+					}
+				},
+				deep: true,
 			},
 		},
 		computed: {
@@ -307,7 +325,7 @@ export default mixins(
 					throw new Error(`Execution with id "${executionId}" could not be found!`);
 				}
 
-				this.$store.commit('setWorkflowName', data.workflowData.name);
+				this.$store.commit('setWorkflowName', {newName: data.workflowData.name, setStateDirty: false});
 				this.$store.commit('setWorkflowId', PLACEHOLDER_EMPTY_WORKFLOW_ID);
 
 				this.$store.commit('setWorkflowExecutionData', data);
@@ -331,10 +349,12 @@ export default mixins(
 
 				this.$store.commit('setActive', data.active || false);
 				this.$store.commit('setWorkflowId', workflowId);
-				this.$store.commit('setWorkflowName', data.name);
+				this.$store.commit('setWorkflowName', {newName: data.name, setStateDirty: false});
 				this.$store.commit('setWorkflowSettings', data.settings || {});
 
 				await this.addNodes(data.nodes, data.connections);
+
+				return data;
 			},
 			mouseDown (e: MouseEvent) {
 				// Save the location of the mouse click
@@ -435,6 +455,8 @@ export default mixins(
 					// Save workflow
 					e.stopPropagation();
 					e.preventDefault();
+
+					this.$store.commit('setStateDirty', false);
 
 					this.callDebounced('saveCurrentWorkflow', 1000);
 				} else if (e.key === 'Enter') {
@@ -1217,7 +1239,6 @@ export default mixins(
 					if (![null, undefined].includes(inputNameOverlay)) {
 						inputNameOverlay.setVisible(false);
 					}
-
 					this.$store.commit('addConnection', {
 						connection: [
 							{
@@ -1231,6 +1252,7 @@ export default mixins(
 								index: targetInfo.index,
 							},
 						],
+						setStateDirty: true,
 					});
 				});
 
@@ -1312,12 +1334,14 @@ export default mixins(
 				if (this.$route.params.action === 'workflowSave') {
 					// In case the workflow got saved we do not have to run init
 					// as only the route changed but all the needed data is already loaded
+					this.$store.commit('setStateDirty', false);
 					return Promise.resolve();
 				}
 
 				if (this.$route.name === 'ExecutionById') {
 					// Load an execution
 					const executionId = this.$route.params.id;
+
 					await this.openExecution(executionId);
 				} else {
 					// Load a workflow
@@ -1325,7 +1349,6 @@ export default mixins(
 					if (this.$route.params.name) {
 						workflowId = this.$route.params.name;
 					}
-
 					if (workflowId !== null) {
 						const workflow = await this.restApi().getWorkflow(workflowId);
 						this.$titleSet(workflow.name, 'IDLE');
@@ -1339,6 +1362,17 @@ export default mixins(
 
 				document.addEventListener('keydown', this.keyDown);
 				document.addEventListener('keyup', this.keyUp);
+
+				window.addEventListener("beforeunload",  (e) => {
+					if(this.$store.getters.getStateIsDirty === true) {
+						const confirmationMessage = 'It looks like you have been editing something. '
+								+ 'If you leave before saving, your changes will be lost.';
+						(e || window.event).returnValue = confirmationMessage; //Gecko + IE
+						return confirmationMessage; //Gecko + Webkit, Safari, Chrome etc.
+					} else {
+						return;
+					}
+				});
 			},
 			__addConnection (connection: [IConnection, IConnection], addVisualConnection = false) {
 				if (addVisualConnection === true) {
@@ -1354,9 +1388,10 @@ export default mixins(
 						detachable: !this.isReadOnly,
 					});
 				} else {
+					let connectionProperties = {connection, setStateDirty: false};
 					// When nodes get connected it gets saved automatically to the storage
 					// so if we do not connect we have to save the connection manually
-					this.$store.commit('addConnection', { connection });
+					this.$store.commit('addConnection', connectionProperties);
 				}
 			},
 			__removeConnection (connection: [IConnection, IConnection], removeVisualConnection = false) {
@@ -1541,7 +1576,7 @@ export default mixins(
 					this.instance.deleteEveryEndpoint();
 				}
 				this.$store.commit('removeAllConnections');
-				this.$store.commit('removeAllNodes');
+				this.$store.commit('removeAllNodes', {setStateDirty: true});
 
 				// Wait a tick that the old nodes had time to get removed
 				await Vue.nextTick();
@@ -1831,8 +1866,8 @@ export default mixins(
 						});
 				}
 
-				this.$store.commit('removeAllConnections');
-				this.$store.commit('removeAllNodes');
+				this.$store.commit('removeAllConnections', {setStateDirty: false});
+				this.$store.commit('removeAllNodes', {setStateDirty: false});
 
 				// Reset workflow execution data
 				this.$store.commit('setWorkflowExecutionData', null);
@@ -1841,7 +1876,7 @@ export default mixins(
 
 				this.$store.commit('setActive', false);
 				this.$store.commit('setWorkflowId', PLACEHOLDER_EMPTY_WORKFLOW_ID);
-				this.$store.commit('setWorkflowName', '');
+				this.$store.commit('setWorkflowName', {newName: '', setStateDirty: false});
 				this.$store.commit('setWorkflowSettings', {});
 
 				this.$store.commit('setActiveExecutionId', null);
@@ -1852,7 +1887,7 @@ export default mixins(
 				this.$store.commit('resetNodeIndex');
 				this.$store.commit('resetSelectedNodes');
 
-				this.$store.commit('setNodeViewOffsetPosition', [0, 0]);
+				this.$store.commit('setNodeViewOffsetPosition', {newOffset: [0, 0], setStateDirty: false});
 
 				return Promise.resolve();
 			},
@@ -1890,13 +1925,13 @@ export default mixins(
 
 		async mounted () {
 			this.$root.$on('importWorkflowData', async (data: IDataObject) => {
-				await this.importWorkflowData(data.data as IWorkflowDataUpdate);
+				const resData = await this.importWorkflowData(data.data as IWorkflowDataUpdate);
 			});
 
 			this.$root.$on('importWorkflowUrl', async (data: IDataObject) => {
 				const workflowData = await this.getWorkflowDataFromUrl(data.url as string);
 				if (workflowData !== undefined) {
-					await this.importWorkflowData(workflowData);
+					const resData = await this.importWorkflowData(workflowData);
 				}
 			});
 
