@@ -11,7 +11,7 @@ import {
 } from 'n8n-workflow';
 
 import {
-	customerIoApiRequest,
+	apiRequest,
 	eventExists,
 } from './GenericFunctions';
 
@@ -34,7 +34,7 @@ export class CustomerIoTrigger implements INodeType {
 		description: 'Starts the workflow on a Customer.io update. (Beta)',
 		defaults: {
 			name: 'Customer.io Trigger',
-			color: '#ffcd00',
+			color: '#7131ff',
 		},
 		inputs: [],
 		outputs: ['main'],
@@ -237,7 +237,7 @@ export class CustomerIoTrigger implements INodeType {
 
 				const endpoint = '/reporting_webhooks';
 
-				let { reporting_webhooks: webhooks } = await customerIoApiRequest.call(this, 'GET', endpoint, {}, 'beta');
+				let { reporting_webhooks: webhooks } = await apiRequest.call(this, 'GET', endpoint, {});
 
 				if (webhooks === null) {
 					webhooks = [];
@@ -295,7 +295,7 @@ export class CustomerIoTrigger implements INodeType {
 					events: data,
 				};
 
-				webhook = await customerIoApiRequest.call(this, 'POST', endpoint, body, 'beta');
+				webhook = await apiRequest.call(this, 'POST', endpoint, body);
 
 				const webhookData = this.getWorkflowStaticData('node');
 				webhookData.webhookId = webhook.id as string;
@@ -307,7 +307,7 @@ export class CustomerIoTrigger implements INodeType {
 				if (webhookData.webhookId !== undefined) {
 					const endpoint = `/reporting_webhooks/${webhookData.webhookId}`;
 					try {
-						await customerIoApiRequest.call(this, 'DELETE', endpoint, {}, 'beta');
+						await apiRequest.call(this, 'DELETE', endpoint, {});
 					} catch (e) {
 						return false;
 					}
