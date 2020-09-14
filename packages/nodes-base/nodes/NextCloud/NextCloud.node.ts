@@ -20,15 +20,15 @@ import {
 
 export class NextCloud implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'Nextcloud',
+		displayName: 'NextCloud',
 		name: 'nextCloud',
 		icon: 'file:nextcloud.png',
 		group: ['input'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
-		description: 'Access data on Nextcloud',
+		description: 'Access data on NextCloud',
 		defaults: {
-			name: 'Nextcloud',
+			name: 'NextCloud',
 			color: '#1cafff',
 		},
 		inputs: ['main'],
@@ -170,7 +170,7 @@ export class NextCloud implements INodeType {
 					{
 						name: 'List',
 						value: 'list',
-						description: 'Return the contents of a given folder',
+						description: 'Return the files and folders in a given folder',
 					},
 					{
 						name: 'Move',

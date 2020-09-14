@@ -21,7 +21,7 @@ export class CrateDb implements INodeType {
 		icon: 'file:cratedb.png',
 		group: ['input'],
 		version: 1,
-		description: 'Add and update data in CrateDB.',
+		description: 'Gets, add and update data in CrateDB.',
 		defaults: {
 			name: 'CrateDB',
 			color: '#47889f',
@@ -43,17 +43,17 @@ export class CrateDb implements INodeType {
 					{
 						name: 'Execute Query',
 						value: 'executeQuery',
-						description: 'Execute an SQL query',
+						description: 'Executes a SQL query.',
 					},
 					{
 						name: 'Insert',
 						value: 'insert',
-						description: 'Insert rows in database',
+						description: 'Insert rows in database.',
 					},
 					{
 						name: 'Update',
 						value: 'update',
-						description: 'Update rows in database',
+						description: 'Updates rows in database.',
 					},
 				],
 				default: 'insert',
