@@ -7,12 +7,12 @@ enum UserStatusEnum {
 interface IUserSettingsDto {
 }
 
-export interface IUserDto {
+export interface ICurrentUserDto {
 	activeWorkspace: string;
 	defaultWorkspace: string;
 	email: string;
 	id: string;
-	memberships: IMembershipDto[];
+	memberships:  IMembershipDto [];
 	name: string;
 	profilePicture: string;
 	settings: IUserSettingsDto;
