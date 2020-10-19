@@ -6,7 +6,6 @@ import {
 export class SendyApi implements ICredentialType {
 	name = 'sendyApi';
 	displayName = 'Sendy API';
-	documentationUrl = 'sendy';
 	properties = [
 		{
 			displayName: 'URL',
