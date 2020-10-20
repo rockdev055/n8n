@@ -19,12 +19,12 @@ import {
 
 export class ActiveCampaignTrigger implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'ActiveCampaign Trigger',
+		displayName: 'Active Campaign Trigger',
 		name: 'activeCampaignTrigger',
 		icon: 'file:activeCampaign.png',
 		group: ['trigger'],
 		version: 1,
-		description: 'Handle ActiveCampaign events via webhooks',
+		description: 'Handle Active Campaign events via webhooks',
 		defaults: {
 			name: 'ActiveCampaign Trigger',
 			color: '#356ae6',
