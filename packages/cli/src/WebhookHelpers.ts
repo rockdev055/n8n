@@ -3,7 +3,6 @@ import { get } from 'lodash';
 
 import {
 	ActiveExecutions,
-	ExternalHooks,
 	GenericHelpers,
 	IExecutionDb,
 	IResponseCallbackData,

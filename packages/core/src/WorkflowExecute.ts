@@ -622,8 +622,6 @@ export class WorkflowExecute {
 
 							break;
 						} catch (error) {
-							this.runExecutionData.resultData.lastNodeExecuted = executionData.node.name;
-
 							executionError = {
 								message: error.message,
 								stack: error.stack,

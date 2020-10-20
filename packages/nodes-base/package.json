@@ -75,6 +75,7 @@
       "dist/credentials/GitlabOAuth2Api.credentials.js",
       "dist/credentials/GmailOAuth2Api.credentials.js",
       "dist/credentials/GoogleApi.credentials.js",
+      "dist/credentials/GoogleBooksOAuth2Api.credentials.js",
       "dist/credentials/GoogleCalendarOAuth2Api.credentials.js",
       "dist/credentials/GoogleContactsOAuth2Api.credentials.js",
       "dist/credentials/GoogleDriveOAuth2Api.credentials.js",
@@ -264,6 +265,7 @@
       "dist/nodes/Github/GithubTrigger.node.js",
       "dist/nodes/Gitlab/Gitlab.node.js",
       "dist/nodes/Gitlab/GitlabTrigger.node.js",
+      "dist/nodes/Google/Books/GoogleBooks.node.js",
       "dist/nodes/Google/Calendar/GoogleCalendar.node.js",
       "dist/nodes/Google/Contacts/GoogleContacts.node.js",
       "dist/nodes/Google/Drive/GoogleDrive.node.js",
@@ -424,7 +426,7 @@
     "n8n-workflow": "~0.42.0",
     "ts-jest": "^26.3.0",
     "tslint": "^6.1.2",
-    "typescript": "~3.9.7"
+    "typescript": "~3.7.4"
   },
   "dependencies": {
     "@types/promise-ftp": "^1.3.4",

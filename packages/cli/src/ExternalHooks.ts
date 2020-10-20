@@ -64,10 +64,6 @@ class ExternalHooksClass implements IExternalHooksClass {
 		}
 	}
 
-	exists(hookName: string): boolean {
-		return !!this.externalHooks[hookName];
-	}
-
 }
 
 
