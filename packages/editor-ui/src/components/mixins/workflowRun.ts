@@ -29,6 +29,7 @@ export const workflowRun = mixins(
 				// because then it can not receive the data as it executes.
 				throw new Error('No active connection to server. It is maybe down.');
 			}
+			const workflow = this.getWorkflow();
 
 			this.$store.commit('addActiveAction', 'workflowRunning');
 

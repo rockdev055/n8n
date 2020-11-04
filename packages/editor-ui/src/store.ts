@@ -96,6 +96,7 @@ export const store = new Vuex.Store({
 
 		// Active Executions
 		addActiveExecution (state, newActiveExecution: IExecutionsCurrentSummaryExtended) {
+			state.stateIsDirty = true;
 			// Check if the execution exists already
 			const activeExecution = state.activeExecutions.find(execution => {
 				return execution.idActive === newActiveExecution.idActive;
@@ -112,6 +113,7 @@ export const store = new Vuex.Store({
 			state.activeExecutions.unshift(newActiveExecution);
 		},
 		finishActiveExecution (state, finishedActiveExecution: IPushDataExecutionFinished) {
+			state.stateIsDirty = true;
 			// Find the execution to set to finished
 			const activeExecution = state.activeExecutions.find(execution => {
 				return execution.idActive === finishedActiveExecution.executionIdActive;
@@ -130,6 +132,7 @@ export const store = new Vuex.Store({
 			Vue.set(activeExecution, 'stoppedAt', finishedActiveExecution.data.stoppedAt);
 		},
 		setActiveExecutions (state, newActiveExecutions: IExecutionsCurrentSummaryExtended[]) {
+			state.stateIsDirty = true;
 			Vue.set(state, 'activeExecutions', newActiveExecutions);
 		},
 
@@ -162,6 +165,7 @@ export const store = new Vuex.Store({
 			state.selectedNodes.push(node);
 		},
 		removeNodeFromSelection (state, node: INodeUi) {
+			state.stateIsDirty = true;
 			let index;
 			for (index in state.selectedNodes) {
 				if (state.selectedNodes[index].name === node.name) {
@@ -373,6 +377,7 @@ export const store = new Vuex.Store({
 
 				// Set/Overwrite the value
 				Vue.set(node.issues!, nodeIssueData.type, nodeIssueData.value);
+				state.stateIsDirty = true;
 			}
 
 			return true;
@@ -461,6 +466,7 @@ export const store = new Vuex.Store({
 			state.nodeIndex.push(nodeName);
 		},
 		setNodeIndex (state, newData: { index: number, name: string | null}) {
+			state.stateIsDirty = true;
 			state.nodeIndex[newData.index] = newData.name;
 		},
 		resetNodeIndex (state) {
@@ -472,6 +478,9 @@ export const store = new Vuex.Store({
 			state.nodeViewMoveInProgress = value;
 		},
 		setNodeViewOffsetPosition (state, data) {
+			if (data.setStateDirty === true) {
+				state.stateIsDirty = true;
+			}
 			state.nodeViewOffsetPosition = data.newOffset;
 		},
 
@@ -532,6 +541,16 @@ export const store = new Vuex.Store({
 			Vue.set(state, 'oauthCallbackUrls', urls);
 		},
 
+		addNodeType (state, typeData: INodeTypeDescription) {
+			if (!typeData.hasOwnProperty('name')) {
+				// All node-types have to have a name
+				// TODO: Check if there is an error or whatever that is supposed to be returned
+				return;
+			}
+			state.stateIsDirty = true;
+			state.nodeTypes.push(typeData);
+		},
+
 		setActiveNode (state, nodeName: string) {
 			state.activeNode = nodeName;
 		},
@@ -554,6 +573,7 @@ export const store = new Vuex.Store({
 			if (state.workflowExecutionData.data.resultData.runData[pushData.nodeName] === undefined) {
 				Vue.set(state.workflowExecutionData.data.resultData.runData, pushData.nodeName, []);
 			}
+			state.stateIsDirty = true;
 			state.workflowExecutionData.data.resultData.runData[pushData.nodeName].push(pushData.data);
 		},
 
