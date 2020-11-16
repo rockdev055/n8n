@@ -348,11 +348,13 @@ export class Ftp implements INodeType {
 					const remotePath = this.getNodeParameter('path', i) as string;
 
 					// Check if dir path exists
-					const dirPath = dirname(remotePath);
-					const dirExists = await sftp!.exists(dirPath);
+					const dirExists = await sftp!.exists(dirname(remotePath));
 
 					// If dir does not exist, create all recursively in path
 					if (!dirExists) {
+						// Separate filename from dir path
+						const fileName = basename(remotePath);
+						const dirPath = remotePath.replace(fileName, '');
 						// Create directory
 						await sftp!.mkdir(dirPath, true);
 					}
